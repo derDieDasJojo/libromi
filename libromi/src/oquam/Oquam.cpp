@@ -24,6 +24,7 @@
 
 #include <vector>
 #include <stdexcept>
+#include <iostream>
 
 #include "oquam/plotter.h"
 #include "oquam/print.h"
@@ -59,7 +60,7 @@ namespace romi {
                 return controller_.get_position(position);
         }
         
-        bool Oquam::get_position(v3& position) 
+        bool Oquam::get_position(v3& position)
         {
                 int32_t p[3];
                 bool success = get_position(p);
@@ -68,6 +69,7 @@ namespace romi {
                                      p[1] / settings_.scale_meters_to_steps_[1],
                                      p[2] / settings_.scale_meters_to_steps_[2]);
                 }
+                //else std::cout<<"get_position failed"<<std::endl; //test
                 return success;
         }
 
@@ -265,8 +267,11 @@ namespace romi {
                         // Initialize the start position
                         int32_t pos_steps[3];
                         convert_position_to_steps(section.p0, pos_steps); 
-
+                        std::cout<<"k = "<<script.count_slices()<<std::endl;            //!!!!debugging
+                        int count = 0;                                                  //!!!!debugging
                         for (size_t k = 0; k < script.count_slices(); k++) {
+                                count ++;                                               //!!!!debugging
+                                std::cout<<"loop number = "<<count<<std::endl;
                                 execute_move(script.get_slice(k), pos_steps);
                         }
                 }
