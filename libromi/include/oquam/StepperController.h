@@ -36,7 +36,7 @@ namespace romi {
                 
         class StepperController : public ICNCController
         {
-        protected:
+        protected: //!!!A remettre en protected
 
                 std::unique_ptr<romiserial::IRomiSerialClient> _romi_serial;
                 std::mutex _mutex;
@@ -59,6 +59,8 @@ namespace romi {
                 
                 bool move(int16_t millis, int16_t steps_x,
                           int16_t steps_y, int16_t steps_z) override;
+
+                bool moveat(int16_t speed_x, int16_t speed_y, int16_t speed_z) override;
                 
                 bool synchronize(double timeout) override;
 
@@ -69,12 +71,15 @@ namespace romi {
                 bool enable() override;
                 bool disable() override;
 
+                bool stop() override;
+
         protected:
 
                 int send_command(const char *cmd);
                 int is_idle();                
                 bool response_ok(JsonCpp& response);
                 bool send_command_without_interruption(const char *command);
+                bool check_response(const char *command, JsonCpp& response);
         };
 }
 

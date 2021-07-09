@@ -82,7 +82,14 @@ namespace romi {
                 }
                 return position;
         }
-        
+
+        bool Oquam::moveat(int16_t speed_x, int16_t speed_y, int16_t speed_z)
+        {
+            SynchronizedCodeBlock synchronize(mutex_);
+            store_script_ = false;
+            return controller_.moveat(speed_x, speed_y, speed_z);
+        }
+
         bool Oquam::moveto(double x, double y, double z, double relative_speed)
         {
                 SynchronizedCodeBlock synchronize(mutex_);

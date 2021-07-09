@@ -269,7 +269,8 @@ namespace romi {
                 
                 double len = travel.length();
                 double vn = vnorm(v);
-                travel.duration = len / vn; 
+                if (vn == 0) travel.duration=len;
+                else travel.duration = len / vn;
         }
 
         void assert_speeds(double v0, double v_target, double v1)
