@@ -87,6 +87,8 @@ namespace romi {
                            INavigationController& navigation_controller,
                            ISession& session);
                 ~Navigation() override;
+                bool enable_controller() override;
+                bool disable_controller() override;
 
                 // The left and right speed are in absolute values, in
                 // m/s.
