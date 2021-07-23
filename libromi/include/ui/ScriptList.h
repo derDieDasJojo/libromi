@@ -24,56 +24,19 @@
 #ifndef _ROMI_SCRIPT_LIST_H
 #define _ROMI_SCRIPT_LIST_H
 
+#include "IScriptList.h"
+#include "Script.h"
 #include <string>
 #include <vector>
 #include <JsonCpp.h>
 
 namespace romi {
-        
-        struct Action
+
+        class ScriptList : public IScriptList
         {
-                // FIXME: This enum is specific to the weeding
-                // rover. And this is a generic header for all
-                // devices.
-                enum ActionType { Move, Hoe, Homing, StartRecording, StopRecording };
-
-                static constexpr const char *kMoveCommand = "move";
-                static constexpr const char *kHoeCommand = "hoe";
-                static constexpr const char *kHomingCommand = "homing";
-                static constexpr const char *kStartRecordingCommand = "start-recording";
-                static constexpr const char *kStopRecordingCommand = "stop-recording";
-                
-                ActionType type;
-                double params[2];
-
-                Action(ActionType atype) : type(atype){
-                        params[0] = 0.0;
-                        params[1] = 0.0;
-                }
-
-                Action(ActionType atype, double param1, double param2)  : type(atype){
-                        params[0] = param1;
-                        params[1] = param2;
-                }
-
-        };
-
-        struct Script
-        {
-                std::string id;
-                std::string title;
-                std::vector<Action> actions;
-
-                Script(const char *id_, const char *title_)  : id(id_), title(title_), actions(){
-                }
-
-                void append(Action action) {
-                        actions.push_back(action);
-                }
-        };
-
-        class ScriptList final : public std::vector<Script>
-        {
+        private:
+            std::vector<Script> scripts_;
+            JsonCpp json_scripts_;
         protected:
                 void load_scripts(const std::string& path);
                 void convert_scripts(JsonCpp& scripts);
@@ -88,10 +51,15 @@ namespace romi {
                 void convert_stop_recording(Script& script);
                 
         public:
-                
+
                 explicit ScriptList(const std::string& path);
                 explicit ScriptList(JsonCpp& json);
-                ~ScriptList() = default; // We are final so no virtual destructor.
+                ~ScriptList() override = default;
+
+                Script& operator[](size_t) override;
+                bool empty() const override;
+                size_t size() const override;
+                std::string json_scripts() const override;
         };
 }
 

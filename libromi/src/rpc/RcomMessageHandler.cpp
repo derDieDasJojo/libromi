@@ -121,7 +121,7 @@ namespace romi {
                 rpp::MemBuffer serialised;
                 json_serialise(response, k_json_compact, to_membuffer,
                                reinterpret_cast<void*>(&serialised));
-                websocket.send(serialised);
+                websocket.send(serialised, rcom::kTextMessage);
 
                 json_unref(response);
         }

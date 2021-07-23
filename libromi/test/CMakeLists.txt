@@ -196,17 +196,20 @@ add_test(
 
 ##
 
-set(SRCS_SCRIPTLIST 
+set(SRCS_SCRIPT
         src/tests_main.cpp
         src/scriptlist_tests.cpp
+        src/scripthublistener_tests.cpp
+        src/scripthub_tests.cpp
+        support/test_utility.cpp
   )
 
-add_executable(libromi_unit_tests_scriptlist ${SRCS_SCRIPTLIST})
-target_link_libraries(libromi_unit_tests_scriptlist rcompp-lite romi gtest gmock)
+add_executable(libromi_unit_tests_script ${SRCS_SCRIPT})
+target_link_libraries(libromi_unit_tests_script rcompp-lite rpp romi rcom-mocks gtest gmock)
 
 add_test(
-    NAME libromi_unit_tests_scriptlist
-    COMMAND libromi_unit_tests_scriptlist
+    NAME libromi_unit_tests_script
+    COMMAND libromi_unit_tests_script
 )
 
 ##
@@ -353,7 +356,7 @@ if(BUILD_COVERAGE)
                             libromi_unit_tests_navigation
                             libromi_unit_tests_crystaldisplay
                             libromi_unit_tests_joystick
-                            libromi_unit_tests_scriptlist
+                            libromi_unit_tests_script
                             libromi_unit_tests_statemachine
                             libromi_unit_tests_speed
                             libromi_unit_tests_scriptmenu

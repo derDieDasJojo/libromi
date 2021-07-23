@@ -28,12 +28,10 @@
 
 namespace romi {
                 
-        ScriptList::ScriptList(const std::string& path)
+        ScriptList::ScriptList(const std::string& path) : scripts_(), json_scripts_()
         {
                 try {
-                        
                         load_scripts(path);
-                
                 } catch (JSONError& je) {
                         r_err("ScriptList: JSON error while "
                               "loading scripts: %s", je.what());
@@ -46,7 +44,7 @@ namespace romi {
                 }
         }
                 
-        ScriptList::ScriptList(JsonCpp& json)
+        ScriptList::ScriptList(JsonCpp& json) : scripts_(), json_scripts_()
         {
                 try {
                         
@@ -66,8 +64,8 @@ namespace romi {
         
         void ScriptList::load_scripts(const std::string& path)
         {
-                JsonCpp scripts = JsonCpp::load(path.c_str());
-                convert_scripts(scripts);
+                json_scripts_ = JsonCpp::load(path.c_str());
+                convert_scripts(json_scripts_);
         }
         
         void ScriptList::convert_scripts(JsonCpp& scripts)
@@ -83,8 +81,8 @@ namespace romi {
                 const char *id = (const char *) script["id"];
                 const char *title = (const char *) script["title"];
                 
-                push_back(Script(id, title));
-                convert_script_actions(back(), script);                        
+                scripts_.emplace_back(id, title);
+                convert_script_actions(scripts_.back(), script);
         }
 
         void ScriptList::convert_script_actions(Script& script,
@@ -153,5 +151,23 @@ namespace romi {
         void ScriptList::convert_stop_recording(Script& script)
         {
                 script.append(Action(Action::StopRecording));
+        }
+
+        std::string ScriptList::json_scripts() const {
+            std::string scripts;
+            json_scripts_.tostring(scripts , k_json_pretty | k_json_sort_keys);
+            return scripts;
+        }
+
+        Script &ScriptList::operator[](size_t index) {
+            return scripts_[index];
+        }
+
+        bool ScriptList::empty() const {
+                return scripts_.empty();
+        }
+
+        size_t ScriptList::size() const {
+                return scripts_.size();
         }
 }

@@ -21,21 +21,26 @@
   <http://www.gnu.org/licenses/>.
 
  */
-#ifndef _ROMI_SCRIPT_ENGINE_H
-#define _ROMI_SCRIPT_ENGINE_H
+#ifndef _ROMI_ISCRIPT_LIST_H
+#define _ROMI_ISCRIPT_LIST_H
 
-#include "api/IEventSource.h"
-#include "ui/ScriptList.h"
+#include <string>
+#include "Script.h"
 
 namespace romi {
-        
-        template <class T>
-                class IScriptEngine : public IEventSource
+
+        class IScriptList
         {
-        public:
-                ~IScriptEngine() override = default;
-                virtual void execute_script(T& target, size_t id) = 0;
+            public:
+                virtual ~IScriptList() = default;
+
+                virtual Script& operator[](size_t) = 0;
+                virtual bool empty() const = 0;
+                virtual size_t size() const = 0;
+                virtual std::string json_scripts() const = 0;
+
+
         };
 }
 
-#endif // _ROMI_SCRIPT_ENGINE_H
+#endif // _IROMI_SCRIPT_LIST_H

@@ -175,6 +175,8 @@ set(SOURCES
         include/rpc/RemoteNavigation.h
         include/rpc/RemoteStub.h
         include/rpc/RemoteWeeder.h
+        include/rpc/IScriptHub.h
+        include/rpc/ScriptHub.h
         include/rpc/WeederAdaptor.h
 
         include/ui/CrystalDisplay.h
@@ -256,6 +258,8 @@ set(SOURCES
         src/rpc/RemoteNavigation.cpp
         src/rpc/RemoteStub.cpp
         src/rpc/RemoteWeeder.cpp
+        src/rpc/ScriptHub.cpp
+        src/rpc/ScriptHubListener.cpp
         src/rpc/WeederAdaptor.cpp
 
         src/ui/CrystalDisplay.cpp
