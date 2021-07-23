@@ -32,6 +32,9 @@ namespace romi {
                 
                 virtual ~IMotorDriver() = default;
 
+                virtual bool disable_controller() = 0;
+                virtual bool enable_controller() = 0;
+
                 /** The left and right speed are relative speeds. They
                  * must have a value between -1 and 1, and indicate
                  * the fraction of the maximum allowed speed. */

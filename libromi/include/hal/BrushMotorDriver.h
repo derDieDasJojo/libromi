@@ -113,9 +113,7 @@ namespace romi {
                 
                 bool configure_controller(JsonCpp &config, int steps,
                                           double max_revolutions_per_sec);
-                        
-                bool disable_controller();
-                bool enable_controller();
+
                 bool check_response(const char *command,
                                     JsonCpp& response);
 
@@ -144,6 +142,9 @@ namespace romi {
                                  double max_revolutions_per_sec);
                 
                 ~BrushMotorDriver() override;
+
+                bool disable_controller() override;
+                bool enable_controller() override;
 
                 bool stop() override;
                 bool moveat(double left, double right) override;

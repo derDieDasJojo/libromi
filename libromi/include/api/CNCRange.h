@@ -27,32 +27,34 @@
 
 #include "JsonCpp.h"
 #include "v3.h"
+#include "IRange.h"
 
 namespace romi {
-        
-        struct CNCRange
+
+        class CNCRange : public IRange
         {
+            public:
                 v3 min;
                 v3 max;
-                
+            public:
                 CNCRange();
                 explicit CNCRange(JsonCpp &range);
                 CNCRange(const double *min, const double *max);
                 CNCRange(v3 min, v3 max);
-                
-                void init(JsonCpp &range);
-                
-                v3 dimensions() const;
-                
-                bool is_inside(double x, double y, double z);
-                bool is_inside(v3 p);
-                
+
+                void init(JsonCpp &range) override;
+
+                v3 dimensions() const override;
+
+                bool is_inside(double x, double y, double z) override;
+                bool is_inside(v3 p) override;
+
                 // Computes the distance of a point that lies outside
                 // the range to the border of the range.
-                double error(double x, double y, double z);
-                double error(v3 p);
+                double error(double x, double y, double z) override;
+                double error(v3 p) override;
 
-                v3 clamp(v3 p) const;
+                v3 clamp(v3 p) const override;
         };
 }
 

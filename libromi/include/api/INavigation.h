@@ -46,6 +46,9 @@ namespace romi {
 
                 /** Stops immediately. */
                 virtual bool stop() = 0;
+
+                virtual bool disable_controller() = 0;
+                virtual bool enable_controller() = 0;
         };
 }
 

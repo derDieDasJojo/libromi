@@ -25,7 +25,8 @@
 #include <JsonCpp.h> 
 #include <RomiSerialErrors.h>
 #include <ClockAccessor.h>
-#include "oquam/StepperController.h" 
+#include "oquam/StepperController.h"
+#include <iostream>
 
 namespace romi {
 
@@ -107,6 +108,13 @@ namespace romi {
                 return (send_command(buffer) == 0);
         }
 
+        bool StepperController::moveat(int16_t speed_x, int16_t speed_y, int16_t speed_z)
+        {
+            char buffer[64];
+            rprintf(buffer, 64, "V[%hd,%hd,%hd]", speed_x, speed_y, speed_z);
+            return (send_command(buffer) == 0);
+        }
+
         int StepperController::is_idle()
         {
                 int idle = -1;
@@ -160,6 +168,7 @@ namespace romi {
                                 pos[1] = (int32_t) s.num(2);
                                 pos[2] = (int32_t) s.num(3);
                                 success = true;
+                                r_debug("pos[0]=%d, pos[1]=%d",pos[0],pos[1]);
                         } else {
                                 r_err("StepperController::get_position: error: "
                                       "invalid array length");
@@ -202,6 +211,8 @@ namespace romi {
 
         bool StepperController::response_ok(JsonCpp& response)
         {
+//                std::cout<<"response.isarray() = "<<response.isarray()<<", response.get(0).isnumber() = "<<
+//                                    response.get(0).isnumber()<<", response.num(0) = "<<response.num(0)<<std::endl;
                 return  (response.isarray()
                          && response.get(0).isnumber()
                          && response.num(0) == 0);
@@ -214,6 +225,7 @@ namespace romi {
                 for (int i = 0; i < 10; i++) {
                         _romi_serial->send(command, response);
                         if (response_ok(response)) {
+                                //std::cout<<"response success = "<<success<<std::endl;
                                 success = true;
                                 break;
                         }
@@ -262,5 +274,26 @@ namespace romi {
                 rprintf(command, 64, "h[%d,%d,%d]", axis1, axis2, axis3);
                 r_info("StepperController: setting homing to [%d,%d,%d]", axis1, axis2, axis3);
                 return send_command_without_interruption(command);
+        }
+
+        bool StepperController::stop()         //???? utiliser la fonction de BrushMotorDriver en la passant en static pour eviter les doublons?
+        {
+            JsonCpp response;
+            const char *command = "V[0,0,0]"; //Avec X ca ne marche pas
+            _romi_serial->send(command, response);
+            return check_response(command, response);
+        }
+
+        bool StepperController::check_response(const char *command, JsonCpp& response)
+        {
+            bool success = (response.num(romiserial::kStatusCode) == 0);
+            if (!success) {
+                const char *message = "No message";
+                if (response.length() > 1)
+                    message = response.str(romiserial::kErrorMessage);
+                r_warn("StepperMotorDriver: command %s returned error: %s",
+                       command, message);
+            }
+            return success;
         }
 }
