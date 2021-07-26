@@ -80,6 +80,12 @@ namespace romi {
                         _pos[2] += steps_z;
                         return true;
                 }
+                bool moveat(int16_t speed_x, int16_t speed_y, int16_t speed_z) override
+                {   (void)speed_x;
+                    (void)speed_y;
+                    (void)speed_z;
+                    return true;
+                };
                 
                 bool pause_activity() override {
                         return true;
@@ -99,6 +105,10 @@ namespace romi {
                 
                 bool disable() override {
                         return true;
+                }
+
+                bool stop() override {
+                    return true;
                 }
         };
 }
