@@ -1,11 +1,24 @@
 #include "gtest/gtest.h"
 #include "ui/ScriptList.h"
-#include "mock_scriptlist.h"
 #include "rpc/ScriptHub.h"
 #include "rpc/ScriptHubListener.h"
 #include <test_utility.h>
 #include "WebSocket.mock.h"
 #include <FileUtils.h>
+
+////
+#include "mock_scriptlist.h"
+
+#include "mock_inputdevice.h"
+#include "mock_display.h"
+#include "mock_speedcontroller.h"
+#include "mock_navigation.h"
+#include "mock_eventtimer.h"
+#include "mock_menu.h"
+#include "mock_scriptengine.h"
+#include "mock_notifications.h"
+#include "mock_weeder.h"
+#include "mock_imager.h"
 
 
 using namespace std;
@@ -45,21 +58,50 @@ public:
 
 TEST_F(scripthublistener_tests, can_construct_scripthublistener)
 {
-    // Arrange
+
+
+    MockInputDevice mockInputDevice;
+    MockDisplay mockDisplay;
+    MockSpeedController mockSpeedController;
+    MockNavigation mockNavigation;
+    MockEventTimer mockEventTimer;
+    MockMenu mockMenu;
+    MockScriptEngine mockScriptEngine;
+    MockNotifications mockNotifications;
+    MockWeeder mockWeeder;
+    MockImager mockImager;
+
+    romi::Rover rover(mockInputDevice, mockDisplay, mockSpeedController, mockNavigation, mockEventTimer,
+                      mockMenu, mockScriptEngine, mockNotifications, mockWeeder, mockImager);
     std::string test_script_path = test_data_directory + test_script_filename;
     ScriptList scripts(test_script_path);
+
     // Actscripts
     // Assert
-    auto scriptHubListener = std::make_shared<ScriptHubListener>(scripts);
+    auto scriptHubListener = std::make_shared<ScriptHubListener>(scripts, rover);
 
 }
 
 TEST_F(scripthublistener_tests, onmessage_binary_message_throws)
 {
     // Arrange
+    MockInputDevice mockInputDevice;
+    MockDisplay mockDisplay;
+    MockSpeedController mockSpeedController;
+    MockNavigation mockNavigation;
+    MockEventTimer mockEventTimer;
+    MockMenu mockMenu;
+    MockScriptEngine mockScriptEngine;
+    MockNotifications mockNotifications;
+    MockWeeder mockWeeder;
+    MockImager mockImager;
+
+    romi::Rover rover(mockInputDevice, mockDisplay, mockSpeedController, mockNavigation, mockEventTimer,
+                      mockMenu, mockScriptEngine, mockNotifications, mockWeeder, mockImager);
+
     std::string test_script_path = test_data_directory + test_script_filename;
     ScriptList scripts(test_script_path);
-    auto scriptHubListener = std::make_shared<ScriptHubListener>(scripts);
+    auto scriptHubListener = std::make_shared<ScriptHubListener>(scripts, rover);
     MockWebSocket mockWebSocket;
 
     rpp::MemBuffer request;

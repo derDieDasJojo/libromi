@@ -49,7 +49,7 @@ namespace romi {
         void RoverScriptEngine::run_script(Rover* rover, size_t script_index)
         {
                 int result_event = _finished_event;
-                Script& script = _scripts[script_index];
+                Script& script = const_cast<Script &>(_scripts[script_index]);
                 
                 r_debug("RoverScriptEngine::run_script: '%s'", script.title.c_str());
 

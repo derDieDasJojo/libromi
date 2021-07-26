@@ -56,10 +56,11 @@ namespace romi {
                 explicit ScriptList(JsonCpp& json);
                 ~ScriptList() override = default;
 
-                Script& operator[](size_t) override;
+                const Script& operator[](size_t) const override;
                 bool empty() const override;
                 size_t size() const override;
                 std::string json_scripts() const override;
+                long get_id_index(std::string& id ) const override;
         };
 }
 
