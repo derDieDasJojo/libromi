@@ -35,6 +35,7 @@ namespace romi {
         public:
                 ~IScriptEngine() override = default;
                 virtual void execute_script(T& target, size_t id) = 0;
+                virtual ScriptList& scriptList() = 0;
         };
 }
 

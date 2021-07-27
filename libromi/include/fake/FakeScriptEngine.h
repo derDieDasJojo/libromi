@@ -54,10 +54,11 @@ namespace romi {
         public:
                 FakeScriptEngine(ScriptList& scripts, int event);
                 
-                virtual ~FakeScriptEngine() override = default;
+                ~FakeScriptEngine() override = default;
                 
                 void execute_script(Rover& target, size_t id) override;
                 int get_next_event() override;
+                ScriptList& scriptList() override;
         };
 }
 

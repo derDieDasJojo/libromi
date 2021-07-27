@@ -78,7 +78,7 @@ TEST_F(scripthublistener_tests, can_construct_scripthublistener)
 
     // Actscripts
     // Assert
-    auto scriptHubListener = std::make_shared<ScriptHubListener>(scripts, rover);
+    auto scriptHubListener = std::make_shared<ScriptHubListener>(rover);
 
 }
 
@@ -101,7 +101,8 @@ TEST_F(scripthublistener_tests, onmessage_binary_message_throws)
 
     std::string test_script_path = test_data_directory + test_script_filename;
     ScriptList scripts(test_script_path);
-    auto scriptHubListener = std::make_shared<ScriptHubListener>(scripts, rover);
+
+    auto scriptHubListener = std::make_shared<ScriptHubListener>(rover);
     MockWebSocket mockWebSocket;
 
     rpp::MemBuffer request;

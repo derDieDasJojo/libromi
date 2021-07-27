@@ -171,4 +171,8 @@ namespace romi {
         {
                 return get_result();
         }
+
+        ScriptList &RoverScriptEngine::scriptList() {
+            return _scripts;
+        }
 }

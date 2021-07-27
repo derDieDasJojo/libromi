@@ -57,7 +57,7 @@ TEST_F(scripthub_tests, can_construct_scripthub)
                       mockMenu, mockScriptEngine, mockNotifications, mockWeeder, mockImager);
 
         MockScriptList mockScriptList;
-        auto scriptHubListener = std::make_shared<ScriptHubListener>(mockScriptList, rover);
+        auto scriptHubListener = std::make_shared<ScriptHubListener>(rover);
         ScriptHub scriptHub(scriptHubListener, 20000);
 }
 
