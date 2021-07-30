@@ -40,6 +40,7 @@ set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS}")
 # Build tests by default. We want to run tests whether we are developing or building a release. I mean... why wouldn't you? :)
 option(BUILD_TESTS "Build all tests." ON)
 option(BUILD_COVERAGE "Build coverage." ON)
+option(BUILD_ARDUINO "Build arduino projects." OFF)
 
 if(BUILD_TESTS)
 
@@ -95,6 +96,34 @@ if (BUILD_COVERAGE AND BUILD_TESTS)
             "${CMAKE_SOURCE_DIR}/librcom/*"
             "*test/*")
     append_coverage_compiler_flags()
+
+endif()
+
+######################################
+
+if (BUILD_ARDUINO)
+    if (NOT DEFINED arduinocli_SOURCE_DIR)
+        # arduinocli doesn't build with CMake so we download, set arduinocli as an external target, then call make.
+        # we then manually add the bin path so that we can call it later.
+        download_project(   PROJ              arduinocli
+                URL               https://downloads.arduino.cc/arduino-cli/arduino-cli_latest_Linux_64bit.tar.gz
+                PREFIX            ${CMAKE_THIRDPARTY_DIRECTORY}/arduinocli
+                TIMEOUT           180
+                ${UPDATE_DISCONNECTED_IF_AVAILABLE}
+                )
+
+        set(ARDUINOCLI_EXE "${arduinocli_SOURCE_DIR}/arduino-cli")
+    endif()
+
+    MESSAGE( "Arduino EXE = ${ARDUINOCLI_EXE}")
+    SET(CONFIG_PARAMS "config")
+    SET(INIT_PARAMS "int")
+    MESSAGE( "Config Cmd = ${CONFIG_PARAMS}")
+    execute_process (COMMAND "${ARDUINOCLI_EXE}" ${CONFIG_PARAMS} ${INIT_PARAMS}
+            RESULT_VARIABLE CMD_ERROR
+            OUTPUT_FILE CMD_OUTPUT)
+    MESSAGE( STATUS "CMD_ERROR:" ${CMD_ERROR})
+    MESSAGE( STATUS "CMD_OUTPUT:" ${CMD_OUTPUT})
 
 endif()
 
