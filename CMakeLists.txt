@@ -126,6 +126,7 @@ if (BUILD_ARDUINO)
 
 #    Add any other Adruino hosted library dependencies here.
     arduino_cli_function ("lib" "install" "PID")
+    arduino_cli_function ("lib" "install" "LiquidCrystal")
 
 endif()
 
