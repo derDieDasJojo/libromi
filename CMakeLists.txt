@@ -115,7 +115,15 @@ if (BUILD_ARDUINO)
         set(ARDUINOCLI_EXE "${arduinocli_SOURCE_DIR}/arduino-cli")
     endif()
 
-    SET(CONFIG_PARAMS "config" "init")
+    SET(CONFIG_INITPARAMS "config" "init")
+    MESSAGE( "CONFIG_INITPARAMS = ${CONFIG_INITPARAMS}")
+    execute_process (COMMAND "${ARDUINOCLI_EXE}" ${CONFIG_INITPARAMS}
+            RESULT_VARIABLE CMD_ERROR
+            OUTPUT_FILE CMD_OUTPUT)
+    MESSAGE( STATUS "CMD_ERROR:" ${CMD_ERROR})
+    MESSAGE( STATUS "CMD_OUTPUT:" ${CMD_OUTPUT})
+
+    SET(CONFIG_PARAMS "config" "set" "library.enable_unsafe_install" "true" )
     MESSAGE( "Config Cmd = ${CONFIG_PARAMS}")
     execute_process (COMMAND "${ARDUINOCLI_EXE}" ${CONFIG_PARAMS}
             RESULT_VARIABLE CMD_ERROR
@@ -147,6 +155,11 @@ if (BUILD_ARDUINO)
             OUTPUT_FILE CMD_OUTPUT)
     MESSAGE( STATUS "CMD_ERROR:" ${CMD_ERROR})
     MESSAGE( STATUS "CMD_OUTPUT:" ${CMD_OUTPUT})
+
+#    TBD: Move Romierial lib to ~/Arduino/libraries/Romiserial
+
+#    BUILD OQUAM
+#    ./arduino-cli compile --fqbn arduino:avr:uno ~/Development/romi-rover-build-and-test/libromi/firmware/Oquam
 
 endif()
 

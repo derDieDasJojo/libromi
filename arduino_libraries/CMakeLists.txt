@@ -38,4 +38,33 @@ target_include_directories(romiserial
 
 target_link_libraries(romiserial rpp r)
 
+if (BUILD_ARDUINO)
+
+    SET(ROMISERIAL_ARDUINO_LIB "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/RomiSerial.zip")
+    add_custom_command(OUTPUT ${ROMISERIAL_ARDUINO_LIB} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E tar "cvf" "${ROMISERIAL_ARDUINO_LIB}" --format=zip -- ${CMAKE_CURRENT_SOURCE_DIR}/RomiSerial/
+            WORKING_DIRECTORY
+            ${CMAKE_CURRENT_SOURCE_DIR}
+            DEPENDS
+            romiserial
+            COMMENT
+            "Creating ${ROMISERIAL_ARDUINO_LIB}"
+            )
+
+    SET(LIBNSTALL_ROMISERIAL_PARAMS "lib" "install" "--zip-path" "${ROMISERIAL_ARDUINO_LIB}")
+    MESSAGE( "LIBNSTALL_ROMISERIAL_PARAMS = ${LIBNSTALL_ROMISERIAL_PARAMS}")
+    add_custom_target(install_romiserial_lib ALL
+            COMMAND "${ARDUINOCLI_EXE}" ${LIBNSTALL_ROMISERIAL_PARAMS}
+            WORKING_DIRECTORY
+            ${CMAKE_CURRENT_SOURCE_DIR}
+            DEPENDS
+            ${ROMISERIAL_ARDUINO_LIB}
+            COMMENT
+            "Installing ${ROMISERIAL_ARDUINO_LIB}"
+            )
+
+    MESSAGE( STATUS "CMD_ERROR:" ${CMD_ERROR})
+    MESSAGE( STATUS "CMD_OUTPUT:" ${CMD_OUTPUT})
+endif()
+
 add_subdirectory(test)
