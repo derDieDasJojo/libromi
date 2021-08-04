@@ -102,6 +102,7 @@ endif()
 ######################################
 
 if (BUILD_ARDUINO)
+    include(${CMAKE_MODULES_DIRECTORY}/ArduinoCliFunctions.cmake)
     if (NOT DEFINED arduinocli_SOURCE_DIR)
         # arduinocli doesn't build with CMake so we download, set arduinocli as an external target, then call make.
         # we then manually add the bin path so that we can call it later.
@@ -115,48 +116,11 @@ if (BUILD_ARDUINO)
         set(ARDUINOCLI_EXE "${arduinocli_SOURCE_DIR}/arduino-cli")
     endif()
 
-    SET(CONFIG_INITPARAMS "config" "init")
-    MESSAGE( "CONFIG_INITPARAMS = ${CONFIG_INITPARAMS}")
-    execute_process (COMMAND "${ARDUINOCLI_EXE}" ${CONFIG_INITPARAMS}
-            RESULT_VARIABLE CMD_ERROR
-            OUTPUT_FILE CMD_OUTPUT)
-    MESSAGE( STATUS "CMD_ERROR:" ${CMD_ERROR})
-    MESSAGE( STATUS "CMD_OUTPUT:" ${CMD_OUTPUT})
-
-    SET(CONFIG_PARAMS "config" "set" "library.enable_unsafe_install" "true" )
-    MESSAGE( "Config Cmd = ${CONFIG_PARAMS}")
-    execute_process (COMMAND "${ARDUINOCLI_EXE}" ${CONFIG_PARAMS}
-            RESULT_VARIABLE CMD_ERROR
-            OUTPUT_FILE CMD_OUTPUT)
-    MESSAGE( STATUS "CMD_ERROR:" ${CMD_ERROR})
-    MESSAGE( STATUS "CMD_OUTPUT:" ${CMD_OUTPUT})
-
-    SET(COREUPDATE_PARAMS "core" "update-index")
-    MESSAGE( "COREUPDATE_PARAMS = ${COREUPDATE_PARAMS}")
-    execute_process (COMMAND "${ARDUINOCLI_EXE}" ${COREUPDATE_PARAMS}
-            RESULT_VARIABLE CMD_ERROR
-            OUTPUT_FILE CMD_OUTPUT)
-    MESSAGE( STATUS "CMD_ERROR:" ${CMD_ERROR})
-    MESSAGE( STATUS "CMD_OUTPUT:" ${CMD_OUTPUT})
-
-
-    SET(COREINSTALL_PARAMS "core" "install" "arduino:avr")
-    MESSAGE( "COREINSTALL_PARAMS = ${COREINSTALL_PARAMS}")
-    execute_process (COMMAND "${ARDUINOCLI_EXE}" ${COREINSTALL_PARAMS}
-            RESULT_VARIABLE CMD_ERROR
-            OUTPUT_FILE CMD_OUTPUT)
-    MESSAGE( STATUS "CMD_ERROR:" ${CMD_ERROR})
-    MESSAGE( STATUS "CMD_OUTPUT:" ${CMD_OUTPUT})
-
-    SET(LIBNSTALL_PARAMS "lib" "install" "PID")
-    MESSAGE( "LIBNSTALL_PARAMS = ${LIBNSTALL_PARAMS}")
-    execute_process (COMMAND "${ARDUINOCLI_EXE}" ${LIBNSTALL_PARAMS}
-            RESULT_VARIABLE CMD_ERROR
-            OUTPUT_FILE CMD_OUTPUT)
-    MESSAGE( STATUS "CMD_ERROR:" ${CMD_ERROR})
-    MESSAGE( STATUS "CMD_OUTPUT:" ${CMD_OUTPUT})
-
-#    TBD: Move Romierial lib to ~/Arduino/libraries/Romiserial
+    arduino_cli_function ("config" "init")
+    arduino_cli_function ("config" "set" "library.enable_unsafe_install" "true")
+    arduino_cli_function ("core" "update-index")
+    arduino_cli_function ("core" "install" "arduino:avr")
+    arduino_cli_function ("lib" "install" "PID")
 
 #    BUILD OQUAM
 #    ./arduino-cli compile --fqbn arduino:avr:uno ~/Development/romi-rover-build-and-test/libromi/firmware/Oquam

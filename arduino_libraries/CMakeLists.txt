@@ -39,7 +39,6 @@ target_include_directories(romiserial
 target_link_libraries(romiserial rpp r)
 
 if (BUILD_ARDUINO)
-
     SET(ROMISERIAL_ARDUINO_LIB "${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/RomiSerial.zip")
     add_custom_command(OUTPUT ${ROMISERIAL_ARDUINO_LIB} POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E tar "cvf" "${ROMISERIAL_ARDUINO_LIB}" --format=zip -- ${CMAKE_CURRENT_SOURCE_DIR}/RomiSerial/
