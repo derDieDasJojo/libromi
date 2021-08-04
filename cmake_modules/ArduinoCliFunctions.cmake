@@ -1,14 +1,17 @@
 ############################################################
 
 function (arduino_cli_function)
+    MESSAGE( "arduini cli call:")
     execute_process (COMMAND "${ARDUINOCLI_EXE}" ${ARGV}
+            COMMAND_ECHO
+                STDOUT
             RESULT_VARIABLE
                 CMD_ERROR
-            OUTPUT_FILE
+            OUTPUT_VARIABLE
                 CMD_OUTPUT)
-    MESSAGE( "arduino_cli_function parameters ${ARGV}")
-    MESSAGE( "arduini_cli_function ERROR:" ${CMD_ERROR})
-    MESSAGE( "arduini_cli_function OUTPUT:" ${CMD_OUTPUT})
+#    MESSAGE( "ERROR:" ${CMD_ERROR})
+    MESSAGE("${CMD_OUTPUT}")
+
 endfunction()
 
 ############################################################
