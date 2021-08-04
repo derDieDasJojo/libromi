@@ -102,28 +102,30 @@ endif()
 ######################################
 
 if (BUILD_ARDUINO)
+    SET(ROMISERIAL_ARDUINO_LIB ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/RomiSerial.zip)
     include(${CMAKE_MODULES_DIRECTORY}/ArduinoCliFunctions.cmake)
+
     if (NOT DEFINED arduinocli_SOURCE_DIR)
         # arduinocli doesn't build with CMake so we download, set arduinocli as an external target, then call make.
         # we then manually add the bin path so that we can call it later.
-        download_project(   PROJ              arduinocli
+        download_project(
+                PROJ              arduinocli
                 URL               https://downloads.arduino.cc/arduino-cli/arduino-cli_latest_Linux_64bit.tar.gz
                 PREFIX            ${CMAKE_THIRDPARTY_DIRECTORY}/arduinocli
                 TIMEOUT           180
                 ${UPDATE_DISCONNECTED_IF_AVAILABLE}
                 )
-
-        set(ARDUINOCLI_EXE "${arduinocli_SOURCE_DIR}/arduino-cli")
     endif()
+    set(ARDUINOCLI_EXE "${arduinocli_SOURCE_DIR}/arduino-cli")
 
     arduino_cli_function ("config" "init")
+#    We need to set this config entry to true to install RomiSerial from .zip
     arduino_cli_function ("config" "set" "library.enable_unsafe_install" "true")
     arduino_cli_function ("core" "update-index")
     arduino_cli_function ("core" "install" "arduino:avr")
-    arduino_cli_function ("lib" "install" "PID")
 
-#    BUILD OQUAM
-#    ./arduino-cli compile --fqbn arduino:avr:uno ~/Development/romi-rover-build-and-test/libromi/firmware/Oquam
+#    Add any other Adruino hosted library dependencies here.
+    arduino_cli_function ("lib" "install" "PID")
 
 endif()
 
@@ -207,13 +209,12 @@ if (NOT DEFINED eigen3_SOURCE_DIR)
     )
     include_directories ("${eigen3_SOURCE_DIR}")
 endif()
-######################################
 
-###########################################################
+######################################
 
 include(${CMAKE_MODULES_DIRECTORY}/RomiProjectBuildOptions.cmake)
 
-###########################################################
+######################################
 
 add_subdirectory(binortools)
 add_subdirectory(arduino_libraries)
