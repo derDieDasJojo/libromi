@@ -11,7 +11,7 @@ if (BUILD_ARDUINO)
             COMMENT
                 "Building Arduino Azhoo"
             WORKING_DIRECTORY
-                ${CMAKE_CURRENT_SOURCE_DIR}
+                ${CMAKE_CURRENT_SOURCE_DIR}/Azhoo
             DEPENDS
                 install_romiserial_lib
             )
@@ -21,7 +21,7 @@ if (BUILD_ARDUINO)
             COMMENT
             "Building Arduino CrystalDisplay"
             WORKING_DIRECTORY
-            ${CMAKE_CURRENT_SOURCE_DIR}
+            ${CMAKE_CURRENT_SOURCE_DIR}/CrystalDisplay
             DEPENDS
             install_romiserial_lib
             )
@@ -31,7 +31,7 @@ if (BUILD_ARDUINO)
             COMMENT
             "Building Arduino Oquam"
             WORKING_DIRECTORY
-            ${CMAKE_CURRENT_SOURCE_DIR}
+            ${CMAKE_CURRENT_SOURCE_DIR}/Oquam
             DEPENDS
             install_romiserial_lib
             )
