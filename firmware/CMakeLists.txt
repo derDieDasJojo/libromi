@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.10)
 # We add the tests whether we are building the binaries or not.
 add_subdirectory(Azhoo/tests)
 
-if (BUILD_ARDUINO)
+if (${BUILD_ARDUINO})
 
     MESSAGE( "Arduino Firmware output = SourceDir/build")
     add_custom_target(Azhoo ALL
@@ -80,20 +80,3 @@ if (BUILD_ARDUINO)
 
 endif()
 
-# To call a function from add_custom_target
-# COMMAND ${CMAKE_COMMAND} -P ${CMAKE_MODULES_DIRECTORY}/ArduinoCliFunctions.cmake "lib" "install" "--zip-path" "${ROMISERIAL_ARDUINO_LIB}"
-#if (BUILD_ARDUINO)
-#    #    output wil currently go to /tmp/ if we want the output to go to the directory of source we need to add
-#    #    ./arduino-cli compile --fqbn arduino:avr:uno ~/Development/romi-rover-build-and-test/libromi/firmware/Oquam
-#    arduino_cli_function ("compile" "--clean" "--export-binaries" "--fqbn" "arduino:avr:uno" "${CMAKE_CURRENT_SOURCE_DIR}/Azhoo")
-#    arduino_cli_function ("compile" "--clean" "--export-binaries" "--fqbn" "arduino:avr:uno" "${CMAKE_CURRENT_SOURCE_DIR}/CrystalDisplay")
-#    arduino_cli_function ("compile" "--clean" "--export-binaries" "--fqbn" "arduino:avr:uno" "${CMAKE_CURRENT_SOURCE_DIR}/Oquam")
-#    MESSAGE("BLDC BrushMotorController SabertoothController ToolCarrierJrkG2 do not compile. Need updating.")
-#    #    arduino_cli_function ("compile" "--clean" "--export-binaries" "--fqbn" "arduino:avr:uno" "${CMAKE_CURRENT_SOURCE_DIR}/BLDC")
-#    #    arduino_cli_function ("compile" "--clean" "--export-binaries" "--fqbn" "arduino:avr:uno" "${CMAKE_CURRENT_SOURCE_DIR}/BrushMotorController")
-#    #    arduino_cli_function ("compile" "--clean" "--export-binaries" "--fqbn" "arduino:avr:uno" "${CMAKE_CURRENT_SOURCE_DIR}/SabertoothController")
-#    #    arduino_cli_function ("compile" "--clean" "--export-binaries" "--fqbn" "arduino:avr:uno" "${CMAKE_CURRENT_SOURCE_DIR}/ToolCarrierJrkG2")
-#
-#
-#
-#endif()
