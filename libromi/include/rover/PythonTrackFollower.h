@@ -44,6 +44,7 @@ namespace romi {
                 ICamera& camera_;
                 std::unique_ptr<romi::IRPCClient> rpc_;
                 std::string function_name_;
+                double pixels_per_meter_;
                 ISession& session_;
                 double cross_track_error_;
                 double orientation_error_;
@@ -61,6 +62,7 @@ namespace romi {
                 PythonTrackFollower(ICamera& camera,
                                     std::unique_ptr<romi::IRPCClient>& rpc,
                                     const std::string& function_name,
+                                    double pixels_per_meter,
                                     ISession& session);
                 ~PythonTrackFollower() override = default;
                 

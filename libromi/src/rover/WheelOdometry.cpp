@@ -35,7 +35,7 @@ namespace romi {
                     theta(0.0),
                     wheel_circumference(M_PI * rover_config.wheel_diameter),
                     wheel_base(rover_config.wheel_base),
-                    encoder_steps(rover_config.encoder_steps)
+                    encoder_steps(driver.get_encoder_steps())
         {
                 double left, right, timestamp;
                 

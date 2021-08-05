@@ -23,6 +23,8 @@
 #define _AZHOO_I_AZHOO_H
 
 #include <stdint.h>
+#include "SpeedEnvelope.h"
+#include "PIController.h"
 
 struct AzhooConfiguration
 {
@@ -47,6 +49,13 @@ struct AzhooConfiguration
         int16_t kp_denominator;
         int16_t ki_numerator;
         int16_t ki_denominator;
+
+        // The maximum PWM amplitude that may be produced. If
+        // max_amplitude is zero, then the default amplitude of the
+        // PWM generator will be used. This value allows you to
+        // restrict the maximum signal sent to the motor driver as a
+        // safeguard against runaway values.
+        int16_t max_amplitude;
 };
 
 class IAzhoo
@@ -67,10 +76,26 @@ public:
         // initialization wasn't completed.
         virtual bool set_target_speeds(int16_t left, int16_t right) = 0;
 
+        // The target speed is the speed requested by the user
+        virtual void get_target_speeds(int16_t& left, int16_t& right) = 0;
+        
+        // The current speed is the speed computed by the speed
+        // envelope. It takes into account the maximum acceleration.
+        virtual void get_current_speeds(int16_t& left, int16_t& right) = 0;
+
+        // The measured speed is the speed deduced from the changes in
+        // the encoder values.
+        virtual void get_measured_speeds(int16_t& left, int16_t& right) = 0;
+        
         // Returns true if an update was performed, false otherwise. 
         virtual bool update() = 0;
 
         virtual void get_encoders(int32_t& left, int32_t& right, uint32_t& time) = 0;
+
+        virtual PIController& left_controller() = 0;
+        virtual PIController& right_controller() = 0;
+        virtual SpeedEnvelope& left_speed_envelope() = 0;
+        virtual SpeedEnvelope& right_speed_envelope() = 0;
 
 };
 

@@ -43,21 +43,26 @@ namespace romi {
                 /** Stop as quick as possible. */
                 virtual bool stop() = 0;
 
+                /** Returns the number of steps per revolution. */
+                virtual int32_t get_encoder_steps() = 0;
+
                 /** Returns the values of the encoders. The timestamp
                  * is in seconds. */
                 virtual bool get_encoder_values(double& left, double& right,
                                                 double& timestamp) = 0;
 
                 enum Axis { kLeftWheel = 0, kRightWheel = 1 };
-                
-                virtual bool get_pid_values(Axis axis,
-                                            double& target_speed,
-                                            double& measured_speed,
-                                            double& pid_output,
-                                            double& pid_error_p,
-                                            double& pid_error_i,
-                                            double& pid_error_d,
-                                            double& controller_input) = 0;
+
+                virtual bool get_speeds(double& left_target, double& right_target,
+                                        double& left_current, double& right_current,
+                                        double& left_measured, double& right_measured) = 0;
+
+                /* virtual bool get_pid_values(Axis axis, */
+                /*                             double& pid_output, */
+                /*                             double& pid_error_p, */
+                /*                             double& pid_error_i, */
+                /*                             double& pid_error_d, */
+                /*                             double& controller_input) = 0; */
         };
 }
 

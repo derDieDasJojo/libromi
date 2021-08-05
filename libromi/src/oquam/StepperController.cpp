@@ -114,6 +114,13 @@ namespace romi {
             rprintf(buffer, 64, "V[%hd,%hd,%hd]", speed_x, speed_y, speed_z);
             return (send_command(buffer) == 0);
         }
+        
+        bool StepperController::moveto(int16_t dt, int16_t x, int16_t y, int16_t z)
+        {
+                char buffer[64];
+                rprintf(buffer, 64, "m[%d,%d,%d,%d]", dt, x, y, z);
+                return (send_command(buffer) == 0);                
+        }
 
         int StepperController::is_idle()
         {

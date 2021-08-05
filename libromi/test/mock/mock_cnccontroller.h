@@ -12,6 +12,7 @@ public:
         MOCK_METHOD(bool, synchronize, (double timeout), (override));
         MOCK_METHOD(bool, move, (int16_t millis, int16_t steps_x, int16_t steps_y, int16_t steps_z), (override));
         MOCK_METHOD(bool, moveat, (int16_t speed_x, int16_t speed_y, int16_t speed_z), (override));
+        MOCK_METHOD(bool, moveto, (int16_t millis, int16_t x, int16_t y, int16_t z), (override));
         MOCK_METHOD(bool, pause_activity, (), (override));
         MOCK_METHOD(bool, continue_activity, (), (override));
         MOCK_METHOD(bool, reset_activity, (), (override));

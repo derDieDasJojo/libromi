@@ -67,9 +67,9 @@ bool Azhoo::is_disabled()
 bool Azhoo::enable()
 {
         bool success = false;
+        stop();
         if (is_configured() || is_disabled()) {
                 // TODO: power on?
-                stop();
                 state_ = kEnabled;
                 success = true;
         }
@@ -78,10 +78,10 @@ bool Azhoo::enable()
 
 bool Azhoo::disable()
 {
-        bool success = false;
+        bool success = true;
+        stop();
         if (is_enabled()) {
                 // TODO: power off?
-                stop();
                 state_ = kDisabled;
                 success = true;
         }
@@ -100,7 +100,8 @@ bool Azhoo::configure(AzhooConfiguration& config)
                               config.right_direction);
                 init_speed_envelope(config.max_speed, config.max_acceleration);
                 init_pi_controllers(config.kp_numerator, config.kp_denominator,
-                                    config.ki_numerator, config.ki_denominator);
+                                    config.ki_numerator, config.ki_denominator,
+                                    config.max_amplitude);
                 if (is_set_up()) {
                         state_ = kConfigured;
                 }
@@ -137,12 +138,15 @@ void Azhoo::init_speed_envelope(double max_speed, double max_acceleration)
 }
 
 void Azhoo::init_pi_controllers(int16_t kp_numerator, int16_t kp_denominator,
-                                int16_t ki_numerator, int16_t ki_denominator)
+                                int16_t ki_numerator, int16_t ki_denominator,
+                                int16_t max_amplitude)
 {
         left_controller_.init(kp_numerator, kp_denominator,
-                              ki_numerator, ki_denominator);
+                              ki_numerator, ki_denominator,
+                              max_amplitude);
         right_controller_.init(kp_numerator, kp_denominator,
-                               ki_numerator, ki_denominator);
+                               ki_numerator, ki_denominator,
+                               max_amplitude);
 }
 
 bool Azhoo::set_target_speeds(int16_t left, int16_t right)
@@ -154,6 +158,24 @@ bool Azhoo::set_target_speeds(int16_t left, int16_t right)
                 updated = true;
         }
         return updated;
+}
+
+void Azhoo::get_target_speeds(int16_t& left, int16_t& right)
+{
+        left = left_speed_envelope_.get_target();
+        right = right_speed_envelope_.get_target();
+}
+        
+void Azhoo::get_current_speeds(int16_t& left, int16_t& right)
+{
+        left = left_speed_envelope_.get_current();
+        right = right_speed_envelope_.get_current();
+}
+        
+void Azhoo::get_measured_speeds(int16_t& left, int16_t& right)
+{
+        left = left_controller_.get_speed();
+        right = right_controller_.get_speed();
 }
 
 void Azhoo::get_encoders(int32_t& left, int32_t& right, uint32_t& time)
@@ -172,10 +194,7 @@ bool Azhoo::update()
                 uint32_t dt = now - last_time_;
         
                 if (dt >= interval_) {
-                        int16_t left_speed = left_speed_envelope_.update();
-                        int16_t right_speed = right_speed_envelope_.update();
-                        left_controller_.update(left_speed);
-                        right_controller_.update(right_speed);
+                        do_update();
                         last_time_ = now;
                         updated = true;
                 }
@@ -190,4 +209,24 @@ void Azhoo::stop()
         right_speed_envelope_.stop();
         left_controller_.stop();
         right_controller_.stop();
+}
+
+PIController& Azhoo::left_controller()
+{
+        return left_controller_;
+}
+        
+PIController& Azhoo::right_controller()
+{
+        return right_controller_;
+}
+        
+SpeedEnvelope& Azhoo::left_speed_envelope()
+{
+        return left_speed_envelope_;
+}
+        
+SpeedEnvelope& Azhoo::right_speed_envelope()
+{
+        return right_speed_envelope_;
 }

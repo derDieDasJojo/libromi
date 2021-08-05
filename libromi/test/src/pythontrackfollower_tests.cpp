@@ -41,7 +41,7 @@ TEST_F(pythontrackfollower_tests, constructor_with_good_values_succeeds)
         std::unique_ptr<romi::IRPCClient> rpc = std::move(mock_rpc);
 
         // Act
-        PythonTrackFollower follower(camera_, rpc, "toto", session_);
+        PythonTrackFollower follower(camera_, rpc, "toto", 1.0, session_);
 }
 
 static rpp::MemBuffer buffer;
@@ -62,7 +62,7 @@ TEST_F(pythontrackfollower_tests, update_error_estimate_fails_when_camera_fails)
 
         std::unique_ptr<romi::IRPCClient> rpc = std::move(mock_rpc);
         
-        PythonTrackFollower follower(camera_, rpc, "toto", session_);
+        PythonTrackFollower follower(camera_, rpc, "toto", 1.0, session_);
 
         // Act
         bool success = follower.update_error_estimate();

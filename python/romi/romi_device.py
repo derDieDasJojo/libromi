@@ -11,6 +11,9 @@ class RomiDevice():
         time.sleep(2.0)
         self.debug = True
         
+    def get_driver(self):
+        return self.driver
+        
     def print_debug(self, s):
         if self.debug:
             print(s)
@@ -46,7 +49,8 @@ class RomiDevice():
         while True:
             b = self.driver.readline()
             s = b.decode("ascii").rstrip()
-            if s[0] == "#":
+            print(f"s='{s}'")
+            if len(s) > 0 and s[0] == "#":
                 if s[1] == "!":
                     print("Log: %s" % s)
                 else:
