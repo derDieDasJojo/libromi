@@ -18,6 +18,7 @@ endfunction()
 function (build_arduino_cli_download_url ARDUINO_CLI_DOWNLOAD_URL )
     cmake_host_system_information (RESULT 64BIT QUERY IS_64BIT)
 #    We only support linux32/64 or PI32/64
+    Message("Pi Build = ${PI_BUILD}")
     if (${PI_BUILD})
         if (64BIT)
             set(${ARDUINO_CLI_DOWNLOAD_URL} "https://downloads.arduino.cc/arduino-cli/arduino-cli_latest_Linux_ARM64.tar.gz" PARENT_SCOPE)
