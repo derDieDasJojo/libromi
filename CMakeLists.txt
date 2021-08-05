@@ -116,7 +116,7 @@ if (${BUILD_ARDUINO})
             # we then manually add the bin path so that we can call it later.
             download_project(
                     PROJ              arduinocli
-                    URL               https://downloads.arduino.cc/arduino-cli/arduino-cli_latest_Linux_64bit.tar.gz
+                    URL               ${ARDUINOCLI_DOWNLOAD_URL}
                     PREFIX            ${CMAKE_THIRDPARTY_DIRECTORY}/arduinocli
                     TIMEOUT           180
                     ${UPDATE_DISCONNECTED_IF_AVAILABLE}
