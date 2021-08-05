@@ -125,22 +125,11 @@ namespace romi {
                 bool check_response(const char *command,
                                     JsonCpp& response);
 
-                // Debugging
-                std::atomic<bool> recording_pid_;
-                std::unique_ptr<std::thread> pid_thread_;
-                /* void record_pid(); */
-                /* void record_pid_main(); */
-                /* void store_pid_recordings(std::vector<PidStatus>& recording); */
 
                 std::atomic<bool> recording_speeds_;
                 std::unique_ptr<std::thread> speeds_thread_;
-                /* void record_speeds(); */
-                /* void record_speeds_main(); */
-                /* void store_speed_recordings(std::vector<Speeds>& recording); */
-                /* bool get_speeds_values(double& left_absolute, */
-                /*                        double& right_absolute, */
-                /*                        double& left_normalized, */
-                /*                        double& right_normalized); */
+                void log_speeds();
+                void record_speeds_main();
                 
         public:
 
@@ -163,18 +152,8 @@ namespace romi {
                                 double& left_current, double& right_current,
                                 double& left_measured, double& right_measured) override;
                 
-                /* bool get_pid_values(Axis axis, */
-                /*                     double& target_speed, */
-                /*                     double& measured_speed, */
-                /*                     double& pid_output, */
-                /*                     double& pid_error_p, */
-                /*                     double& pid_error_i, */
-                /*                     double& pid_error_d, */
-                /*                     double& controller_input) override; */
-                /* void start_recording_pid(); */
-                /* void stop_recording_pid(); */
-                /* void start_recording_speeds(); */
-                /* void stop_recording_speeds(); */
+                void start_recording_speeds();
+                void stop_recording_speeds();
         };
 }
 

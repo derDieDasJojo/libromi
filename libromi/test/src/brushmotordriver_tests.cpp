@@ -279,7 +279,7 @@ TEST_F(brushmotordriver_tests, returns_false_on_invalid_speeds_1)
                                 max_angular_acceleration);
         
         // Act
-        bool success = driver.moveat(2.0, 0.0);
+        bool success = driver.moveat((max_angular_speed + 0.1), 0.0);
         
         // Assert
         ASSERT_EQ(expected_output.size(), observed_output.size());
@@ -304,7 +304,7 @@ TEST_F(brushmotordriver_tests, returns_false_on_invalid_speeds_2)
                                 max_angular_acceleration);
         
         // Act
-        bool success = driver.moveat(-2.0, 0.0);
+        bool success = driver.moveat(-(max_angular_speed + 0.1), 0.0);
         
         // Assert
         ASSERT_EQ(expected_output.size(), observed_output.size());
@@ -329,7 +329,7 @@ TEST_F(brushmotordriver_tests, returns_false_on_invalid_speeds_3)
                                 max_angular_acceleration);
         
         // Act
-        bool success = driver.moveat(0.0, -1.1);
+        bool success = driver.moveat(0.0, -(max_angular_speed + 0.1));
         
         // Assert
         ASSERT_EQ(expected_output.size(), observed_output.size());
@@ -354,7 +354,7 @@ TEST_F(brushmotordriver_tests, returns_false_on_invalid_speeds_4)
                                 max_angular_acceleration);
         
         // Act
-        bool success = driver.moveat(0.0, 1.1);
+        bool success = driver.moveat(0.0, (max_angular_speed + 0.1));
         
         // Assert
         ASSERT_EQ(expected_output.size(), observed_output.size());
