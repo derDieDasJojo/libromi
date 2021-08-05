@@ -57,8 +57,6 @@ static const std::string kDriverRightMeasuredSpeedName = "driver-right-measured-
                         throw std::runtime_error("BrushMotorDriver: "
                                                  "Initialization failed");
                 }
-
-                start_recording_speeds();
         }
         
         BrushMotorDriver::~BrushMotorDriver()
