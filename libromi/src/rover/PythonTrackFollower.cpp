@@ -22,6 +22,8 @@
 
  */
 
+#include <r.h>
+#include <ClockAccessor.h>
 #include "rover/PythonTrackFollower.h"
 
 namespace romi {
@@ -29,15 +31,21 @@ namespace romi {
         PythonTrackFollower::PythonTrackFollower(ICamera& camera,
                                                  std::unique_ptr<romi::IRPCClient>& rpc,
                                                  const std::string& function_name,
+                                                 double pixels_per_meter,
                                                  ISession& session)
                 : camera_(camera),
                   rpc_(),
                   function_name_(function_name),
+                  pixels_per_meter_(pixels_per_meter),
                   session_(session),
                   cross_track_error_(0.0),
                   orientation_error_(0.0),
                   image_counter_(0)
         {
+                if (pixels_per_meter_ <= 0.0) {
+                        r_err("Invalid value for pixels_per_meter: %f", pixels_per_meter);
+                        throw std::runtime_error("Invalid value for pixels_per_meter");
+                }
                 //rpc_ = romi::RcomClient::create("python", 30);
                 rpc_ = std::move(rpc);
         }
@@ -67,12 +75,23 @@ namespace romi {
         
         void PythonTrackFollower::try_update()
         {
+                auto clock = rpp::ClockAccessor::GetInstance();
+                double start_time = clock->time();
+
                 auto filename = get_image_name();
+
                 auto image = grab_image();
+                r_debug("PythonTrackFollower: grab: %.6f s", clock->time()-start_time);
+                
                 store_image(image, filename);
+                r_debug("PythonTrackFollower: store: %.6f s", clock->time()-start_time);
+                
                 auto path = get_image_path(filename);
                 JsonCpp response = send_python_request(path);
+                r_debug("PythonTrackFollower: python: %.6f s", clock->time()-start_time);
+                
                 parse_response(response);
+                r_debug("PythonTrackFollower: parse: %.6f s", clock->time()-start_time);
         }
 
         rpp::MemBuffer& PythonTrackFollower::grab_image()
@@ -128,7 +147,10 @@ namespace romi {
                 
         void PythonTrackFollower::parse_response(JsonCpp& response)
         {
-                cross_track_error_ = response.num(kCrossTrackErrorKey);
-                orientation_error_ = response.num(kOrientationErrorKey);
+                cross_track_error_ = response.get("result").num(kCrossTrackErrorKey);
+                cross_track_error_ /= pixels_per_meter_;
+                orientation_error_ = response.get("result").num(kOrientationErrorKey);
+                r_debug("cross_track_error %f, orientation_error %f",
+                        cross_track_error_, orientation_error_);
         }
 }

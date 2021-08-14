@@ -43,7 +43,7 @@ TEST_F(picontroller_tests, test_constructor)
         ASSERT_EQ(controller.out_, 0);
         ASSERT_EQ(controller.pulsewidth_, 0);
         // expected: speed (1 rev/s) x dt (0.020 s) x ppr (pulse/rev)
-        //ASSERT_EQ(controller.delta_coeff_, 1.0 * 0.020 * 10000.0);
+        //ASSERT_EQ(controller.speed_to_delta_, 1.0 * 0.020 * 10000.0);
 }
 
 TEST_F(picontroller_tests, test_update_encoder_values)
@@ -60,7 +60,7 @@ TEST_F(picontroller_tests, test_update_encoder_values)
 
         // Assert
         // expected: speed (1 rev/s) x dt (0.020 s) x ppr (pulse/rev)
-        ASSERT_EQ(controller.delta_coeff_, 1.0 * 0.020 * 10000.0);
+        ASSERT_EQ(controller.speed_to_delta_, 1.0 * 0.020 * 10000.0);
 }
 
 TEST_F(picontroller_tests, test_update_1)
@@ -79,7 +79,7 @@ TEST_F(picontroller_tests, test_update_1)
 
         PIController controller(encoder_, pwm_);
         controller.update_encoder_values(0.020);
-        controller.init(1, 1, 1, 1);
+        controller.init(1, 1, 1, 1, 0);
         
         // Act
         controller.update(100);
@@ -115,7 +115,7 @@ TEST_F(picontroller_tests, test_update_2)
 
         PIController controller(encoder_, pwm_);
         controller.update_encoder_values(0.020);
-        controller.init(1, 1, 1, 1);
+        controller.init(1, 1, 1, 1, 0);
         
         // Act
         controller.update(100);

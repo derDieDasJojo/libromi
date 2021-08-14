@@ -27,7 +27,6 @@ protected:
                 const char * config_string = "{"
                         "'wheel-diameter': 1.0,"
                         "'wheel-base': 1.0,"
-                        "'encoder-steps': 1000.0,"
                         "'maximum-speed': 3.0, "
                         "'maximum-acceleration': 0.1 }";
                 config = JsonCpp::parse(config_string);
@@ -36,6 +35,8 @@ protected:
 	~wheelodometry_tests() override = default;
 
 	void SetUp() override {
+                EXPECT_CALL(driver_, get_encoder_steps)
+                        .WillRepeatedly(Return(1000));
 	}
 
 	void TearDown() override {

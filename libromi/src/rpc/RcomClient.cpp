@@ -56,7 +56,7 @@ namespace romi {
         void RcomClient::execute(const std::string& method, JsonCpp &params,
                                 JsonCpp &result, RPCError &error)
         {
-                r_debug("RcomClient::execute");
+                //r_debug("RcomClient::execute");
 
                 try {
 
@@ -71,7 +71,7 @@ namespace romi {
         void RcomClient::try_execute(const std::string& method, JsonCpp &params,
                                     JsonCpp &result, RPCError &error)
         { 
-                r_debug("RcomClient::try_execute");
+                //r_debug("RcomClient::try_execute");
                 make_request(method, params);
                 if (send_request(rcom::kTextMessage, error)
                     && receive_response(buffer_, error)) {
@@ -81,7 +81,7 @@ namespace romi {
 
         void RcomClient::make_request(const std::string& method, JsonCpp &params)
         {
-                r_debug("RcomClient::make_request");
+                //r_debug("RcomClient::make_request");
                 JsonCpp request = JsonCpp::construct("{\"method\": \"%s\"}",
                                                      method.c_str());
                 
@@ -97,7 +97,7 @@ namespace romi {
 
         bool RcomClient::send_request(rcom::MessageType type, RPCError &error)
         {
-                r_debug("RcomClient::send_request");
+                //r_debug("RcomClient::send_request");
                 bool success = false;
                 if (link_->send(buffer_, type)) {
                         success = true;
@@ -110,21 +110,21 @@ namespace romi {
 
         bool RcomClient::receive_response(rpp::MemBuffer& buffer, RPCError &error)
         {
-                r_debug("RcomClient::receive_response");
+                //r_debug("RcomClient::receive_response");
                 bool success = false;
                 if (link_->recv(buffer, timeout_)) {
                         success = true;
                         const std::vector<uint8_t>& data = buffer.data();
                         uint8_t first_char = data[0];
                         if (first_char == '{')
-                                r_debug("RcomClient::receive_response kRecvText: "
+                                r_debug("RcomClient: response (text): "
                                         "%.*s", buffer.size(), data.data());
-                        else 
-                                r_debug("RcomClient::receive_response kRecvBinary: "
-                                        "length %zu", buffer.size());
+                        // else 
+                        //         r_debug("RcomClient::receive_response kRecvBinary: "
+                        //                 "length %zu", buffer.size());
                 } else {
-                        r_debug("RcomClient::receive_response: not text/binary %.*s",
-                                buffer.size(), buffer.data().data());
+                        // r_debug("RcomClient::receive_response: not text/binary %.*s",
+                        //         buffer.size(), buffer.data().data());
                         set_error(error);
                 }
                 return success;
@@ -132,7 +132,7 @@ namespace romi {
 
         void RcomClient::parse_response(JsonCpp &result, RPCError &error)
         {
-                r_debug("RcomClient::parse_response");
+                //r_debug("RcomClient::parse_response");
                 try {
                         result = JsonCpp::parse(buffer_);
                                 
@@ -144,7 +144,7 @@ namespace romi {
         
         void RcomClient::set_error(RPCError &error)
         {
-                r_debug("RcomClient::set_error");
+                //r_debug("RcomClient::set_error");
                 switch (link_->recv_status()) {
                 case rcom::kRecvError:
                         error.code = RPCError::kReceiveError;
@@ -171,7 +171,7 @@ namespace romi {
                                  rpp::MemBuffer& result,
                                  RPCError &error)
         {
-                r_debug("RcomClient::execute");
+                //r_debug("RcomClient::execute");
 
                 try {
 

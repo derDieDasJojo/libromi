@@ -60,16 +60,9 @@ namespace romi {
                 bool stop_;
 
                 // WIP
-                std::unique_ptr<std::thread> update_thread_;
-                std::atomic<double> left_target_;
-                std::atomic<double> right_target_;
-                double left_speed_;
-                double right_speed_;
-                std::atomic<bool> quitting_;
-                void update_speeds();
+                double left_target_;
+                double right_target_;
                 bool set_speed_targets(double left, double right);
-                double compute_next_speed(double current_speed, double target_speed,
-                                          double dt);
                 //
                 
                 bool send_moveat(double left, double right);

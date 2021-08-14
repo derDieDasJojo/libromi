@@ -40,6 +40,7 @@ set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS}")
 # Build tests by default. We want to run tests whether we are developing or building a release. I mean... why wouldn't you? :)
 option(BUILD_TESTS "Build all tests." ON)
 option(BUILD_COVERAGE "Build coverage." ON)
+option(BUILD_ARDUINO "Build arduino projects." ON)
 
 if(BUILD_TESTS)
 
@@ -96,6 +97,46 @@ if (BUILD_COVERAGE AND BUILD_TESTS)
             "*test/*")
     append_coverage_compiler_flags()
 
+endif()
+
+######################################
+
+if (${BUILD_ARDUINO})
+    SET(ROMISERIAL_ARDUINO_LIB ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/RomiSerial.zip)
+    include(${CMAKE_MODULES_DIRECTORY}/ArduinoCliFunctions.cmake)
+
+    SET(ARDUINOCLI_DOWNLOAD_URL, "")
+    build_arduino_cli_download_url(ARDUINOCLI_DOWNLOAD_URL)
+    MESSAGE("Download URL ${ARDUINOCLI_DOWNLOAD_URL}")
+
+    if(NOT ${ARDUINOCLI_DOWNLOAD_URL} STREQUAL "")
+
+        if (NOT DEFINED arduinocli_SOURCE_DIR)
+            # arduinocli doesn't build with CMake so we download, set arduinocli as an external target, then call make.
+            # we then manually add the bin path so that we can call it later.
+            download_project(
+                    PROJ              arduinocli
+                    URL               ${ARDUINOCLI_DOWNLOAD_URL}
+                    PREFIX            ${CMAKE_THIRDPARTY_DIRECTORY}/arduinocli
+                    TIMEOUT           180
+                    ${UPDATE_DISCONNECTED_IF_AVAILABLE}
+                    )
+        endif()
+        set(ARDUINOCLI_EXE "${arduinocli_SOURCE_DIR}/arduino-cli")
+
+        arduino_cli_function ("config" "init")
+    #    We need to set this config entry to true to install RomiSerial from .zip
+        arduino_cli_function ("config" "set" "library.enable_unsafe_install" "true")
+        arduino_cli_function ("core" "update-index")
+        arduino_cli_function ("core" "install" "arduino:avr")
+
+    #    Add any other Adruino hosted library dependencies here.
+        arduino_cli_function ("lib" "install" "PID")
+        arduino_cli_function ("lib" "install" "LiquidCrystal")
+    else()
+            MESSAGE(WARNING "unsupported setting BUILD_ARDUINO OFF")
+            set(BUILD_ARDUINO  OFF)
+    endif()
 endif()
 
 ######################################
@@ -178,13 +219,12 @@ if (NOT DEFINED eigen3_SOURCE_DIR)
     )
     include_directories ("${eigen3_SOURCE_DIR}")
 endif()
-######################################
 
-###########################################################
+######################################
 
 include(${CMAKE_MODULES_DIRECTORY}/RomiProjectBuildOptions.cmake)
 
-###########################################################
+######################################
 
 add_subdirectory(binortools)
 add_subdirectory(arduino_libraries)

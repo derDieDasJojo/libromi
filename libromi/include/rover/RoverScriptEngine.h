@@ -40,6 +40,7 @@ namespace romi {
         
         class RoverScriptEngine : public IScriptEngine<Rover>
         {
+
         protected:
 
                 ScriptList& _scripts;
@@ -72,7 +73,8 @@ namespace romi {
                 ~RoverScriptEngine() override = default;
 
                 void execute_script(Rover& target, size_t id) override;
-                int get_next_event() override;                
+                int get_next_event() override;
+                ScriptList& scriptList() override;
         };
 }
 

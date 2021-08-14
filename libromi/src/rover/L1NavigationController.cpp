@@ -25,9 +25,18 @@
 #include <math.h>
 #include <stdexcept>
 #include <r.h>
+#include <ClockAccessor.h>
 #include "rover/L1NavigationController.h"
+#include "api/DataLogAccessor.h"
 
 namespace romi {
+
+        static const std::string kErrorDistanceName = "l1-error-distance";
+        static const std::string kErrorAngleName = "l1-error-angle";
+        static const std::string kGammaName = "l1-gamma";
+        static const std::string kThetaName = "l1-theta";
+        static const std::string kRName = "l1-r";
+        static const std::string kCorrectionName = "l1-correction";
         
         L1NavigationController::L1NavigationController(double width, double L)
                 : w_(width), L_(L) {
@@ -74,12 +83,27 @@ namespace romi {
                         throw std::runtime_error("L1NavigationController: d>=L");
                 }
                 
+                auto clock = rpp::ClockAccessor::GetInstance();
+                double now = clock->time();
                 double correction = 0.0;
-                double theta = phi + atan(d / sqrt(L_ * L_ - d * d));
+                double gamma = -atan(d / sqrt(L_ * L_ - d * d));
+                double theta = phi - gamma;
+                
+                log_data(now, kErrorDistanceName, d);
+                log_data(now, kErrorAngleName, phi);
+                log_data(now, kGammaName, gamma);
+                log_data(now, kThetaName, theta);
+
+                r_debug("L1NavigationController: d=%.5f, phi=%.5f, gamma=%.5f, theta=%.5f",
+                        d, phi, gamma, theta);
                 if (theta != 0) {
                         double R = -L_ / (2.0 * sin(theta));
-                        correction = -w_ / (2.0 * R);
+                        correction = w_ / (2.0 * R);
+                        log_data(now, kRName, R);
+                } else {
+                        log_data(now, kRName, 0.0);
                 }
+                log_data(now, kCorrectionName, correction);
                 return correction;
         }
 }

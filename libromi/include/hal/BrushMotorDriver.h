@@ -35,30 +35,33 @@ namespace romi {
 
         struct BrushMotorDriverSettings
         {
-                int max_signal;
-                bool use_pid;
-                double kp, ki, kd;
-                int dir_left;
-                int dir_right;
+                int32_t encoder_steps;
+                int8_t dir_left;
+                int8_t dir_right;
+                int32_t kp_numerator;
+                int32_t kp_denominator;
+                int32_t ki_numerator;
+                int32_t ki_denominator;
+                int32_t max_signal;
 
+                static constexpr const char *kEncoderSteps = "encoder-steps"; 
                 static constexpr const char *kMaxSignalAmpKey = "maximum-signal-amplitude"; 
-                static constexpr const char *kUsePidKey = "use-pid"; 
                 static constexpr const char *kPidKey = "pid"; 
                 static constexpr const char *kKpKey = "kp"; 
                 static constexpr const char *kKiKey = "ki"; 
-                static constexpr const char *kKdKey = "kd"; 
                 static constexpr const char *kEncoderDirectionsKey = "encoder-directions"; 
                 static constexpr const char *kLeftKey = "left"; 
                 static constexpr const char *kRightKey = "right"; 
 
                 void parse(JsonCpp &params) {
-                        max_signal = (int) params.num(kMaxSignalAmpKey);
-                        use_pid = params.boolean(kUsePidKey);
-                        kp = params.get(kPidKey).num(kKpKey);
-                        ki = params.get(kPidKey).num(kKiKey);
-                        kd = params.get(kPidKey).num(kKdKey);
-                        dir_left = (int) params.get(kEncoderDirectionsKey).num(kLeftKey);
-                        dir_right = (int) params.get(kEncoderDirectionsKey).num(kRightKey);
+                        encoder_steps = (int32_t) params.num(kEncoderSteps);
+                        dir_left = (int8_t) params.get(kEncoderDirectionsKey).num(kLeftKey);
+                        dir_right = (int8_t) params.get(kEncoderDirectionsKey).num(kRightKey);
+                        kp_numerator = (int32_t) params.get(kPidKey).get(kKpKey).num(0);
+                        kp_denominator = (int32_t) params.get(kPidKey).get(kKpKey).num(1);
+                        ki_numerator = (int32_t) params.get(kPidKey).get(kKiKey).num(0);
+                        ki_denominator = (int32_t) params.get(kPidKey).get(kKiKey).num(1);
+                        max_signal = (int32_t) params.num(kMaxSignalAmpKey);
                 }
         };
 
@@ -110,57 +113,45 @@ namespace romi {
         protected:
                 std::unique_ptr<romiserial::IRomiSerialClient> serial_;
                 BrushMotorDriverSettings settings_;
+                double max_angular_speed_;
                 
-                bool configure_controller(JsonCpp &config, int steps,
-                                          double max_revolutions_per_sec);
+                bool configure_controller(JsonCpp &config, 
+                                          double max_angular_speed, 
+                                          double max_angular_acceleration);
+                        
+                bool disable_controller();
+                bool enable_controller();
 
                 bool check_response(const char *command,
                                     JsonCpp& response);
 
-                // Debugging
-                std::atomic<bool> recording_pid_;
-                std::unique_ptr<std::thread> pid_thread_;
-                void record_pid();
-                void record_pid_main();
-                void store_pid_recordings(std::vector<PidStatus>& recording);
 
                 std::atomic<bool> recording_speeds_;
                 std::unique_ptr<std::thread> speeds_thread_;
-                void record_speeds();
+                void log_speeds();
                 void record_speeds_main();
-                void store_speed_recordings(std::vector<Speeds>& recording);
-                bool get_speeds_values(double& left_absolute,
-                                       double& right_absolute,
-                                       double& left_normalized,
-                                       double& right_normalized);
                 
         public:
 
                 BrushMotorDriver(std::unique_ptr<romiserial::IRomiSerialClient>& serial,
                                  JsonCpp &config,
-                                 int encoder_steps,
-                                 double max_revolutions_per_sec);
+                                 double max_angular_speed,
+                                 double max_angular_acceleration);
                 
                 ~BrushMotorDriver() override;
 
-                bool disable_controller() override;
-                bool enable_controller() override;
-
+                const BrushMotorDriverSettings& get_settings();
+                
                 bool stop() override;
                 bool moveat(double left, double right) override;
+                int32_t get_encoder_steps() override;
                 bool get_encoder_values(double& left, double& right,
                                         double& timestamp) override;
+
+                bool get_speeds(double& left_target, double& right_target,
+                                double& left_current, double& right_current,
+                                double& left_measured, double& right_measured) override;
                 
-                bool get_pid_values(Axis axis,
-                                    double& target_speed,
-                                    double& measured_speed,
-                                    double& pid_output,
-                                    double& pid_error_p,
-                                    double& pid_error_i,
-                                    double& pid_error_d,
-                                    double& controller_input) override;
-                void start_recording_pid();
-                void stop_recording_pid();
                 void start_recording_speeds();
                 void stop_recording_speeds();
         };

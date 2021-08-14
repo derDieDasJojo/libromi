@@ -52,6 +52,14 @@ public:
                 target_ = target;
         }
 
+        int16_t get_target() {
+                return target_;
+        }
+
+        int16_t get_current() {
+                return current_;
+        }
+
         int16_t update() {
                 if (current_ < target_) {
                         current_ = (int16_t) (current_ + increment_);

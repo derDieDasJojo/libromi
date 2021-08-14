@@ -34,12 +34,11 @@ namespace romi {
             public:
                 virtual ~IScriptList() = default;
 
-                virtual Script& operator[](size_t) = 0;
+                virtual const Script& operator[](size_t) const = 0;
                 virtual bool empty() const = 0;
                 virtual size_t size() const = 0;
                 virtual std::string json_scripts() const = 0;
-
-
+                virtual long get_id_index(std::string& id ) const = 0;
         };
 }
 

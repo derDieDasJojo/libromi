@@ -7,8 +7,8 @@ using namespace std;
 using namespace testing;
 using namespace romi;
 
-const int default_encoder_steps = 123;
-const double default_maximum_revolutions_per_second = 1.7;
+const double default_max_angular_speed = 1.7;
+const double default_max_angular_acceleration = 0.2;
 
 class brushmotordriver_tests : public ::testing::Test
 {
@@ -17,20 +17,20 @@ protected:
         vector<string> observed_output;
         vector<string> mock_response;
         JsonCpp driver_config;
-        int encoder_steps;
-        double maximum_revolutions_per_second;
+        double max_angular_speed;
+        double max_angular_acceleration;
         
 	brushmotordriver_tests()
 	: expected_output(),
           observed_output(),
           mock_response(),
           driver_config(),
-          encoder_steps(default_encoder_steps),
-          maximum_revolutions_per_second(default_maximum_revolutions_per_second) {
+          max_angular_speed(default_max_angular_speed),
+          max_angular_acceleration(default_max_angular_acceleration) {
                 const char *config_string = "{"
                         "'maximum-signal-amplitude': 71,"
-                        "'use-pid': false,"
-                        "'pid': {'kp': 1.1, 'ki': 2.2, 'kd': 3.3},"
+                        "'pid': {'kp': [1, 2], 'ki': [3, 4] },"
+                        "'encoder-steps': 1000,"
                         "'encoder-directions': {'left': -1, 'right': 1 }}";
                 driver_config = JsonCpp::parse(config_string);
 	}
@@ -69,13 +69,14 @@ TEST_F(brushmotordriver_tests, parse_config)
         settings.parse(driver_config);
         
         //Assert
-        ASSERT_EQ(settings.max_signal, 71);
-        ASSERT_EQ(settings.use_pid, false);
-        ASSERT_EQ(settings.kp, 1.1);
-        ASSERT_EQ(settings.ki, 2.2);
-        ASSERT_EQ(settings.kd, 3.3);
+        ASSERT_EQ(settings.encoder_steps, 1000);
         ASSERT_EQ(settings.dir_left, -1);
         ASSERT_EQ(settings.dir_right, 1);
+        ASSERT_EQ(settings.kp_numerator, 1);
+        ASSERT_EQ(settings.kp_denominator, 2);
+        ASSERT_EQ(settings.ki_numerator, 3);
+        ASSERT_EQ(settings.ki_denominator, 4);
+        ASSERT_EQ(settings.max_signal, 71);
 }
 
 TEST_F(brushmotordriver_tests, successful_config_and_enable)
@@ -83,13 +84,15 @@ TEST_F(brushmotordriver_tests, successful_config_and_enable)
         // Arrange
         auto mock_serial = std::make_unique<MockRomiSerialClient>();
         add_expected_output(*mock_serial, "E[0]", "[0]");
-        add_expected_output(*mock_serial, "C[123,170,71,0,1100,2200,3300,-1,1]", "[0]");
+        add_expected_output(*mock_serial, "C[1000,-1,1,1700,200,1,2,3,4,71]", "[0]");
         add_expected_output(*mock_serial, "E[1]", "[0]");
         std::unique_ptr<romiserial::IRomiSerialClient> serial = std::move(mock_serial);
 
         // Act
-        BrushMotorDriver driver(serial, driver_config, encoder_steps,
-                                maximum_revolutions_per_second);
+        BrushMotorDriver driver(serial,
+                                driver_config, 
+                                max_angular_speed, 
+                                max_angular_acceleration);
 
         // Assert
         ASSERT_EQ(expected_output.size(), observed_output.size());
@@ -104,13 +107,14 @@ TEST_F(brushmotordriver_tests, throws_exception_at_failed_config)
         // Arrange
         auto mock_serial = std::make_unique<MockRomiSerialClient>();
         add_expected_output(*mock_serial, "E[0]", "[0]");
-        add_expected_output(*mock_serial, "C[123,170,71,0,1100,2200,3300,-1,1]", "[1,\"MESSAGE\"]");
+        add_expected_output(*mock_serial, "C[1000,-1,1,1700,200,1,2,3,4,71]", "[1,\"MESSAGE\"]");
         std::unique_ptr<romiserial::IRomiSerialClient> serial = std::move(mock_serial);
 
         try {
                 // Act
-                BrushMotorDriver driver(serial, driver_config, encoder_steps,
-                                        maximum_revolutions_per_second);
+                BrushMotorDriver driver(serial, driver_config,
+                                        max_angular_speed, 
+                                        max_angular_acceleration);
                 FAIL() << "Expected std::runtime_error";
         }  catch (std::runtime_error const &re) {
                 // Assert
@@ -128,14 +132,15 @@ TEST_F(brushmotordriver_tests, throws_exception_at_failed_enable)
         // Arrange
         auto mock_serial = std::make_unique<MockRomiSerialClient>();
         add_expected_output(*mock_serial, "E[0]", "[0]");
-        add_expected_output(*mock_serial, "C[123,170,71,0,1100,2200,3300,-1,1]", "[0]");
+        add_expected_output(*mock_serial, "C[1000,-1,1,1700,200,1,2,3,4,71]", "[0]");
         add_expected_output(*mock_serial, "E[1]", "[1,\"MESSAGE\"]");
         std::unique_ptr<romiserial::IRomiSerialClient> serial = std::move(mock_serial);
 
         try {
                 // Act
-                BrushMotorDriver driver(serial, driver_config, encoder_steps,
-                                        maximum_revolutions_per_second);
+                BrushMotorDriver driver(serial, driver_config,
+                                        max_angular_speed, 
+                                max_angular_acceleration);
                 FAIL() << "Expected std::runtime_error";
         }  catch (std::runtime_error const &e) {
                 
@@ -155,13 +160,14 @@ TEST_F(brushmotordriver_tests, returns_true_on_successful_moveat)
         // Arrange
         auto mock_serial = std::make_unique<MockRomiSerialClient>();
         add_expected_output(*mock_serial, "E[0]", "[0]");
-        add_expected_output(*mock_serial, "C[123,170,71,0,1100,2200,3300,-1,1]", "[0]");
+        add_expected_output(*mock_serial, "C[1000,-1,1,1700,200,1,2,3,4,71]", "[0]");
         add_expected_output(*mock_serial, "E[1]", "[0]");
         add_expected_output(*mock_serial, "V[100,200]", "[0]");
         std::unique_ptr<romiserial::IRomiSerialClient> serial = std::move(mock_serial);
         
-        BrushMotorDriver driver(serial, driver_config, encoder_steps,
-                                maximum_revolutions_per_second);
+        BrushMotorDriver driver(serial, driver_config,
+                                max_angular_speed, 
+                                max_angular_acceleration);
 
         // Act
         bool success = driver.moveat(0.1, 0.2);
@@ -180,13 +186,14 @@ TEST_F(brushmotordriver_tests, returns_false_on_unsuccessful_moveat)
         // Arrange
         auto mock_serial = std::make_unique<MockRomiSerialClient>();
         add_expected_output(*mock_serial, "E[0]", "[0]");
-        add_expected_output(*mock_serial, "C[123,170,71,0,1100,2200,3300,-1,1]", "[0]");
+        add_expected_output(*mock_serial, "C[1000,-1,1,1700,200,1,2,3,4,71]", "[0]");
         add_expected_output(*mock_serial, "E[1]", "[0]");
         add_expected_output(*mock_serial, "V[100,200]", "[1,'Just fooling you']");
         std::unique_ptr<romiserial::IRomiSerialClient> serial = std::move(mock_serial);
         
-        BrushMotorDriver driver(serial, driver_config, encoder_steps,
-                                maximum_revolutions_per_second);
+        BrushMotorDriver driver(serial, driver_config,
+                                max_angular_speed, 
+                                max_angular_acceleration);
         
         // Act
         bool success = driver.moveat(0.1, 0.2);
@@ -206,13 +213,14 @@ TEST_F(brushmotordriver_tests, returns_true_on_successful_get_encoders)
         // Arrange
         auto mock_serial = std::make_unique<MockRomiSerialClient>();
         add_expected_output(*mock_serial, "E[0]", "[0]");
-        add_expected_output(*mock_serial, "C[123,170,71,0,1100,2200,3300,-1,1]", "[0]");
+        add_expected_output(*mock_serial, "C[1000,-1,1,1700,200,1,2,3,4,71]", "[0]");
         add_expected_output(*mock_serial, "E[1]", "[0]");
         add_expected_output(*mock_serial, "e", "[0,100,200,300]");
         std::unique_ptr<romiserial::IRomiSerialClient> serial = std::move(mock_serial);
 
-        BrushMotorDriver driver(serial, driver_config, encoder_steps,
-                                maximum_revolutions_per_second);
+        BrushMotorDriver driver(serial, driver_config,
+                                max_angular_speed, 
+                                max_angular_acceleration);
         
         // Act
         double left, right, timestamp;
@@ -235,13 +243,14 @@ TEST_F(brushmotordriver_tests, returns_false_on_unsuccessful_get_encoders)
         // Arrange
         auto mock_serial = std::make_unique<MockRomiSerialClient>();
         add_expected_output(*mock_serial, "E[0]", "[0]");
-        add_expected_output(*mock_serial, "C[123,170,71,0,1100,2200,3300,-1,1]", "[0]");
+        add_expected_output(*mock_serial, "C[1000,-1,1,1700,200,1,2,3,4,71]", "[0]");
         add_expected_output(*mock_serial, "E[1]", "[0]");
         add_expected_output(*mock_serial, "e", "[1,'TEST']");
         std::unique_ptr<romiserial::IRomiSerialClient> serial = std::move(mock_serial);
 
-        BrushMotorDriver driver(serial, driver_config, encoder_steps,
-                                maximum_revolutions_per_second);
+        BrushMotorDriver driver(serial, driver_config,
+                                max_angular_speed, 
+                                max_angular_acceleration);
         
         // Act
         double left, right, timestamp;
@@ -261,15 +270,16 @@ TEST_F(brushmotordriver_tests, returns_false_on_invalid_speeds_1)
         // Arrange
         auto mock_serial = std::make_unique<MockRomiSerialClient>();
         add_expected_output(*mock_serial, "E[0]", "[0]");
-        add_expected_output(*mock_serial, "C[123,170,71,0,1100,2200,3300,-1,1]", "[0]");
+        add_expected_output(*mock_serial, "C[1000,-1,1,1700,200,1,2,3,4,71]", "[0]");
         add_expected_output(*mock_serial, "E[1]", "[0]");
         std::unique_ptr<romiserial::IRomiSerialClient> serial = std::move(mock_serial);
 
-        BrushMotorDriver driver(serial, driver_config, encoder_steps,
-                                maximum_revolutions_per_second);
+        BrushMotorDriver driver(serial, driver_config,
+                                max_angular_speed, 
+                                max_angular_acceleration);
         
         // Act
-        bool success = driver.moveat(2.0, 0.0);
+        bool success = driver.moveat((max_angular_speed + 0.1), 0.0);
         
         // Assert
         ASSERT_EQ(expected_output.size(), observed_output.size());
@@ -285,15 +295,16 @@ TEST_F(brushmotordriver_tests, returns_false_on_invalid_speeds_2)
         // Arrange
         auto mock_serial = std::make_unique<MockRomiSerialClient>();
         add_expected_output(*mock_serial, "E[0]", "[0]");
-        add_expected_output(*mock_serial, "C[123,170,71,0,1100,2200,3300,-1,1]", "[0]");
+        add_expected_output(*mock_serial, "C[1000,-1,1,1700,200,1,2,3,4,71]", "[0]");
         add_expected_output(*mock_serial, "E[1]", "[0]");
         std::unique_ptr<romiserial::IRomiSerialClient> serial = std::move(mock_serial);
 
-        BrushMotorDriver driver(serial, driver_config, encoder_steps,
-                                maximum_revolutions_per_second);
+        BrushMotorDriver driver(serial, driver_config,
+                                max_angular_speed, 
+                                max_angular_acceleration);
         
         // Act
-        bool success = driver.moveat(-2.0, 0.0);
+        bool success = driver.moveat(-(max_angular_speed + 0.1), 0.0);
         
         // Assert
         ASSERT_EQ(expected_output.size(), observed_output.size());
@@ -309,15 +320,16 @@ TEST_F(brushmotordriver_tests, returns_false_on_invalid_speeds_3)
         // Arrange
         auto mock_serial = std::make_unique<MockRomiSerialClient>();
         add_expected_output(*mock_serial, "E[0]", "[0]");
-        add_expected_output(*mock_serial, "C[123,170,71,0,1100,2200,3300,-1,1]", "[0]");
+        add_expected_output(*mock_serial, "C[1000,-1,1,1700,200,1,2,3,4,71]", "[0]");
         add_expected_output(*mock_serial, "E[1]", "[0]");
         std::unique_ptr<romiserial::IRomiSerialClient> serial = std::move(mock_serial);
 
-        BrushMotorDriver driver(serial, driver_config, encoder_steps,
-                                maximum_revolutions_per_second);
+        BrushMotorDriver driver(serial, driver_config,
+                                max_angular_speed, 
+                                max_angular_acceleration);
         
         // Act
-        bool success = driver.moveat(0.0, -1.1);
+        bool success = driver.moveat(0.0, -(max_angular_speed + 0.1));
         
         // Assert
         ASSERT_EQ(expected_output.size(), observed_output.size());
@@ -333,15 +345,16 @@ TEST_F(brushmotordriver_tests, returns_false_on_invalid_speeds_4)
         // Arrange
         auto mock_serial = std::make_unique<MockRomiSerialClient>();
         add_expected_output(*mock_serial, "E[0]", "[0]");
-        add_expected_output(*mock_serial, "C[123,170,71,0,1100,2200,3300,-1,1]", "[0]");
+        add_expected_output(*mock_serial, "C[1000,-1,1,1700,200,1,2,3,4,71]", "[0]");
         add_expected_output(*mock_serial, "E[1]", "[0]");
         std::unique_ptr<romiserial::IRomiSerialClient> serial = std::move(mock_serial);
 
-        BrushMotorDriver driver(serial, driver_config, encoder_steps,
-                                maximum_revolutions_per_second);
+        BrushMotorDriver driver(serial, driver_config,
+                                max_angular_speed, 
+                                max_angular_acceleration);
         
         // Act
-        bool success = driver.moveat(0.0, 1.1);
+        bool success = driver.moveat(0.0, (max_angular_speed + 0.1));
         
         // Assert
         ASSERT_EQ(expected_output.size(), observed_output.size());
@@ -357,13 +370,14 @@ TEST_F(brushmotordriver_tests, returns_true_on_successful_stop)
         // Arrange
         auto mock_serial = std::make_unique<MockRomiSerialClient>();
         add_expected_output(*mock_serial, "E[0]", "[0]");
-        add_expected_output(*mock_serial, "C[123,170,71,0,1100,2200,3300,-1,1]", "[0]");
+        add_expected_output(*mock_serial, "C[1000,-1,1,1700,200,1,2,3,4,71]", "[0]");
         add_expected_output(*mock_serial, "E[1]", "[0]");
         add_expected_output(*mock_serial, "X", "[0]");
         std::unique_ptr<romiserial::IRomiSerialClient> serial = std::move(mock_serial);
 
-        BrushMotorDriver driver(serial, driver_config, encoder_steps,
-                                maximum_revolutions_per_second);
+        BrushMotorDriver driver(serial, driver_config,
+                                max_angular_speed, 
+                                max_angular_acceleration);
         
         // Act
         bool success = driver.stop();
@@ -382,13 +396,14 @@ TEST_F(brushmotordriver_tests, returns_false_on_failed_stop)
         // Arrange
         auto mock_serial = std::make_unique<MockRomiSerialClient>();
         add_expected_output(*mock_serial, "E[0]", "[0]");
-        add_expected_output(*mock_serial, "C[123,170,71,0,1100,2200,3300,-1,1]", "[0]");
+        add_expected_output(*mock_serial, "C[1000,-1,1,1700,200,1,2,3,4,71]", "[0]");
         add_expected_output(*mock_serial, "E[1]", "[0]");
         add_expected_output(*mock_serial, "X", "[1,\"error\"]");
         std::unique_ptr<romiserial::IRomiSerialClient> serial = std::move(mock_serial);
 
-        BrushMotorDriver driver(serial, driver_config, encoder_steps,
-                                maximum_revolutions_per_second);
+        BrushMotorDriver driver(serial, driver_config,
+                                max_angular_speed, 
+                                max_angular_acceleration);
         
         // Act
         bool success = driver.stop();

@@ -69,9 +69,12 @@ set(SOURCES
         include/api/EventTimer.h
         include/api/IEventTimer.h
         include/api/CNCRange.h
+        include/api/DataLog.h
+        include/api/DataLogAccessor.h
         include/api/IActivity.h
         include/api/ICamera.h
         include/api/ICNC.h
+        include/api/IDataLog.h
         include/api/IDisplay.h
         include/api/IEventSource.h
         include/api/IGimbal.h
@@ -190,6 +193,8 @@ set(SOURCES
         include/ui/UIEventMapper.h
 
         src/api/CNCRange.cpp
+        src/api/DataLog.cpp
+        src/api/DataLogAccessor.cpp
         src/api/Path.cpp
         src/api/ActivityHelper.cpp
         src/api/EventTimer.cpp

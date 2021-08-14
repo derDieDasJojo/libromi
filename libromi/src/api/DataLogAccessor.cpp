@@ -21,22 +21,9 @@
   <http://www.gnu.org/licenses/>.
 
  */
-#ifndef _ROMI_SCRIPT_ENGINE_H
-#define _ROMI_SCRIPT_ENGINE_H
-
-#include "api/IEventSource.h"
-#include "ui/ScriptList.h"
+#include "api/DataLogAccessor.h"
 
 namespace romi {
-        
-        template <class T>
-                class IScriptEngine : public IEventSource
-        {
-        public:
-                ~IScriptEngine() override = default;
-                virtual void execute_script(T& target, size_t id) = 0;
-                virtual ScriptList& scriptList() = 0;
-        };
-}
 
-#endif // _ROMI_SCRIPT_ENGINE_H
+        std::shared_ptr<IDataLog> DataLogAccessor::log_ = nullptr;
+}

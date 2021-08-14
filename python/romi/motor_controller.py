@@ -1,7 +1,7 @@
 import serial
 import json
 import math
-from romi_device import RomiDevice
+from romi.romi_device import RomiDevice
 
 class MotorController(RomiDevice):
 
@@ -16,23 +16,33 @@ class MotorController(RomiDevice):
         self.enable()
         
     def __send_configuration(self, config):
-        steps = config["rover"]["encoder_steps"]
-        wheel_diameter = config["rover"]["wheel_diameter"]
-        max_speed = config["rover"]["maximum_speed"]
-        max_signal = config["brush-motor-driver"]["maximum_signal_amplitude"]
-        use_pid = config["brush-motor-driver"]["use_pid"]
-        print(f"PID={use_pid}")
-        kp = config["brush-motor-driver"]["pid"]["kp"]
-        ki = config["brush-motor-driver"]["pid"]["ki"]
-        kd = config["brush-motor-driver"]["pid"]["kd"]
-        left_encoder = config["brush-motor-driver"]["encoder_directions"]["left"]
-        right_encoder = config["brush-motor-driver"]["encoder_directions"]["right"]
+        # Encoder
+        steps = config["brush-motor-driver"]["encoder-steps"]
+        left_encoder = config["brush-motor-driver"]["encoder-directions"]["left"]
+        right_encoder = config["brush-motor-driver"]["encoder-directions"]["right"]
+        
+        # Speed envelope
+        wheel_diameter = config["rover"]["wheel-diameter"]
         circumference = math.pi * wheel_diameter
-        max_rps = max_speed / circumference;
-        self.send_command("C[{0},{1},{2},{3},{4},{5},{6},{7},{8}]"
-                          .format(int(steps), int(100 * max_rps), int(max_signal),
-                                  int(use_pid), int(kp * 1000), int(ki * 1000),
-                                  int(kd * 1000), int(left_encoder), int(right_encoder)))
+        max_speed = config["rover"]["maximum-speed"]
+        max_angular_speed = max_speed / circumference;
+        max_acceleration = config["rover"]["maximum-acceleration"]
+        max_angular_acceleration = max_acceleration / circumference
+        
+        # PI controller
+        kp_numerator = config["brush-motor-driver"]["pid"]["kp"][0]
+        kp_denominator = config["brush-motor-driver"]["pid"]["kp"][1]
+        ki_numerator = config["brush-motor-driver"]["pid"]["ki"][0]
+        ki_denominator = config["brush-motor-driver"]["pid"]["ki"][1]
+        max_signal = config["brush-motor-driver"]["maximum-signal-amplitude"]
+        
+        self.send_command("C[{0},{1},{2},{3},{4},{5},{6},{7},{8},{9}]"
+                          .format(int(steps), int(left_encoder), int(right_encoder),
+                                  int(1000 * max_angular_speed),
+                                  int(1000 * max_angular_acceleration),
+                                  int(kp_numerator), int(kp_denominator),
+                                  int(ki_numerator), int(ki_denominator),
+                                  int(max_signal)))
         
     def get_max_rps(self):
         max_speed = self.config["rover"]["maximum_speed"]

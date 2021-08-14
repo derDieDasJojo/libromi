@@ -45,6 +45,7 @@ protected:
                 config.kp_denominator = 1;
                 config.ki_numerator = 1;
                 config.ki_denominator = 1;
+                config.max_amplitude = 1000;
         }
 };
 
@@ -107,9 +108,9 @@ TEST_F(azhoo_tests, test_configuration)
         EXPECT_CALL(arduino_, milliseconds())
                 .WillOnce(Return(1000));
         EXPECT_CALL(left_pwm_, amplitude())
-                .WillOnce(Return(500));
+                .WillRepeatedly(Return(500));
         EXPECT_CALL(right_pwm_, amplitude())
-                .WillOnce(Return(500));
+                .WillRepeatedly(Return(500));
         EXPECT_CALL(arduino_, init_encoders(10000, 1, -1));
         EXPECT_CALL(left_encoder_, get_position())
                 .WillOnce(Return(0));
@@ -144,6 +145,13 @@ TEST_F(azhoo_tests, test_enable_fails_if_not_configured)
                 .WillOnce(ReturnRef(right_pwm_));
         EXPECT_CALL(arduino_, milliseconds())
                 .WillOnce(Return(1000));
+        
+        EXPECT_CALL(left_pwm_, center())
+                .WillOnce(Return(1500));
+        EXPECT_CALL(left_pwm_, set(1500));
+        EXPECT_CALL(right_pwm_, center())
+                .WillOnce(Return(1500));
+        EXPECT_CALL(right_pwm_, set(1500));
         
         Azhoo azhoo(arduino_, Azhoo::kDefaultUpdateInterval);
         azhoo.setup();
@@ -193,9 +201,9 @@ TEST_F(azhoo_tests, test_update_fails_if_not_enabled)
         EXPECT_CALL(arduino_, milliseconds())
                 .WillOnce(Return(1000));
         EXPECT_CALL(left_pwm_, amplitude())
-                .WillOnce(Return(500));
+                .WillRepeatedly(Return(500));
         EXPECT_CALL(right_pwm_, amplitude())
-                .WillOnce(Return(500));
+                .WillRepeatedly(Return(500));
         EXPECT_CALL(arduino_, init_encoders(10000, 1, -1));
         EXPECT_CALL(left_encoder_, get_position())
                 .WillOnce(Return(0));
@@ -231,9 +239,9 @@ TEST_F(azhoo_tests, test_update_and_set_target_fail_if_disabled)
         EXPECT_CALL(arduino_, milliseconds())
                 .WillOnce(Return(1000));
         EXPECT_CALL(left_pwm_, amplitude())
-                .WillOnce(Return(500));
+                .WillRepeatedly(Return(500));
         EXPECT_CALL(right_pwm_, amplitude())
-                .WillOnce(Return(500));
+                .WillRepeatedly(Return(500));
         EXPECT_CALL(arduino_, init_encoders(10000, 1, -1));
         EXPECT_CALL(left_encoder_, get_position())
                 .WillOnce(Return(0));
@@ -243,6 +251,14 @@ TEST_F(azhoo_tests, test_update_and_set_target_fail_if_disabled)
                 .WillOnce(Return(0));
         EXPECT_CALL(right_encoder_, positions_per_revolution())
                 .WillOnce(Return(10000));
+
+        EXPECT_CALL(left_pwm_, center())
+                .WillRepeatedly(Return(1500));
+        EXPECT_CALL(left_pwm_, set(1500)).Times(2);
+        EXPECT_CALL(right_pwm_, center())
+                .WillRepeatedly(Return(1500));
+        EXPECT_CALL(right_pwm_, set(1500)).Times(2);
+
         
         Azhoo azhoo(arduino_, Azhoo::kDefaultUpdateInterval);
         azhoo.setup();
@@ -296,6 +312,9 @@ TEST_F(azhoo_tests, test_update)
                 .WillOnce(Return(0))
                 .WillOnce(Return(0));
 
+        EXPECT_CALL(left_pwm_, set(1000));
+        EXPECT_CALL(right_pwm_, set(1000));
+        
         EXPECT_CALL(left_pwm_, set(1008));
         EXPECT_CALL(right_pwm_, set(1008));
         
@@ -321,7 +340,7 @@ TEST_F(azhoo_tests, test_update)
         ASSERT_EQ(azhoo.right_speed_envelope_.increment_, 20);
         ASSERT_EQ(azhoo.right_speed_envelope_.current_, 20);
         
-        ASSERT_EQ(azhoo.left_controller_.delta_coeff_, 200);
+        ASSERT_EQ(azhoo.left_controller_.speed_to_delta_, 200);
         ASSERT_EQ(azhoo.left_controller_.delta_, 0);
         ASSERT_EQ(azhoo.left_controller_.delta_target_, 4);
         ASSERT_EQ(azhoo.left_controller_.error_, 4);
@@ -331,7 +350,7 @@ TEST_F(azhoo_tests, test_update)
         ASSERT_EQ(azhoo.left_controller_.out_, 8);
         ASSERT_EQ(azhoo.left_controller_.pulsewidth_, 1008);
         
-        ASSERT_EQ(azhoo.right_controller_.delta_coeff_, 200);
+        ASSERT_EQ(azhoo.right_controller_.speed_to_delta_, 200);
         ASSERT_EQ(azhoo.right_controller_.delta_, 0);
         ASSERT_EQ(azhoo.right_controller_.delta_target_, 4);
         ASSERT_EQ(azhoo.right_controller_.error_, 4);
@@ -379,8 +398,8 @@ TEST_F(azhoo_tests, test_update_default_to_zero_speed)
                 .WillOnce(Return(0))
                 .WillOnce(Return(0));
 
-        EXPECT_CALL(left_pwm_, set(1000));
-        EXPECT_CALL(right_pwm_, set(1000));
+        EXPECT_CALL(left_pwm_, set(1000)).Times(2);
+        EXPECT_CALL(right_pwm_, set(1000)).Times(2);
         
         Azhoo azhoo(arduino_, Azhoo::kDefaultUpdateInterval);
         azhoo.setup();

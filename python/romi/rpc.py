@@ -59,7 +59,8 @@ class Server:
         await registry.register(self.topic, f"{self.ip}:{self.port}", 10)
 
     def start(self, callback):
-        self.server = websockets.serve(callback, self.ip, self.port)
+        print("======================================================== ping_interval=None")
+        self.server = websockets.serve(callback, self.ip, self.port, ping_interval=None)
         return self.server
     
     async def handle_client(self, websocket):
@@ -100,7 +101,7 @@ class Client:
         registry = Registry(self.registry)
         addr = await registry.get_address(self.topic)
         self.addr = "ws://" + addr
-        self.ws = await websockets.connect(self.addr)
+        self.ws = await websockets.connect(self.addr, ping_interval=None)
 
     async def execute(self, method, **kwargs):
         request = { 'method': method, 'params': kwargs }

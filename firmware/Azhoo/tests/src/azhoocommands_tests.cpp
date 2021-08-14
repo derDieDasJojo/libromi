@@ -115,7 +115,7 @@ TEST_F(azhoocommands_tests, test_encoders)
 TEST_F(azhoocommands_tests, test_successfull_configure_returns_ok)
 {
         // Arrange
-        int16_t params[] = { 10000, 100, NOTUSED, NOTUSED, 1, 1, NOTUSED, 1, -1 };
+        int16_t params[] = { 10000, -1, 1, 1000, 300, 1, 1, 1, 1, 1000 };
         
         EXPECT_CALL(romi_serial_, set_handlers(_, _));
         EXPECT_CALL(azhoo_, configure(_))
@@ -133,7 +133,7 @@ TEST_F(azhoocommands_tests, test_successfull_configure_returns_ok)
 TEST_F(azhoocommands_tests, test_failed_configure_send_error)
 {
         // Arrange
-        int16_t params[] = { 10000, 100, NOTUSED, NOTUSED, 1, 1, NOTUSED, 1, -1 };
+        int16_t params[] = { 10000, -1, 1, 1000, 300, 1, 1, 1, 1, 1000 };
         
         EXPECT_CALL(romi_serial_, set_handlers(_, _));
         EXPECT_CALL(azhoo_, configure(_))
@@ -219,9 +219,9 @@ TEST_F(azhoocommands_tests, test_failed_disable_sends_error)
 TEST_F(azhoocommands_tests, test_successful_moveat_sends_ok)
 {
         // Arrange
-        int16_t params[] = { 1, 1 };
+        int16_t params[] = { 1000, 1000 };
         EXPECT_CALL(romi_serial_, set_handlers(_, _));
-        EXPECT_CALL(azhoo_, set_target_speeds(10, 10))
+        EXPECT_CALL(azhoo_, set_target_speeds(1000, 1000))
                 .WillOnce(DoAll(Return(true)));
         EXPECT_CALL(romi_serial_, send_ok());
         
@@ -236,9 +236,9 @@ TEST_F(azhoocommands_tests, test_successful_moveat_sends_ok)
 TEST_F(azhoocommands_tests, test_failed_moveat_sends_error)
 {
         // Arrange
-        int16_t params[] = { 1, 1 };
+        int16_t params[] = { 1000, 1000 };
         EXPECT_CALL(romi_serial_, set_handlers(_, _));
-        EXPECT_CALL(azhoo_, set_target_speeds(10, 10))
+        EXPECT_CALL(azhoo_, set_target_speeds(1000, 1000))
                 .WillOnce(DoAll(Return(false)));
         EXPECT_CALL(romi_serial_, send_error(_,_));
         

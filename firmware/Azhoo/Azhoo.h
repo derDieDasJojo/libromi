@@ -69,7 +69,10 @@ protected:
         void init_speed_envelope(double max_speed, double max_acceleration);
 
         void init_pi_controllers(int16_t kp_numerator, int16_t kp_denominator,
-                                 int16_t ki_numerator, int16_t ki_denominator);
+                                 int16_t ki_numerator, int16_t ki_denominator,
+                                 int16_t max_amplitude);
+
+        
 
 public:
         
@@ -88,6 +91,10 @@ public:
         // initialization wasn't completed.
         bool set_target_speeds(int16_t left, int16_t right) override;
 
+        void get_target_speeds(int16_t& left, int16_t& right) override;
+        void get_current_speeds(int16_t& left, int16_t& right) override;
+        void get_measured_speeds(int16_t& left, int16_t& right) override;
+        
         // Returns true if an update was performed, false otherwise. 
         bool update() override;
 
@@ -95,6 +102,18 @@ public:
         void stop() override;
 
         void get_encoders(int32_t& left, int32_t& right, uint32_t& time) override;
+
+        PIController& left_controller() override;
+        PIController& right_controller() override;
+        SpeedEnvelope& left_speed_envelope() override;
+        SpeedEnvelope& right_speed_envelope() override;
+        
+        void do_update() {
+                int16_t left_speed = left_speed_envelope_.update();
+                int16_t right_speed = right_speed_envelope_.update();
+                left_controller_.update(left_speed);
+                right_controller_.update(right_speed);
+        }
 };
 
 #endif // _AZHOO_AZHOO_H

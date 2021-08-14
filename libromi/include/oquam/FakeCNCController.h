@@ -73,8 +73,9 @@ namespace romi {
                         return true;
                 }
                 
-                bool move(__attribute__((unused))int16_t millis, int16_t steps_x,
+                bool move(int16_t millis, int16_t steps_x,
                           int16_t steps_y, int16_t steps_z) override {
+                        (void) millis;
                         _pos[0] += steps_x;
                         _pos[1] += steps_y;
                         _pos[2] += steps_z;
@@ -86,6 +87,14 @@ namespace romi {
                     (void)speed_z;
                     return true;
                 };
+                
+                bool moveto(int16_t dt, int16_t x, int16_t y, int16_t z) override {
+                        (void) dt;
+                        _pos[0] = x;
+                        _pos[1] = y;
+                        _pos[2] = z;
+                        return true;
+                }
                 
                 bool pause_activity() override {
                         return true;

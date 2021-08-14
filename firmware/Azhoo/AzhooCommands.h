@@ -34,8 +34,9 @@ void handle_configure(romiserial::IRomiSerial *romiSerial, int16_t *args, const 
 void handle_enable(romiserial::IRomiSerial *romiSerial, int16_t *args, const char *string_arg);
 void handle_moveat(romiserial::IRomiSerial *romiSerial, int16_t *args, const char *string_arg);
 void handle_stop(romiserial::IRomiSerial *romiSerial, int16_t *args, const char *string_arg);
+void handle_tests(romiserial::IRomiSerial *romiSerial, int16_t *args, const char *string_arg);
+void send_speeds(romiserial::IRomiSerial *romiSerial, int16_t *args, const char *string_arg);
 // void send_pid(romiserial::IRomiSerial *romiSerial, int16_t *args, const char *string_arg);
-// void send_speeds(romiserial::IRomiSerial *romiSerial, int16_t *args, const char *string_arg);
 // void send_status(romiserial::IRomiSerial *romiSerial, int16_t *args, const char *string_arg);
 // void send_configure(romiserial::IRomiSerial *romiSerial, int16_t *args, const char *string_arg);
 

@@ -63,4 +63,8 @@ namespace romi {
                 }
                 return event;
         }
+
+    ScriptList &FakeScriptEngine::scriptList() {
+        return _scripts;
+    }
 }

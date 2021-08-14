@@ -2,7 +2,8 @@
 
 namespace romi {
 
-    std::string get_brush_motor_device_in_config(JsonCpp &config) {
+    std::string get_brush_motor_device_in_config(JsonCpp &config)
+    {
             std::string brush_motor_device;
             try {
                     brush_motor_device = (const char *) config["ports"]["brush-motor-driver"]["port"];
@@ -15,7 +16,8 @@ namespace romi {
             return brush_motor_device;
     }
 
-    std::string get_brush_motor_device(romi::IOptions &options, JsonCpp &config) {
+    std::string get_brush_motor_device(romi::IOptions &options, JsonCpp &config)
+    {
             std::string brush_motor_device = options.get_value(romi::RoverOptions::navigation_device);
             if (brush_motor_device.empty()) {
                     brush_motor_device = get_brush_motor_device_in_config(config);
@@ -23,9 +25,10 @@ namespace romi {
             return brush_motor_device;
     }
 
-    std::string get_sound_font_in_config(JsonCpp &config) {
+    std::string get_sound_font_in_config(JsonCpp &config)
+    {
             try {
-                    return (const char *) config["user-interface"]["fluid-sounds"]["soundfont"];
+                    return (const char *) config["user-interface"]["fluid-sounds"][RoverOptions::soundfont];
 
             } catch (JSONError &je) {
                     r_err("FluidSoundNotification: Failed to read the config: %s",
@@ -34,14 +37,16 @@ namespace romi {
             }
     }
 
-    std::string get_sound_font_file(romi::IOptions &options, JsonCpp &config) {
-            std::string file = options.get_value("notifications-sound-font");
+    std::string get_sound_font_file(romi::IOptions &options, JsonCpp &config)
+    {
+            std::string file = options.get_value(RoverOptions::soundfont);
             if (file.empty())
                     file = get_sound_font_in_config(config);
             return file;
     }
 
-    std::string get_script_file_in_config(JsonCpp &config) {
+    std::string get_script_file_in_config(JsonCpp &config)
+    {
             try {
                     return (const char *) config["user-interface"]["script-engine"][RoverOptions::script];
 
@@ -52,7 +57,8 @@ namespace romi {
             }
     }
 
-    std::string get_script_file(romi::IOptions &options, JsonCpp &config) {
+    std::string get_script_file(romi::IOptions &options, JsonCpp &config)
+    {
             std::string file = options.get_value(romi::RoverOptions::script);
             if (file.empty()) {
                     file = get_script_file_in_config(config);
@@ -60,7 +66,8 @@ namespace romi {
             return file;
     }
 
-    std::string get_session_directory(romi::IOptions &options, JsonCpp &config) {
+    std::string get_session_directory(romi::IOptions &options, JsonCpp &config)
+    {
             (void) config;
             std::string dir = options.get_value(romi::RoverOptions::session_directory);
             if (dir.empty()) {

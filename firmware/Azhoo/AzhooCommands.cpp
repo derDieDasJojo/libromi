@@ -24,17 +24,25 @@
 #include "AzhooCommands.h"
 #include "AzhooVersion.h"
 
+// FIXME
+#if ARDUINO
+#include "AzhooTests.h"
+#endif
+
 using namespace romiserial;
 
 const static MessageHandler handlers[] = {
         { '?', 0, false, send_info },
         { 'e', 0, false, send_encoders },
-        { 'C', 9, false, handle_configure },
+        { 'C', 10, false, handle_configure },
         { 'E', 1, false, handle_enable },
         { 'V', 2, false, handle_moveat },
         { 'X', 0, false, handle_stop },
+        { 'v', 0, false, send_speeds },
+#if ARDUINO
+        { 'T', 1, false, handle_tests },
+#endif
         // { 'p', 1, false, send_pid },
-        // { 'v', 0, false, send_speeds },
         // { 'S', 0, false, send_status },
         // { 'c', 0, false, send_configuration },
 };
@@ -95,23 +103,21 @@ void handle_configure(IRomiSerial *romiSerial, int16_t *args, const char *string
         bool success;
         AzhooConfiguration config;
 
-        // encoders
+        // Encoders
         config.encoder_steps = (uint16_t) args[0];
-        config.left_direction = args[7] > 0? 1 : -1;
-        config.right_direction = args[8] > 0? 1 : -1;
+        config.left_direction = args[1] > 0? 1 : -1;
+        config.right_direction = args[2] > 0? 1 : -1;
 
-        // envelope
-        config.max_speed = (double) args[1] / 100.0f;
-        config.max_acceleration = 0.2; // TODO
-        // float max_signal = (float) args[2]; Not used, legacy
+        // Envelope
+        config.max_speed = (double) args[3] / 1000.0f;
+        config.max_acceleration = (double) args[4] / 1000.0f;
 
         // PI controller
-        //int enablePID = args[3]; // Not used, legacy
-        config.kp_numerator = args[4];
-        config.kp_denominator = 1000;
-        config.ki_numerator = args[5];
-        config.ki_denominator = 1000;
-        //int16_t kd = args[6];  // Not used, legacy
+        config.kp_numerator = args[5];
+        config.kp_denominator = args[6];
+        config.ki_numerator = args[7];
+        config.ki_denominator = args[8];
+        config.max_amplitude = args[9];
                 
         success = azhoo_->configure(config);
         if (success) {
@@ -140,10 +146,8 @@ void handle_enable(IRomiSerial *romiSerial, int16_t *args, const char *string_ar
 void handle_moveat(IRomiSerial *romiSerial, int16_t *args, const char *string_arg)
 {
         (void) string_arg;
-        // TODO: speed is currently multiplied by 100. Should be
-        // chnaged to 1000.
-        int16_t left = (int16_t) (args[0] * 10);
-        int16_t right = (int16_t) (args[1] * 10);
+        int16_t left = (int16_t) args[0];
+        int16_t right = (int16_t) args[1];
         bool success = azhoo_->set_target_speeds(left, right);
         if (success) {
                 romiSerial->send_ok();  
@@ -159,3 +163,35 @@ void handle_stop(IRomiSerial *romiSerial, int16_t *args, const char *string_arg)
         azhoo_->stop();
         romiSerial->send_ok();  
 }
+
+void send_speeds(IRomiSerial *romiSerial, int16_t *args, const char *string_arg)
+{
+        (void) string_arg;
+        (void) args;
+        int16_t left_target;
+        int16_t right_target;
+        int16_t left_current;
+        int16_t right_current;
+        int16_t left_measured;
+        int16_t right_measured;
+
+        azhoo_->get_target_speeds(left_target, right_target);
+        azhoo_->get_current_speeds(left_current, right_current);
+        azhoo_->get_measured_speeds(left_measured, right_measured);
+        
+        snprintf(reply_buffer, sizeof(reply_buffer),
+                 "[0,%hd,%hd,%hd,%hd,%hd,%hd]",
+                 left_target, right_target,
+                 left_current, right_current,
+                 left_measured, right_measured);
+        romiSerial->send(reply_buffer);                
+}
+
+#if ARDUINO
+void handle_tests(IRomiSerial *romiSerial, int16_t *args, const char *string_arg)
+{
+        (void) string_arg;
+        romiSerial->send_ok();  
+        run_tests(*azhoo_, args[0]);
+}
+#endif

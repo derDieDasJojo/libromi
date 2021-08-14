@@ -27,20 +27,32 @@
 namespace romi {
         
         NavigationSettings::NavigationSettings(JsonCpp &config)
-                : encoder_steps(0.0),
-                  wheel_diameter(0.0),
-                  maximum_speed(0.0),
+                : wheel_diameter(0.0),
                   wheel_base(0.0),
-                  wheel_circumference(0.0),
-                  max_revolutions_per_sec(0.0),
+                  maximum_speed(0.0),
                   maximum_acceleration(0.0)
         {
-                encoder_steps = config.num(kEncoderStepsKey);
                 wheel_diameter = config.num(kWheelDiameterKey);
-                maximum_speed = config.num(kMaximumSpeedKey);
                 wheel_base = config.num(kWheelBaseKey);
-                wheel_circumference = M_PI * wheel_diameter;
-                max_revolutions_per_sec = maximum_speed / wheel_circumference;
+                maximum_speed = config.num(kMaximumSpeedKey);
                 maximum_acceleration = config.num(kMaximumAccelerationKey);
+        }
+        
+        double NavigationSettings::convert_to_angular_speed(double linear_speed)
+        {
+                double wheel_circumference = M_PI * wheel_diameter;
+                return linear_speed / wheel_circumference;
+        }
+
+        double NavigationSettings::compute_max_angular_speed()
+        {
+                double wheel_circumference = M_PI * wheel_diameter;
+                return maximum_speed / wheel_circumference;
+        }
+        
+        double NavigationSettings::compute_max_angular_acceleration()
+        {
+                double wheel_circumference = M_PI * wheel_diameter;
+                return maximum_acceleration / wheel_circumference;
         }
 }

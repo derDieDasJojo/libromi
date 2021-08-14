@@ -1,9 +1,20 @@
 #include "gtest/gtest.h"
 #include "ui/ScriptList.h"
-#include "mock_scriptlist.h"
 #include "rpc/ScriptHub.h"
 #include "rpc/ScriptHubListener.h"
 #include <test_utility.h>
+
+#include "mock_scriptlist.h"
+#include "mock_inputdevice.h"
+#include "mock_display.h"
+#include "mock_speedcontroller.h"
+#include "mock_navigation.h"
+#include "mock_eventtimer.h"
+#include "mock_menu.h"
+#include "mock_scriptengine.h"
+#include "mock_notifications.h"
+#include "mock_weeder.h"
+#include "mock_imager.h"
 
 
 using namespace std;
@@ -31,10 +42,23 @@ protected:
 
 TEST_F(scripthub_tests, can_construct_scripthub)
 {
-        MockScriptList mockScriptList;
-        auto scriptHubListener = std::make_shared<ScriptHubListener>(mockScriptList);
-        ScriptHub scriptHub(scriptHubListener, 20000);
+    MockInputDevice mockInputDevice;
+    MockDisplay mockDisplay;
+    MockSpeedController mockSpeedController;
+    MockNavigation mockNavigation;
+    MockEventTimer mockEventTimer;
+    MockMenu mockMenu;
+    MockScriptEngine mockScriptEngine;
+    MockNotifications mockNotifications;
+    MockWeeder mockWeeder;
+    MockImager mockImager;
 
+    romi::Rover rover(mockInputDevice, mockDisplay, mockSpeedController, mockNavigation, mockEventTimer,
+                      mockMenu, mockScriptEngine, mockNotifications, mockWeeder, mockImager);
+
+        MockScriptList mockScriptList;
+        auto scriptHubListener = std::make_shared<ScriptHubListener>(rover);
+        ScriptHub scriptHub(scriptHubListener, 20000);
 }
 
 TEST_F(scripthub_tests, successfully_load_simple_scriplist)

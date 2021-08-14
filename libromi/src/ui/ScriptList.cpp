@@ -24,6 +24,7 @@
 
 #include <stdexcept>
 #include <log.h>
+#include <algorithm>
 #include "ui/ScriptList.h"
 
 namespace romi {
@@ -159,7 +160,7 @@ namespace romi {
             return scripts;
         }
 
-        Script &ScriptList::operator[](size_t index) {
+        const Script &ScriptList::operator[](size_t index) const {
             return scripts_[index];
         }
 
@@ -170,4 +171,14 @@ namespace romi {
         size_t ScriptList::size() const {
                 return scripts_.size();
         }
+
+    long ScriptList::get_id_index(std::string &id) const {
+
+       auto itr = std::find_if(scripts_.begin(), scripts_.end(), [&id](const auto& element) { return element.id == id; });
+       long index = -1;
+        if (itr != scripts_.cend()) {
+            index = std::distance(scripts_.begin(), itr);
+        }
+        return index;
+    }
 }

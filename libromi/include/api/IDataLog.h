@@ -21,22 +21,20 @@
   <http://www.gnu.org/licenses/>.
 
  */
-#ifndef _ROMI_SCRIPT_ENGINE_H
-#define _ROMI_SCRIPT_ENGINE_H
 
-#include "api/IEventSource.h"
-#include "ui/ScriptList.h"
+#ifndef __ROMI_I_DATALOG_H
+#define __ROMI_I_DATALOG_H
+
+#include <string>
 
 namespace romi {
-        
-        template <class T>
-                class IScriptEngine : public IEventSource
-        {
+
+        class IDataLog {
         public:
-                ~IScriptEngine() override = default;
-                virtual void execute_script(T& target, size_t id) = 0;
-                virtual ScriptList& scriptList() = 0;
+                virtual ~IDataLog() = default;
+                virtual void store(double time, const std::string& name, double value) = 0;
+                virtual void store(const std::string& name, double value) = 0;
         };
 }
 
-#endif // _ROMI_SCRIPT_ENGINE_H
+#endif // __ROMI_ROMI_I_DATALOG_H
