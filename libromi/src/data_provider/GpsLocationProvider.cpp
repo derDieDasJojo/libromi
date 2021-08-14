@@ -1,3 +1,4 @@
+#include <stdexcept>
 #include "data_provider/JsonFieldNames.h"
 #include "data_provider/GpsLocationProvider.h"
 #include "JsonCpp.h"

@@ -28,6 +28,7 @@
 
 #include <string>
 #include <memory>
+#include <mutex>
 #include <IRomiSerialClient.h>
 #include <IInputStream.h>
 #include <IOutputStream.h>

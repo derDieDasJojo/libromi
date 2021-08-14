@@ -1,6 +1,7 @@
 #ifndef ROMI_ROVER_BUILD_AND_TEST_METAFOLDER_H
 #define ROMI_ROVER_BUILD_AND_TEST_METAFOLDER_H
 
+#include <mutex>
 #include "cv/ImageIO.h"
 #include "data_provider/IRomiDeviceData.h"
 #include "data_provider/ISoftwareVersion.h"
