@@ -36,41 +36,16 @@ namespace romi::arm {
                 MMAL_PORT_T *input_; 
                 MMAL_PORT_T *output_;
                 MMAL_POOL_T *pool_;
-                Semaphore semaphore_;
                 rpp::MemBuffer buffer_;
-                bool capture_failed_;
-                
-        public:
-                EncoderComponent();
-                ~EncoderComponent() override;
-                
-                void prepare_capture();
-                void finish_capture();
-                rpp::MemBuffer& get_buffer();
-                
-                MMAL_PORT_T *get_input_port() {
-                        return input_;
-                }
-                                
-        protected:
-
-                static void encoder_output_callback(MMAL_PORT_T *port,
-                                                    MMAL_BUFFER_HEADER_T *buffer);
-                void handle_output_callback(MMAL_BUFFER_HEADER_T *buffer);
 
                 void assert_input_and_output();
-                void set_format();
-                void set_jpeg_quality();
-                void disable_jpeg_restart();
-                void disable_thumbnail();
-                void create_header_pool();
-                void disable_exif();
-                void post_capture();
-                void wait_capture();
-                void enable_output();
-                void send_buffers();
-                void disable_output();
-                void assert_successful_capture();
+
+        public:
+                EncoderComponent(const char* name);
+                ~EncoderComponent() override;
+                
+                rpp::MemBuffer& get_buffer();
+                MMAL_PORT_T *get_input_port();
                 
         private:
                 EncoderComponent(EncoderComponent& other) = default;

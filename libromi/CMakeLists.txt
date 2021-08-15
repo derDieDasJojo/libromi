@@ -43,18 +43,26 @@ if(${PI_BUILD})
       include/picamera/Component.h
       include/picamera/Connection.h
       include/picamera/EncoderComponent.h
+      include/picamera/ImageEncoder.h
       include/picamera/MMAL.h
       include/picamera/PiCamera.h
       include/picamera/PiCameraSettings.h
       include/picamera/Semaphore.h
+      include/picamera/StillCamera.h
+      include/picamera/VideoCamera.h
+      include/picamera/VideoEncoder.h
       src/picamera/CameraComponent.cpp
       src/picamera/Component.cpp
       src/picamera/Connection.cpp
       src/picamera/EncoderComponent.cpp
+      src/picamera/ImageEncoder.cpp
       src/picamera/MMAL.cpp
       src/picamera/PiCamera.cpp
       src/picamera/PiCameraSettings.cpp
-      src/picamera/Semaphore.cpp)
+      src/picamera/Semaphore.cpp
+      src/picamera/StillCamera.cpp
+      src/picamera/VideoCamera.cpp
+      src/picamera/VideoEncoder.cpp)
 else()
    set(PICAMERA_SOURCES)
 endif()

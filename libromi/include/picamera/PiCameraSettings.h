@@ -15,6 +15,12 @@ namespace romi {
         static const size_t kHQHalfWidth = 2028;
         static const size_t kHQHalfHeight = 1520;
 
+        // This is a decent default bitrate for 1080p
+        static const uint32_t kDefaultBitRate =  17000000;
+        static const uint32_t kMaxBitrateMJPEG = 25000000; // 25Mbits/s
+        
+        static const int32_t kVariableFrameRate = 0;
+        
         struct ColourEffects
         {
                 bool enable;
@@ -30,8 +36,17 @@ namespace romi {
                 float h;
         };
 
+        enum CameraMode
+        {
+                kStillMode,
+                kVideoMode
+        };
+
         struct PiCameraSettings
         {
+                CameraMode mode_;
+                int32_t framerate_;
+                uint32_t bitrate_;
                 size_t max_width_;
                 size_t max_height_;
                 size_t width_;
@@ -86,14 +101,26 @@ namespace romi {
                 bool is_colour_effects_valid(uint32_t u,  uint32_t v);
         };
 
-        struct V2CameraSettings : public PiCameraSettings {
-                V2CameraSettings(size_t width, size_t height);
-                ~V2CameraSettings() override = default;
+        struct V2StillCameraSettings : public PiCameraSettings {
+                V2StillCameraSettings(size_t width, size_t height);
+                ~V2StillCameraSettings() override = default;
         };
 
-        struct HQCameraSettings : public PiCameraSettings {
-                HQCameraSettings(size_t width, size_t height);
-                ~HQCameraSettings() override = default;
+        struct HQStillCameraSettings : public PiCameraSettings {
+                HQStillCameraSettings(size_t width, size_t height);
+                ~HQStillCameraSettings() override = default;
+        };
+
+        struct V2VideoCameraSettings : public PiCameraSettings {
+                V2VideoCameraSettings(size_t width, size_t height,
+                                      int32_t framerate);
+                ~V2VideoCameraSettings() override = default;
+        };
+
+        struct HQVideoCameraSettings : public PiCameraSettings {
+                HQVideoCameraSettings(size_t width, size_t height,
+                                      int32_t framerate);
+                ~HQVideoCameraSettings() override = default;
         };
 }
 

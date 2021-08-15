@@ -38,7 +38,7 @@ namespace romi::arm {
                 static const int kCameraNumber = 0;
 
                 static const int kModeAuto = 0;
-                static const int kNumberOdVideoOutputBuffers = 3;
+                static const int kNumberOfVideoOutputBuffers = 3;
                 
                 MMAL_PORT_T *preview_port_;
                 MMAL_PORT_T *video_port_;
@@ -49,13 +49,17 @@ namespace romi::arm {
                 
                 CameraComponent(PiCameraSettings& settings);
                 ~CameraComponent() override;
-                
+
+                // Request capture of still image 
                 void trigger_capture();
+
+                // Start video recording
+                void start_video();
+                
                 void set_shutter_speed();
                 
-                MMAL_PORT_T *get_still_port() {
-                        return still_port_;
-                }
+                MMAL_PORT_T *get_still_port();
+                MMAL_PORT_T *get_video_port();
 
 
         protected:
@@ -64,13 +68,20 @@ namespace romi::arm {
                 void assert_settings(PiCameraSettings& settings);
                 void assert_output_ports();
                 void get_camera_ports();
+                
                 void set_port_formats(PiCameraSettings& settings);
-                void set_preview_format(size_t width, size_t height);
-                void set_video_format();
-                void ensure_number_of_video_buffer(MMAL_PORT_T *port);
+                void set_preview_format(size_t width, size_t height,
+                                        int32_t framerate);
+                void set_video_format(size_t width, size_t height,
+                                      int32_t framerate);
+                void set_still_format(size_t width, size_t height);
+                void set_format(MMAL_PORT_T *port,
+                                size_t width, size_t height,
+                                int32_t framerate);
+                void ensure_number_of_video_buffers(MMAL_PORT_T *port);
                 void set_fps_range(MMAL_PORT_T *port,
                                    int32_t low, int32_t high);
-                void set_still_format(size_t width, size_t height);
+                
                 void disable_stereo_mode();
                 void disable_stereo_mode(MMAL_PORT_T *port);
                 void disable_annotation();
@@ -79,7 +90,10 @@ namespace romi::arm {
                 
                 void set_parameters(PiCameraSettings& settings);
                 
-                void set_config(size_t width, size_t height);
+                void set_config(PiCameraSettings& settings);
+                void set_still_config(size_t width, size_t height);
+                void set_video_config(size_t width, size_t height,
+                                      int32_t framerate);
                 void set_saturation(int32_t value);
                 void set_sharpness(int32_t value);
                 void set_contrast(int32_t value);

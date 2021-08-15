@@ -28,7 +28,10 @@
 namespace romi {
         
         PiCameraSettings::PiCameraSettings()
-                : max_width_(640),
+                : mode_(kStillMode),
+                  framerate_(kVariableFrameRate),
+                  bitrate_(kDefaultBitRate), 
+                  max_width_(640),
                   max_height_(480),
                   width_(640),
                   height_(480),
@@ -203,9 +206,11 @@ namespace romi {
                 return valid;
         }
 
-        V2CameraSettings::V2CameraSettings(size_t width, size_t height)
+        V2StillCameraSettings::V2StillCameraSettings(size_t width, size_t height)
                 : PiCameraSettings()
         {
+                mode_ = kStillMode;
+                framerate_ = kVariableFrameRate;
                 max_width_ = kV2FullWidth;
                 max_height_ = kV2FullHeight;
                 width_ = width;
@@ -214,9 +219,39 @@ namespace romi {
                 preview_height_ = height;
         }
         
-        HQCameraSettings::HQCameraSettings(size_t width, size_t height)
+        HQStillCameraSettings::HQStillCameraSettings(size_t width, size_t height)
                 : PiCameraSettings()
         {
+                mode_ = kStillMode;
+                framerate_ = kVariableFrameRate;
+                max_width_ = kHQFullWidth;
+                max_height_ = kHQFullHeight;
+                width_ = width;
+                height_ = height;
+                preview_width_ = width;
+                preview_height_ = height;
+        }
+
+        V2VideoCameraSettings::V2VideoCameraSettings(size_t width, size_t height,
+                                                     int32_t framerate)
+                : PiCameraSettings()
+        {
+                mode_ = kVideoMode;
+                framerate_ = framerate;
+                max_width_ = kV2FullWidth;
+                max_height_ = kV2FullHeight;
+                width_ = width;
+                height_ = height;
+                preview_width_ = width;
+                preview_height_ = height;
+        }
+        
+        HQVideoCameraSettings::HQVideoCameraSettings(size_t width, size_t height,
+                                                     int32_t framerate)
+                : PiCameraSettings()
+        {
+                mode_ = kVideoMode;
+                framerate_ = framerate;
                 max_width_ = kHQFullWidth;
                 max_height_ = kHQFullHeight;
                 width_ = width;

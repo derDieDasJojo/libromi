@@ -26,6 +26,10 @@
 #include "picamera/CameraComponent.h"
 
 namespace romi::arm {
+
+// Copied from interface/vcos/vcos_types.h, adapted to size_t
+#define ALIGN_DOWN(__p, __n) (((__p)) & ~((size_t)((__n) - 1)))
+#define ALIGN_UP(__p, __n) ALIGN_DOWN((__p) + (__n) - 1, (__n))
         
         CameraComponent::CameraComponent(PiCameraSettings& settings)
                 : Component(MMAL_COMPONENT_DEFAULT_CAMERA),
@@ -45,9 +49,12 @@ namespace romi::arm {
                 set_camera_number();
                 set_sensor_mode_to_auto();                
                 disable_stereo_mode();
-                disable_annotation();
-                set_parameters(settings);
+                set_config(settings);
                 set_port_formats(settings);
+                ensure_number_of_video_buffers(video_port_);
+                ensure_number_of_video_buffers(still_port_);
+                set_parameters(settings);
+                disable_annotation();
 
                 enable();
         }
@@ -118,58 +125,70 @@ namespace romi::arm {
         void CameraComponent::set_port_formats(PiCameraSettings& settings)
         {
                 set_preview_format(settings.preview_width_,
-                                   settings.preview_height_);
-                set_video_format();
-                set_still_format(settings.width_, settings.height_);
-                ensure_number_of_video_buffer(video_port_);
-                ensure_number_of_video_buffer(still_port_);
+                                   settings.preview_height_,
+                                   settings.framerate_);
+                set_video_format(settings.width_,
+                                 settings.height_,
+                                 settings.framerate_);
+                set_still_format(settings.width_,
+                                 settings.height_);
         }
 
-        void CameraComponent::set_preview_format(size_t width, size_t height)
+        void CameraComponent::set_preview_format(size_t width, size_t height,
+                                                 int32_t framerate)
+        {
+                set_format(preview_port_, width, height, framerate);
+        }
+
+        void CameraComponent::set_video_format(size_t width, size_t height,
+                                               int32_t framerate)
+        {
+                set_format(video_port_, width, height, framerate);
+        }
+
+        void CameraComponent::set_still_format(size_t width, size_t height)
+        {
+                set_format(still_port_, width, height, 0);
+        }
+
+        void CameraComponent::set_format(MMAL_PORT_T *port,
+                                         size_t width, size_t height,
+                                         int32_t framerate)
         {
                 MMAL_STATUS_T status;
                 MMAL_ES_FORMAT_T *format;
                 
-                format = preview_port_->format;
-                format->encoding = MMAL_ENCODING_OPAQUE;
-                format->encoding_variant = MMAL_ENCODING_I420;
-
                 if (shutter_speed_ > 6000000) {
                         set_fps_range(preview_port_, 5, 166);
                 } else if (shutter_speed_ > 1000000) {
                         set_fps_range(preview_port_, 166, 999);
                 }
+
+                if (framerate > 0
+                    && shutter_speed_ > 0
+                    && framerate > 1000000.0 / shutter_speed_) {
+                        framerate = 0;
+                        r_warn("Enabling dynamic frame rate to fulfil "
+                               "shutter speed requirement");
+                }
                 
-                format->es->video.width = width;
-                format->es->video.height = height;
+                format = port->format;
+                format->encoding = MMAL_ENCODING_OPAQUE;
+                format->encoding_variant = MMAL_ENCODING_I420;
+                format->es->video.width = ALIGN_UP(width, 32);
+                format->es->video.height = ALIGN_UP(height, 16);
                 format->es->video.crop.x = 0;
                 format->es->video.crop.y = 0;
                 format->es->video.crop.width = (int32_t) width;
                 format->es->video.crop.height = (int32_t) height;
-                
-                /* Frames rates of 0 implies variable, but denominator
-                 * needs to be 1 to prevent div by 0. */
-                format->es->video.frame_rate.num = 0;
+
+                /* A frame rate of 0 implies a variable frame rate but
+                   the denominator must be 1 to prevent div by 0. */
+                format->es->video.frame_rate.num = framerate;
                 format->es->video.frame_rate.den = 1;
                 
-                status = mmal_port_format_commit(preview_port_);
-                assert_status("set_preview_format", status);
-        }
-
-        void CameraComponent::set_video_format()
-        {
-                MMAL_STATUS_T status;
-                // Set the same format on the video port (which we
-                // don't use here) as on the preview port.
-                mmal_format_full_copy(video_port_->format, preview_port_->format);
-                status = mmal_port_format_commit(video_port_);
-                assert_status("set_video_format", status);
-        }
-
-        void CameraComponent::ensure_number_of_video_buffer(MMAL_PORT_T *port)
-        {
-                if (port->buffer_num < kNumberOdVideoOutputBuffers)
-                        port->buffer_num = kNumberOdVideoOutputBuffers;
+                status = mmal_port_format_commit(port);
+                assert_status("set_format", status);
         }
         
         void CameraComponent::set_fps_range(MMAL_PORT_T *port,
@@ -184,32 +203,10 @@ namespace romi::arm {
                 assert_status("set_fps_range", status);
         }
 
-        void CameraComponent::set_still_format(size_t width, size_t height)
+        void CameraComponent::ensure_number_of_video_buffers(MMAL_PORT_T *port)
         {
-                MMAL_STATUS_T status;
-                MMAL_ES_FORMAT_T *format;
-                
-                format = still_port_->format;
-
-                if (shutter_speed_ > 6000000) {
-                        set_fps_range(still_port_, 5, 166);
-                } else if(shutter_speed_ > 1000000) {
-                        set_fps_range(still_port_, 166, 999);
-                }
-                
-                // Set our stills format on the stills (for encoder) port
-                format->encoding = MMAL_ENCODING_OPAQUE;
-                format->es->video.width = width;
-                format->es->video.height = height;
-                format->es->video.crop.x = 0;
-                format->es->video.crop.y = 0;
-                format->es->video.crop.width = (int32_t) width;
-                format->es->video.crop.height = (int32_t) height;
-                format->es->video.frame_rate.num = 0;
-                format->es->video.frame_rate.den = 1;
-
-                status = mmal_port_format_commit(still_port_);
-                assert_status("set_still_format", status);
+                if (port->buffer_num < kNumberOfVideoOutputBuffers)
+                        port->buffer_num = kNumberOfVideoOutputBuffers;
         }
         
         void CameraComponent::disable_stereo_mode()
@@ -256,9 +253,54 @@ namespace romi::arm {
                                       kModeAuto);
         }
 
+        void CameraComponent::set_config(PiCameraSettings& settings)
+        {
+                if (settings.mode_ == kStillMode)
+                        set_still_config(settings.width_, settings.height_);
+                else
+                        set_video_config(settings.width_, settings.height_,
+                                         settings.framerate_);
+        }
+        
+        void CameraComponent::set_still_config(size_t width, size_t height)
+        {
+                MMAL_PARAMETER_CAMERA_CONFIG_T cam_config = {
+                        { MMAL_PARAMETER_CAMERA_CONFIG, sizeof(cam_config) },
+                        width, // .max_stills_w 
+                        height, // .max_stills_h 
+                        0, // .stills_yuv422 
+                        1, // .one_shot_stills 
+                        width, // .max_preview_video_w 
+                        height, // .max_preview_video_h 
+                        3, // .num_preview_video_frames 
+                        0, // .stills_capture_circular_buffer_height 
+                        0, // .fast_preview_resume 
+                        MMAL_PARAM_TIMESTAMP_MODE_RESET_STC // .use_stc_timestamp 
+                };
+                set_control_parameter("set_config", &cam_config.hdr);
+        }
+        
+        void CameraComponent::set_video_config(size_t width, size_t height,
+                                               int32_t framerate)
+        {
+                MMAL_PARAMETER_CAMERA_CONFIG_T cam_config = {
+                        { MMAL_PARAMETER_CAMERA_CONFIG, sizeof(cam_config) },
+                        width, // .max_stills_w 
+                        height, // .max_stills_h 
+                        0, // .stills_yuv422 
+                        0, // .one_shot_stills 
+                        width, // .max_preview_video_w 
+                        height, // .max_preview_video_h 
+                        3 + (uint32_t) vcos_max(0, (framerate - 30) / 10), // .num_preview_video_frames 
+                        0, // .stills_capture_circular_buffer_height 
+                        0, // .fast_preview_resume 
+                        MMAL_PARAM_TIMESTAMP_MODE_RESET_STC // .use_stc_timestamp 
+                };
+                set_control_parameter("set_config", &cam_config.hdr);
+        }
+
         void CameraComponent::set_parameters(PiCameraSettings& settings)
         {
-                set_config(settings.width_, settings.height_);
                 set_saturation(settings.saturation_);
                 set_sharpness(settings.sharpness_);
                 set_contrast(settings.contrast_);
@@ -281,24 +323,6 @@ namespace romi::arm {
                 set_analog_gain(settings.analog_gain_);
                 set_digital_gain(settings.digital_gain_);
                 set_focus_window(settings.focus_window_);
-        }
-        
-        void CameraComponent::set_config(size_t width, size_t height)
-        {
-                MMAL_PARAMETER_CAMERA_CONFIG_T cam_config = {
-                        { MMAL_PARAMETER_CAMERA_CONFIG, sizeof(cam_config) },
-                        width, // .max_stills_w 
-                        height, // .max_stills_h 
-                        0, // .stills_yuv422 
-                        1, // .one_shot_stills 
-                        width, // .max_preview_video_w 
-                        height, // .max_preview_video_h 
-                        3, // .num_preview_video_frames 
-                        0, // .stills_capture_circular_buffer_height 
-                        0, // .fast_preview_resume 
-                        MMAL_PARAM_TIMESTAMP_MODE_RESET_STC // .use_stc_timestamp 
-                };
-                set_control_parameter("set_config", &cam_config.hdr);
         }
 
         void CameraComponent::set_fraction(const char *caller_name,
@@ -524,6 +548,16 @@ namespace romi::arm {
                                       MMAL_PARAMETER_SHUTTER_SPEED,
                                       value);
         }
+        
+        MMAL_PORT_T *CameraComponent::get_still_port()
+        {
+                return still_port_;
+        }
+                
+        MMAL_PORT_T *CameraComponent::get_video_port()
+        {
+                return video_port_;
+        }
 
         void CameraComponent::trigger_capture()
         {
@@ -533,6 +567,18 @@ namespace romi::arm {
                                                     1);
                 if (status != MMAL_SUCCESS) {
                         r_err("%s: Failed to start capture");
+                        throw std::runtime_error("Failed to start capture");
+                }
+        }
+
+        void CameraComponent::start_video()
+        {
+                MMAL_STATUS_T status;
+                status = mmal_port_parameter_set_boolean(video_port_,
+                                                    MMAL_PARAMETER_CAPTURE,
+                                                    1);
+                if (status != MMAL_SUCCESS) {
+                        r_err("%s: Failed to start the video");
                         throw std::runtime_error("Failed to start capture");
                 }
         }

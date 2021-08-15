@@ -21,28 +21,33 @@
   <http://www.gnu.org/licenses/>.
 
  */
-#include <stdexcept>
-#include <r.h>
+#ifndef _LIBROMI_STILL_CAMERA_H_
+#define _LIBROMI_STILL_CAMERA_H_
+
 #include "picamera/PiCamera.h"
-#include "picamera/StillCamera.h"
-#include "picamera/VideoCamera.h"
+#include "picamera/PiCameraIncludes.h"
+#include "picamera/PiCameraSettings.h"
+#include "picamera/CameraComponent.h"
+#include "picamera/ImageEncoder.h"
+#include "picamera/Connection.h"
 
 namespace romi {
         
-        PiCamera::PiCamera()
-        {
-        }
+        class StillCamera : public PiCamera {
 
-        PiCamera::~PiCamera()
-        {
-        }
-        
-        std::unique_ptr<ICamera> PiCamera::create(PiCameraSettings& settings)
-        {
-                if (settings.mode_ == kStillMode)
-                        return std::make_unique<StillCamera>(settings);
-                else
-                        return std::make_unique<VideoCamera>(settings);
-        }
+        protected:
+
+                arm::CameraComponent camera_;
+                arm::ImageEncoder encoder_;
+                arm::Connection encoder_connection_;
+                
+        public:                
+                StillCamera(PiCameraSettings& settings);
+                ~StillCamera() override;
+                
+                bool grab(Image &image) override;
+                rpp::MemBuffer& grab_jpeg();
+        };
 }
 
+#endif // _LIBROMI_STILL_CAMERA_H_

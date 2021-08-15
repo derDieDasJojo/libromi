@@ -23,26 +23,36 @@
  */
 #include <stdexcept>
 #include <r.h>
-#include "picamera/PiCamera.h"
 #include "picamera/StillCamera.h"
-#include "picamera/VideoCamera.h"
 
 namespace romi {
         
-        PiCamera::PiCamera()
+        StillCamera::StillCamera(PiCameraSettings& settings)
+                : camera_(settings),
+                  encoder_(),
+                  encoder_connection_(camera_.get_still_port(),
+                                      encoder_.get_input_port())
         {
         }
 
-        PiCamera::~PiCamera()
+        StillCamera::~StillCamera()
         {
         }
         
-        std::unique_ptr<ICamera> PiCamera::create(PiCameraSettings& settings)
+        bool StillCamera::grab(romi::Image &image)
         {
-                if (settings.mode_ == kStillMode)
-                        return std::make_unique<StillCamera>(settings);
-                else
-                        return std::make_unique<VideoCamera>(settings);
+                (void) image;
+                r_err("StillCamera::grab not implemented, yet");
+                return false;
+        }
+
+        rpp::MemBuffer& StillCamera::grab_jpeg()
+        {
+                encoder_.prepare_capture();
+                camera_.set_shutter_speed();
+                camera_.trigger_capture();
+                encoder_.finish_capture();
+                return encoder_.get_buffer();
         }
 }
 

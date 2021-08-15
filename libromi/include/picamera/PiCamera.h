@@ -24,29 +24,20 @@
 #ifndef _LIBROMI_PICAMERA_H_
 #define _LIBROMI_PICAMERA_H_
 
+#include <memory>
 #include "api/ICamera.h"
-#include "picamera/PiCameraIncludes.h"
 #include "picamera/PiCameraSettings.h"
-#include "picamera/CameraComponent.h"
-#include "picamera/EncoderComponent.h"
-#include "picamera/Connection.h"
 
 namespace romi {
         
         class PiCamera : public ICamera {
-
         protected:
+                PiCamera();
 
-                arm::CameraComponent camera_;
-                arm::EncoderComponent encoder_;
-                arm::Connection encoder_connection_;
-                
         public:                
-                PiCamera(PiCameraSettings& settings);
                 ~PiCamera() override;
-                
-                bool grab(Image &image) override;
-                rpp::MemBuffer& grab_jpeg();
+
+                static std::unique_ptr<ICamera> create(PiCameraSettings& settings);
         };
 }
 
