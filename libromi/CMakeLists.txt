@@ -142,8 +142,12 @@ set(SOURCES
         include/oquam/StepperController.h
         include/oquam/StepperSettings.h
 
+        include/rover/DifferentialSteering.h
+        include/rover/DoubleSteering.h
         include/rover/EventsAndStates.h
         include/rover/IDistanceMeasure.h
+        include/rover/IMUTrackFollower.h
+        include/rover/ISteering.h
         include/rover/ITrackFollower.h
         include/rover/INavigationController.h
         include/rover/L1NavigationController.h
@@ -157,9 +161,11 @@ set(SOURCES
         include/rover/Navigation.h
         include/rover/PythonTrackFollower.h
         include/rover/SpeedController.h
+        include/rover/SteeringData.h
         include/rover/NavigationSettings.h
         include/rover/ISpeedController.h
         include/rover/SpeedConverter.h
+        include/rover/StepperSteering.h
         include/rover/WheelOdometry.h
         include/rover/ZeroNavigationController.h
 
@@ -243,7 +249,10 @@ set(SOURCES
         src/oquam/StepperSettings.cpp
         src/oquam/StepperController.cpp
 
+        src/rover/DifferentialSteering.cpp
+        src/rover/DoubleSteering.cpp
         src/rover/EventsAndStates.cpp
+        src/rover/IMUTrackFollower.cpp
         src/rover/L1NavigationController.cpp
         src/rover/LocationTracker.cpp
         src/rover/NavigationSettings.cpp
@@ -256,6 +265,7 @@ set(SOURCES
         src/rover/Navigation.cpp
         src/rover/SpeedController.cpp
         src/rover/SpeedConverter.cpp
+        src/rover/StepperSteering.cpp
         src/rover/WheelOdometry.cpp
 
         src/rpc/CameraAdaptor.cpp

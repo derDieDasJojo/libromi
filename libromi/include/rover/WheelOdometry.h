@@ -42,21 +42,21 @@ namespace romi {
                 IMotorDriver& driver_;
                 std::mutex mutex_;
                         
-                double instantaneous_speed[2];
-                double filtered_speed[2];
-                double encoder[2];
-                double last_timestamp;
+                double instantaneous_speed_[2];
+                double filtered_speed_[2];
+                double encoder_[2];
+                double last_timestamp_;
         
                 // The current location and orientation
                 // The displacement, in meters, and the change in orientation
                 // (only tracking the change in yaw) relative to the 'current'
                 // location;
-                double displacement[2];
-                double theta;
+                double displacement_[2];
+                double theta_;
                 
-                double wheel_circumference; 
-                double wheel_base;
-                double encoder_steps;
+                double wheel_circumference_; 
+                double wheeltrack_;
+                double encoder_steps_;
 
                 bool update_estimate();
                 

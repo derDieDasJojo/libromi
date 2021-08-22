@@ -140,8 +140,6 @@ static const std::string kDriverRightMeasuredSpeedName = "driver-right-measured-
         {
                 bool success = false;
 
-                r_debug("BrushMotorDriver: moveat (%f, %f)", left, right);
-
                 if (-max_angular_speed_ <= left  && left <= max_angular_speed_
                     && -max_angular_speed_  <= right && right <= max_angular_speed_) {
                                 

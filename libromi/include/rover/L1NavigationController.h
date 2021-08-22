@@ -31,19 +31,16 @@ namespace romi {
         class L1NavigationController : public INavigationController
         {
         protected:
-                double w_;
                 double L_;
 
-                void assert_valid_parameters();
-                void assert_valid_width();
                 void assert_valid_distance();
-                
+
         public:
-                L1NavigationController(double width, double L);
+                L1NavigationController(double L);
                 ~L1NavigationController() override = default;
                 
-                double estimate_correction(double cross_track_error,
-                                           double orientation_error) override;
+                SteeringData estimate_steering(double cross_track_error,
+                                               double orientation_error) override;
         };
 }
 

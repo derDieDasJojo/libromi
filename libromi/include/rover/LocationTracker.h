@@ -70,6 +70,7 @@ namespace romi {
                 double get_distance_to_end() override;
 
                 // ITrackFollower
+                bool start_line() override { return true; }
                 bool update_error_estimate() override;
                 double get_cross_track_error() override;
                 double get_orientation_error() override;

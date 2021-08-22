@@ -37,7 +37,7 @@
 #include "rover/IDistanceMeasure.h"
 #include "rover/ITrackFollower.h"
 #include "rover/INavigationController.h"
-#include "rover/WheelOdometry.h"
+#include "rover/ISteering.h"
 
 namespace romi {
 
@@ -50,22 +50,15 @@ namespace romi {
                 enum move_status_t{ MOVEAT_CAPABLE, MOVING };
                 
                 NavigationSettings& settings_;
-                IMotorDriver& driver_;
                 IDistanceMeasure& distance_measure_;
                 ITrackFollower& track_follower_;
                 INavigationController& navigation_controller_;
+                ISteering& steering_;
                 ISession& session_;
                 std::mutex mutex_;
                 move_status_t status_;
                 bool stop_;
-
-                // WIP
-                double left_target_;
-                double right_target_;
-                bool set_speed_targets(double left, double right);
-                //
                 
-                bool send_moveat(double left, double right);
                 bool do_move(double distance, double speed);
                 bool travel(double speed, double distance);
                 bool try_travel(double speed, double distance, double timeout);
@@ -74,10 +67,10 @@ namespace romi {
         public:
                 
                 Navigation(NavigationSettings &settings,
-                           IMotorDriver& driver,
                            IDistanceMeasure& distance_measure,
                            ITrackFollower& track_follower,
                            INavigationController& navigation_controller,
+                           ISteering& steering,
                            ISession& session);
                 ~Navigation() override;
                 bool enable_controller() override;

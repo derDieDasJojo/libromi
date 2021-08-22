@@ -26,7 +26,8 @@ protected:
                   timestamp_(0.0) {
                 const char * config_string = "{"
                         "'wheel-diameter': 1.0,"
-                        "'wheel-base': 1.0,"
+                        "'wheeltrack': 1.0,"
+                        "'wheelbase': 1.2,"
                         "'maximum-speed': 3.0, "
                         "'maximum-acceleration': 0.1 }";
                 config = JsonCpp::parse(config_string);

@@ -21,29 +21,25 @@
   <http://www.gnu.org/licenses/>.
 
  */
-#ifndef __ROMI_I_TRACKFOLLOWER_H
-#define __ROMI_I_TRACKFOLLOWER_H
+#ifndef __ROMI_I_STEERING_H
+#define __ROMI_I_STEERING_H
 
-#include "v3.h"
+#include "rover/SteeringData.h"
 
 namespace romi {
         
-        static constexpr const char *kCrossTrackErrorKey = "cross-track-error";
-        static constexpr const char *kOrientationErrorKey = "orientation-error";
-        
-        class ITrackFollower
+        class ISteering
         {
         public:
-                virtual ~ITrackFollower() = default;
-
-                virtual bool start_line() = 0;
-
-                /** update_error_estimate() returns false if it failed
-                 * to update the error estimates. */
-                virtual bool update_error_estimate() = 0;
-                virtual double get_cross_track_error() = 0;
-                virtual double get_orientation_error() = 0;
+                virtual ~ISteering() = default;
+                
+                virtual bool enable() = 0;
+                virtual bool disable() = 0;
+                virtual bool stop() = 0;
+                virtual bool drive(double speed, SteeringData steering) = 0;
+                virtual bool forward(double speed) = 0;
+                virtual bool turn(double speed, double radius) = 0;
         };
 }
 
-#endif // __ROMI_I_TRACKFOLLOWER_H
+#endif // __ROMI_I_STEERING_H

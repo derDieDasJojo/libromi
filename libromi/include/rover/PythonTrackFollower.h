@@ -38,8 +38,6 @@ namespace romi {
         protected:
 
                 static constexpr const char *kImageName = "navigation-image";
-                static constexpr const char *kCrossTrackErrorKey = "cross-track-error";
-                static constexpr const char *kOrientationErrorKey = "orientation-error";
 
                 ICamera& camera_;
                 std::unique_ptr<romi::IRPCClient> rpc_;
@@ -66,6 +64,7 @@ namespace romi {
                                     ISession& session);
                 ~PythonTrackFollower() override = default;
                 
+                bool start_line() override { return true; }
                 bool update_error_estimate() override;
                 double get_cross_track_error() override;
                 double get_orientation_error() override;

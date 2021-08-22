@@ -38,35 +38,16 @@ namespace romi {
         static const std::string kRName = "l1-r";
         static const std::string kCorrectionName = "l1-correction";
         
-        L1NavigationController::L1NavigationController(double width, double L)
-                : w_(width), L_(L) {
-                assert_valid_parameters();
-        }
-
-        void L1NavigationController::assert_valid_parameters()
-        {
-                assert_valid_width();
+        L1NavigationController::L1NavigationController(double L)
+                : L_(L) {
                 assert_valid_distance();
-        }
-
-        void L1NavigationController::assert_valid_width()
-        {
-                if (w_ <= 0.0) {
-                        r_err("L1NavigationController: The width should be > 0: %f ", w_);
-                        throw std::runtime_error("L1NavigationController: Invalid width");
-                }
-                if (w_ > 5.0) {
-                        r_err("L1NavigationController: Please verify the width, "
-                              "should be < 5 m: %f ", w_);
-                        throw std::runtime_error("L1NavigationController: Invalid width");
-                }
         }
 
         void L1NavigationController::assert_valid_distance()
         {
-                if (L_ < w_) {
-                        r_err("L1NavigationController: L1 should be at least equal "
-                              "to the width: %f < %f", L_, w_);
+                if (L_ <= 0.0) {
+                        r_err("L1NavigationController: L1 should be strictly positive: "
+                              "%f < 0.0", L_);
                         throw std::runtime_error("L1NavigationController: Invalid L1");
                 }
                 if (L_ > 20.0) {
@@ -75,35 +56,28 @@ namespace romi {
                         throw std::runtime_error("L1NavigationController: Invalid L1");
                 }
         }
-        
-        double L1NavigationController::estimate_correction(double d, double phi) 
+
+        SteeringData L1NavigationController::estimate_steering(double d, double phi)
         {
                 if (d >= L_) {
                         r_err("L1NavigationController: d>=L");
                         throw std::runtime_error("L1NavigationController: d>=L");
                 }
                 
-                auto clock = rpp::ClockAccessor::GetInstance();
-                double now = clock->time();
-                double correction = 0.0;
+                SteeringData steering(kStraight);
                 double gamma = -atan(d / sqrt(L_ * L_ - d * d));
                 double theta = phi - gamma;
-                
-                log_data(now, kErrorDistanceName, d);
-                log_data(now, kErrorAngleName, phi);
-                log_data(now, kGammaName, gamma);
-                log_data(now, kThetaName, theta);
-
-                r_debug("L1NavigationController: d=%.5f, phi=%.5f, gamma=%.5f, theta=%.5f",
-                        d, phi, gamma, theta);
                 if (theta != 0) {
-                        double R = -L_ / (2.0 * sin(theta));
-                        correction = w_ / (2.0 * R);
-                        log_data(now, kRName, R);
-                } else {
-                        log_data(now, kRName, 0.0);
+                        steering.type_ = kTurn;
+                        steering.radius_ = -L_ / (2.0 * sin(theta));
                 }
-                log_data(now, kCorrectionName, correction);
-                return correction;
+                
+                log_data(kErrorDistanceName, d);
+                log_data(kErrorAngleName, phi);
+                log_data(kGammaName, gamma);
+                log_data(kThetaName, theta);
+                log_data(kRName, steering.radius_);
+                
+                return steering;
         }
 }

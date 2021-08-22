@@ -24,6 +24,8 @@
 #ifndef __ROMI_MOTORDRIVER_H
 #define __ROMI_MOTORDRIVER_H
 
+#include <stdint.h>
+
 namespace romi {
         
         class IMotorDriver

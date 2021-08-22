@@ -32,14 +32,15 @@ namespace romi {
         {
         public:
                 ~ZeroNavigationController() override = default;
-                
-                double estimate_correction(double cross_track_error,
-                                           double orientation_error) override
+
+                SteeringData estimate_steering(double cross_track_error,
+                                               double orientation_error) override
                 {
                         (void) cross_track_error;
                         (void) orientation_error;
-                        return 0.0;
+                        return SteeringData(kStraight); 
                 }
+                
         };
 }
 

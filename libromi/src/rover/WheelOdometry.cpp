@@ -31,11 +31,11 @@ namespace romi {
                                      IMotorDriver& driver)
                 :   driver_(driver),
                     mutex_(),
-                    last_timestamp(0.0),
-                    theta(0.0),
-                    wheel_circumference(M_PI * rover_config.wheel_diameter),
-                    wheel_base(rover_config.wheel_base),
-                    encoder_steps(driver.get_encoder_steps())
+                    last_timestamp_(0.0),
+                    theta_(0.0),
+                    wheel_circumference_(M_PI * rover_config.wheel_diameter),
+                    wheeltrack_(rover_config.wheeltrack),
+                    encoder_steps_(driver.get_encoder_steps())
         {
                 double left, right, timestamp;
                 
@@ -46,15 +46,15 @@ namespace romi {
                                                  "get_encoder_values failed");
                 }
                 
-                displacement[0] = 0;
-                displacement[1] = 0;                       
-                encoder[0] = left;
-                encoder[1] = right;
-                last_timestamp = timestamp;
+                displacement_[0] = 0;
+                displacement_[1] = 0;                       
+                encoder_[0] = left;
+                encoder_[1] = right;
+                last_timestamp_ = timestamp;
                 
                 for (int i = 0; i < 2; i++) {
-                        instantaneous_speed[i] = 0;
-                        filtered_speed[i] = 0;
+                        instantaneous_speed_[i] = 0;
+                        filtered_speed_[i] = 0;
                 }
         }
         
@@ -64,8 +64,8 @@ namespace romi {
         
         void WheelOdometry::set_displacement(double x, double y)
         {
-                displacement[0] = x;
-                displacement[1] = y;                
+                displacement_[0] = x;
+                displacement_[1] = y;                
         }
 
         bool WheelOdometry::update_estimate()
@@ -94,7 +94,7 @@ namespace romi {
         v3 WheelOdometry::get_location()
         {
                 SynchronizedCodeBlock sync(mutex_);
-                return v3(displacement[0], displacement[1], 0.0);
+                return v3(displacement_[0], displacement_[1], 0.0);
         }
         
         std::string WheelOdometry::get_location_string()
@@ -103,9 +103,9 @@ namespace romi {
                 
                 json_object_t coordinate_object = json_object_create();
                 json_object_setnum(coordinate_object, JsonFieldNames::x_position.data(),
-                                   displacement[0]);
+                                   displacement_[0]);
                 json_object_setnum(coordinate_object, JsonFieldNames::y_position.data(),
-                                   displacement[1]);
+                                   displacement_[1]);
                 std::string locationString;
                 JsonCpp locationData(coordinate_object);
                 locationData.tostring(locationString, k_json_pretty);
@@ -117,19 +117,19 @@ namespace romi {
         v3 WheelOdometry::get_speed()
         {
                 SynchronizedCodeBlock sync(mutex_);
-                return v3(filtered_speed[0], filtered_speed[1], 0.0);
+                return v3(filtered_speed_[0], filtered_speed_[1], 0.0);
         }
         
         double WheelOdometry::get_orientation()
         {
                 SynchronizedCodeBlock sync(mutex_);
-                return theta;
+                return theta_;
         }
 
         v3 WheelOdometry::get_encoders()
         {
                 SynchronizedCodeBlock sync(mutex_);
-                return v3(encoder[0], encoder[1], 0.0);
+                return v3(encoder_[0], encoder_[1], 0.0);
         }
         
         void WheelOdometry::set_encoders(double left, double right,
@@ -137,7 +137,7 @@ namespace romi {
         {
                 double dx, dy;
                 double dL, dR;
-                double half_wheel_base = 0.5 * wheel_base;
+                double half_wheeltrack = 0.5 * wheeltrack_;
                 double alpha;
 
                 SynchronizedCodeBlock sync(mutex_);
@@ -146,12 +146,12 @@ namespace romi {
         
                 // dL and dR are the distances travelled by the left and right
                 // wheel.
-                dL = left - encoder[0];
-                dR = right - encoder[1];
+                dL = left - encoder_[0];
+                dR = right - encoder_[1];
                 r_debug("dL %f, dR %f steps", dL, dR);
         
-                dL = wheel_circumference * dL / encoder_steps;
-                dR = wheel_circumference * dR / encoder_steps;
+                dL = wheel_circumference_ * dL / encoder_steps_;
+                dR = wheel_circumference_ * dR / encoder_steps_;
                 // r_debug("dL %f, dR %f m", dL, dR);
 
                 // dx and dy are the changes in the location of the rover, in
@@ -161,12 +161,12 @@ namespace romi {
                         dy = 0.0;
                         alpha = 0.0;
                 } else {
-                        double radius = 0.5 * wheel_base * (dL + dR) / (dR - dL);
+                        double radius = 0.5 * wheeltrack_ * (dL + dR) / (dR - dL);
                         /* r_debug("radius %f", radius); */
                         if (radius >= 0) {
-                                alpha = dR / (radius + half_wheel_base);
+                                alpha = dR / (radius + half_wheeltrack);
                         } else {
-                                alpha = -dL / (-radius + half_wheel_base);
+                                alpha = -dL / (-radius + half_wheeltrack);
                         }
                         dx = radius * sin(alpha);
                         dy = radius - radius * cos(alpha);
@@ -176,33 +176,33 @@ namespace romi {
 
                 // Convert dx and dy to the changes in the last frame of
                 // reference (i.e. relative to the current orientation).
-                double c = cos(theta);
-                double s = sin(theta);
+                double c = cos(theta_);
+                double s = sin(theta_);
                 double dx_ = c * dx - s * dy;
                 double dy_ = s * dx + c * dy;
 
                 // r_debug("dx_ %f, dy_ %f", dx_, dy_);
 
-                displacement[0] += dx_;
-                displacement[1] += dy_;
-                theta += alpha;
-                encoder[0] = left;
-                encoder[1] = right;
+                displacement_[0] += dx_;
+                displacement_[1] += dy_;
+                theta_ += alpha;
+                encoder_[0] = left;
+                encoder_[1] = right;
 
-                double dt = timestamp - last_timestamp;
+                double dt = timestamp - last_timestamp_;
                 if (dt != 0.0) {
-                        instantaneous_speed[0] = dx_ / dt;
-                        instantaneous_speed[1] = dy_ / dt;
+                        instantaneous_speed_[0] = dx_ / dt;
+                        instantaneous_speed_[1] = dy_ / dt;
                         
-                        filtered_speed[0] = (0.8 * filtered_speed[0]
-                                             + 0.2 * instantaneous_speed[0]);
-                        filtered_speed[1] = (0.8 * filtered_speed[1]
-                                             + 0.2 * instantaneous_speed[1]);
+                        filtered_speed_[0] = (0.8 * filtered_speed_[0]
+                                              + 0.2 * instantaneous_speed_[0]);
+                        filtered_speed_[1] = (0.8 * filtered_speed_[1]
+                                              + 0.2 * instantaneous_speed_[1]);
                 }
-                last_timestamp = timestamp;
+                last_timestamp_ = timestamp;
         
                 // r_debug("displacement:  %f %f - angle %f",
-                //         displacement[0], displacement[1], theta * 180.0 / M_PI);
+                //         displacement_[0], displacement_[1], theta_ * 180.0 / M_PI);
                 //r_debug("speed:  %f %f", speed[0], speed[1]);
         }
 }

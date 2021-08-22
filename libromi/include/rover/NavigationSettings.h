@@ -33,19 +33,22 @@ namespace romi {
         public:
 
                 static constexpr const char *kWheelDiameterKey = "wheel-diameter"; 
-                static constexpr const char *kWheelBaseKey = "wheel-base"; 
+                static constexpr const char *kWheelbaseKey = "wheelbase"; 
+                static constexpr const char *kWheeltrackKey = "wheeltrack"; 
                 static constexpr const char *kMaximumSpeedKey = "maximum-speed"; 
                 static constexpr const char *kMaximumAccelerationKey = "maximum-acceleration"; 
                 
                 double wheel_diameter;
-                double wheel_base;
+                double wheelbase;
+                double wheeltrack;
                 double maximum_speed;
                 double maximum_acceleration;
 
                 NavigationSettings(JsonCpp &config);
                 virtual ~NavigationSettings() = default;
 
-                double convert_to_angular_speed(double linear_speed);
+                double wheel_circumference();
+                double to_angular_speed(double linear_speed);
                 double compute_max_angular_speed();
                 double compute_max_angular_acceleration();
         };

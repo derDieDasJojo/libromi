@@ -21,29 +21,27 @@
   <http://www.gnu.org/licenses/>.
 
  */
-#ifndef __ROMI_I_TRACKFOLLOWER_H
-#define __ROMI_I_TRACKFOLLOWER_H
-
-#include "v3.h"
+#ifndef __ROMI_STEERING_DATA_H
+#define __ROMI_STEERING_DATA_H
 
 namespace romi {
-        
-        static constexpr const char *kCrossTrackErrorKey = "cross-track-error";
-        static constexpr const char *kOrientationErrorKey = "orientation-error";
-        
-        class ITrackFollower
+
+        enum SteeringType
+        {
+                kStraight,
+                kTurn
+        };
+
+        class SteeringData
         {
         public:
-                virtual ~ITrackFollower() = default;
-
-                virtual bool start_line() = 0;
-
-                /** update_error_estimate() returns false if it failed
-                 * to update the error estimates. */
-                virtual bool update_error_estimate() = 0;
-                virtual double get_cross_track_error() = 0;
-                virtual double get_orientation_error() = 0;
+                SteeringType type_;
+                double radius_;
+                
+                SteeringData(SteeringType type) : type_(type), radius_(0.0) {}
+                SteeringData(SteeringType type, double r) : type_(type), radius_(r) {}
         };
+
 }
 
-#endif // __ROMI_I_TRACKFOLLOWER_H
+#endif // __ROMI_STEERING_DATA_H

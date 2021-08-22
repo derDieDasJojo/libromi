@@ -24,6 +24,8 @@
 #ifndef __ROMI_I_NAVIGATION_CONTROLLER_H
 #define __ROMI_I_NAVIGATION_CONTROLLER_H
 
+#include "rover/SteeringData.h"
+
 namespace romi {
         
         class INavigationController
@@ -31,10 +33,10 @@ namespace romi {
         public:
                 virtual ~INavigationController() = default;
 
-                /** estimate_correction() throws an std::runtime_error
+                /** estimate_steering() throws an std::runtime_error
                  *  if it cannot compute a correction value. */
-                virtual double estimate_correction(double cross_track_error,
-                                                   double orientation_error) = 0;
+                virtual SteeringData estimate_steering(double cross_track_error,
+                                                       double orientation_error) = 0;
         };
 }
 

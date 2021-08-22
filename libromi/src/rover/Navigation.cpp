@@ -40,102 +40,38 @@
 
 namespace romi {
 
-        static const double kSlowNavigationSpeed = 0.3;
+        static const double kSlowNavigationSpeed = 0.2;
         static const double kDistanceSlowNavigation = 0.1;
 
         static const std::string kSpeedName = "navigation-speed";
         static const std::string kDistanceName = "navigation-distance";
-        static const std::string kLeftSpeedName = "navigation-left-speed";
-        static const std::string kRightSpeedName = "navigation-right-speed";
+        static const std::string kDistanceFromStartName = "navigation-distance-from-start";
+        static const std::string kDistanceToEndName = "navigation-distance-to-end";
         static const std::string kCrossTrackErrorName = "navigation-cross-track-error";
         static const std::string kOrientationErrorName = "navigation-orientation-error";
-        static const std::string kCorrectionName = "navigation-correction";
-        
-        
-
-        struct Steering
-        {
-                double width_;
-                double length_;
-                double left_speed_;
-                double right_speed_;
-                double left_angle_;
-                double right_angle_;
-
-                Steering(double width, double length)
-                        : width_(width),
-                          length_(length),
-                          left_speed_(0.0),
-                          right_speed_(0.0),
-                          left_angle_(0.0),
-                          right_angle_(0.0) {
-                }
-
-                void forward(double speed) {
-                        left_speed_ = speed;
-                        right_speed_ = speed;
-                        left_angle_ = 0.0;
-                        right_angle_ = 0.0;
-                }
-
-                void turn(double speed, double radius) {
-                        if (-width_ / 2.0 <= radius && radius <= width_ / 2.0) {
-                                r_err("Unhandled radius: %.3f [R<%.3f or R>%.3f]",
-                                      radius, -width_/2.0, width_/2.0);
-                                throw std::runtime_error("Unhandled value for the radius");
-                        }
-                        left_speed_ = speed * (1 - width_ / (2.0 * radius));
-                        right_speed_ = speed * (1 + width_ / (2.0 * radius));
-                        left_angle_ = atan(length_ / (radius - width_ / 2.0));
-                        right_angle_ = atan(length_ / (radius + width_ / 2.0));
-                }
-        };
 
         Navigation::Navigation(NavigationSettings &settings,
-                               IMotorDriver& driver,
                                IDistanceMeasure& distance_measure,
                                ITrackFollower& track_follower,
                                INavigationController& navigation_controller,
+                               ISteering& steering,
                                ISession& session)
                 : settings_(settings),
-                  driver_(driver),
                   distance_measure_(distance_measure),
                   track_follower_(track_follower),
                   navigation_controller_(navigation_controller),
+                  steering_(steering),
                   session_(session),
                   mutex_(),
                   status_(MOVEAT_CAPABLE),
-                  stop_(false),
-                  left_target_(0.0),
-                  right_target_(0.0)
+                  stop_(false)
         {
-                set_speed_targets(0.0, 0.0);
+                moveat(0.0, 0.0);
         }
         
         Navigation::~Navigation()
         {
-                set_speed_targets(0.0, 0.0);
-        }
-        
-        bool Navigation::set_speed_targets(double left, double right)
-        {
-                bool changed = (left != left_target_ && right != right_target_);
-                if (changed) {
-                        left_target_ = left;
-                        right_target_ = right;
-                        r_debug("Navigation: Speed target now (%.2f, %.2f)", left, right);
-                        send_moveat(left_target_, right_target_);
-                }
-                return true;
-        }
-
-        bool Navigation::send_moveat(double left, double right)
-        {
-                double left_angular_speed = settings_.convert_to_angular_speed(left);
-                double right_angular_speed = settings_.convert_to_angular_speed(right);
-                r_debug("Navigation: Angular speed target now (%.2f, %.2f)",
-                        left_angular_speed, right_angular_speed);
-                return driver_.moveat(left_angular_speed, right_angular_speed);
+                moveat(0.0, 0.0);
         }
 
         bool Navigation::do_move(double distance, double speed)
@@ -163,7 +99,7 @@ namespace romi {
                                 speed = -fabs(speed);
                         }
 
-                        if (driver_.stop()) {
+                        if (steering_.stop()) {
 
                                 success = travel(distance, speed);
 
@@ -178,7 +114,7 @@ namespace romi {
 
                 // A bit of a hack: in any case, make sure that the
                 // rover comes to a standstill.
-                driver_.stop();
+                steering_.stop();
 
                 return success;
         }
@@ -206,10 +142,7 @@ namespace romi {
                 auto clock = rpp::ClockAccessor::GetInstance();
                 double start_time = clock->time();
                 v3 start_location;
-                double left_speed = speed;
-                double right_speed = speed;
                 bool success = false;
-                double last_distance = 0.0;
                 double now;
 
                 /*
@@ -239,27 +172,10 @@ namespace romi {
                 log_data(now, kSpeedName, speed);
                 log_data(now, kDistanceName, distance);
 
-
-                ////////////////////////
-                // auto steering_serial = romiserial::RomiSerialClient::create("/dev/ttyACM0");
-                // romi::StepperController steering_controller(steering_serial);
-                // double max_rpm = 500;
-                // double max_rps = max_rpm / 60.0;
-                // double default_rps = max_rps / 2.0;
-                // double steps_per_revolution = 200; 
-                // double microsteps = 8; 
-                // double gears = 77.0; 
-                        
-                // double steering_steps_per_revolution = steps_per_revolution * microsteps * gears;
-                // double steering_millis_per_step = 1000.0 / (default_rps * steps_per_revolution * microsteps);
-                // double width = 1.0;
-                // double length = 1.4;
-                // Steering steering(width, length);
-
-                // int32_t steering_pos0[3];
-                // steering_controller.get_position(steering_pos0);
-                ////////////////////////
-
+                if (!track_follower_.start_line()) {
+                        r_err("Navigation::travel: track_follower_.start_line failed");
+                        return false; // TODO
+                }
                 
                 while (!stop_) {
 
@@ -274,61 +190,9 @@ namespace romi {
                         
                         double cross_track_error = track_follower_.get_cross_track_error();
                         double orientation_error = track_follower_.get_orientation_error();
-
-                        // By how much should the wheel speeds be
-                        // adapted to get the rover back on the track?
-                        double correction = navigation_controller_.estimate_correction(
-                                cross_track_error, orientation_error);
                         
-                        left_speed = speed * (1.0 - correction);
-                        right_speed = speed * (1.0 + correction);
-
-                        ////////////////////////
-                        // double R = width / (2.0 * correction);
-                        // steering.turn(speed, R);
-
-                        // int16_t steps_left = (int16_t) (steering.left_angle_
-                        //                                 * steering_steps_per_revolution
-                        //                                 / (2.0 * M_PI));
-                        // int16_t steps_right = (int16_t) (steering.right_angle_
-                        //                                  * steering_steps_per_revolution
-                        //                                  / (2.0 * M_PI));
-
-                        // int16_t max_steps = steps_left > steps_right? steps_left : steps_right; 
-                        // int16_t dt = (int16_t) ceil(steering_millis_per_step
-                        //                             * (double) max_steps);
-                        
-                        // steering_controller.moveto(dt,
-                        //                            (int16_t)(steps_left + steering_pos0[0]),
-                        //                            (int16_t)(steps_right + steering_pos0[1]),
-                        //                            (int16_t) steering_pos0[2]); 
-                        ////////////////////////
-                        
-                        
-                        // Make sure the speeds don't pass the maximum speed.
-                        if (left_speed > settings_.maximum_speed) {
-                                double scale = settings_.maximum_speed / left_speed;
-                                left_speed *= scale;
-                                right_speed *= scale;
-                        }
-                        if (right_speed > settings_.maximum_speed) {
-                                double scale = settings_.maximum_speed / right_speed;
-                                left_speed *= scale;
-                                right_speed *= scale;
-                        }
-                        
-                        now = clock->time();
-                        log_data(now, kCrossTrackErrorName, cross_track_error);
-                        log_data(now, kOrientationErrorName, orientation_error);
-                        log_data(now, kCorrectionName, correction);
-                        log_data(now, kLeftSpeedName, left_speed);
-                        log_data(now, kRightSpeedName, right_speed);
-                                
-                        // Keep going
-                        if (!set_speed_targets(left_speed, right_speed)) {
-                                r_err("Navigation::travel: moveat failed");
-                                break;
-                        }
+                        SteeringData direction = navigation_controller_.estimate_steering(cross_track_error, orientation_error);
+                        steering_.drive(speed, direction);
                         
                         // Where are we now?
                         if (!distance_measure_.update_distance_estimate()) {
@@ -338,14 +202,11 @@ namespace romi {
                         double distance_to_end = distance_measure_.get_distance_to_end();
 
                         // If the rover is close to the end, force a slow-down.
-                        if (distance_to_end <= slowdown_distance
-                            && fabs(speed) > kSlowNavigationSpeed) {
-                                if (speed > 0.0) {
-                                        left_speed = kSlowNavigationSpeed;
-                                        right_speed = kSlowNavigationSpeed;
-                                } else {
-                                        left_speed = -kSlowNavigationSpeed;
-                                        right_speed = -kSlowNavigationSpeed;
+                        if (distance_to_end <= slowdown_distance) {
+                                if (speed > kSlowNavigationSpeed) {
+                                        speed = kSlowNavigationSpeed;
+                                } else if (speed < -kSlowNavigationSpeed){
+                                        speed = -kSlowNavigationSpeed;
                                 }
                         }
 
@@ -361,13 +222,11 @@ namespace romi {
                                 break;
                         }
 
-                        if (last_distance != distance_measure_.get_distance_from_start()) {
-                                r_debug("Distance: from start: %f, to end: %f",
-                                        distance_measure_.get_distance_from_start(),
-                                        distance_measure_.get_distance_to_end());
-                                last_distance = distance_measure_.get_distance_from_start();
-                        }
-
+                        log_data(now, kCrossTrackErrorName, cross_track_error);
+                        log_data(now, kOrientationErrorName, orientation_error);
+                        log_data(now, kDistanceFromStartName, distance_measure_.get_distance_from_start());
+                        log_data(now, kDistanceToEndName, distance_measure_.get_distance_to_end());
+                        
                         clock->sleep(0.020);
                 }
 
@@ -392,10 +251,14 @@ namespace romi {
         {
                 SynchronizedCodeBlock sync(mutex_);
                 bool success = false;
-                if (status_ == MOVEAT_CAPABLE)
-                        success = set_speed_targets(left, right);
-                else
-                        r_warn("Navigation::moveat: still moving");
+                double speed = (left + right) / 2.0;
+                if (right == left) {
+                        success = steering_.forward(speed);
+                } else {
+                        double delta = right - left;
+                        double radius = settings_.wheeltrack / (2.0 * delta);
+                        success = steering_.turn(speed, radius);
+                }
                 return success;
         }
 
@@ -424,7 +287,7 @@ namespace romi {
                 // This flag should assure that we break out
                 // the travel loop.
                 stop_ = true;
-                bool success = driver_.stop();
+                bool success = steering_.stop();
                 status_ = MOVEAT_CAPABLE;
                 return success;
         }
@@ -450,11 +313,13 @@ namespace romi {
 
         bool Navigation::enable_controller()
         {
-                return driver_.enable_controller();
+                // return driver_.enable_controller();
+                return true;
         }
 
         bool Navigation::disable_controller()
         {
-                return driver_.disable_controller();
+                // return driver_.disable_controller();
+                return true;
         }
 }
