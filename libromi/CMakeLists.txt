@@ -152,6 +152,7 @@ set(SOURCES
         include/rover/INavigationController.h
         include/rover/L1NavigationController.h
         include/rover/LocationTracker.h
+        include/rover/ManualTrackFollower.h
         include/rover/Rover.h
         include/rover/RoverInterface.h
         include/rover/RoverNotifications.h
@@ -255,6 +256,7 @@ set(SOURCES
         src/rover/IMUTrackFollower.cpp
         src/rover/L1NavigationController.cpp
         src/rover/LocationTracker.cpp
+        src/rover/ManualTrackFollower.cpp
         src/rover/NavigationSettings.cpp
         src/rover/PythonTrackFollower.cpp
         src/rover/Rover.cpp

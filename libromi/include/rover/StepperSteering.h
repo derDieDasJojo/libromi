@@ -40,12 +40,15 @@ namespace romi {
                 NavigationSettings& settings_;
                 int16_t steps_per_second_;
                 double steps_per_revolution_;
-                double left_angle_;
-                double right_angle_;
+                double left_current_;
+                double right_current_;
                 double left_target_;
                 double right_target_;
                 int16_t steps_left_;
                 int16_t steps_right_;
+                double max_angular_speed_;
+                double update_interval_;
+                double last_update_;
                 std::mutex mutex_;
                 std::unique_ptr<std::thread> thread_;
                 std::atomic<bool> quitting_;
@@ -53,8 +56,10 @@ namespace romi {
                 bool turn_wheels(double left_angle, double right_angle);
                 bool set_target(double target_left, double target_right);
                 void run_target_updates();
-                bool angles_changed();
-                bool send_wheel_angles();
+                bool angles_need_updating();
+                bool update_angles(double t);
+                bool do_update_angles(double t);
+                bool do_turn_wheel(double target_left, double target_right);
                 bool moveto(int16_t steps_left, int16_t steps_right);
                 int16_t angle_to_steps(double angle);
 

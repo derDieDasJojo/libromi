@@ -42,16 +42,25 @@ namespace romi {
                   settings_(settings),
                   steps_per_second_(steps_per_second),
                   steps_per_revolution_(steps_per_revolution),
-                  left_angle_(0),
-                  right_angle_(0),
+                  left_current_(0),
+                  right_current_(0),
                   left_target_(0),
                   right_target_(0),
                   steps_left_(0),
                   steps_right_(0),
+                  max_angular_speed_(0.0),
+                  update_interval_(0.0),
+                  last_update_(0.0),
                   mutex_(),
                   thread_(nullptr),
                   quitting_(false)
         {
+                max_angular_speed_ = (2.0 * M_PI
+                                      * (double) steps_per_second
+                                      / steps_per_revolution);
+                update_interval_ = 0.200;
+                last_update_ = rpp::ClockAccessor::GetInstance()->time();
+                
                 thread_ = std::make_unique<std::thread>([this]() {
                                 this->run_target_updates();
                         });
@@ -107,41 +116,76 @@ namespace romi {
         void StepperSteering::run_target_updates()
         {
                 while (!quitting_) {
-
-                        if (angles_changed()) {
-                                bool success = send_wheel_angles();
-                                if (success) {
-                                        //success = controller_.synchronize(10.0);
-                                        if (!success) {
-                                                r_err("StepperSteering::run_updates: synchronize failed");
-                                        }
-                                } else {
-                                        r_err("StepperSteering::run_updates: moveto failed");
-                                }
+                        double now = rpp::ClockAccessor::GetInstance()->time();
+                        if (now - last_update_ >= update_interval_) {
+                                update_angles(now);
+                                last_update_ = now;
+                                
                         } else {
-                                rpp::ClockAccessor::GetInstance()->sleep(0.20);
+                                rpp::ClockAccessor::GetInstance()->sleep(last_update_
+                                                                         + update_interval_
+                                                                         - now);
                         }
                 }
         }
 
-        bool StepperSteering::angles_changed()
+        bool StepperSteering::update_angles(double t)
         {
-                return (left_angle_ != left_target_
-                        || right_angle_ != right_target_);
+                bool success = true;
+                if (angles_need_updating()) {
+                        bool success = do_update_angles(t);
+                        if (success) {
+                                //success = controller_.synchronize(10.0);
+                                if (!success) {
+                                        r_err("StepperSteering::run_updates: synchronize failed");
+                                }
+                        } else {
+                                r_err("StepperSteering::run_updates: moveto failed");
+                        }
+                }
+                return success;
         }
         
-        bool StepperSteering::send_wheel_angles()
+        bool StepperSteering::angles_need_updating()
         {
-                int16_t steps_left = angle_to_steps(left_target_);
-                int16_t steps_right = angle_to_steps(right_target_);
+                return (left_current_ != left_target_
+                        || right_current_ != right_target_);
+        }
+        
+        bool StepperSteering::do_update_angles(double t)
+        {
+                double diff_left = left_target_ - left_current_;
+                double diff_right = right_target_ - right_current_;
+                double diff = std::max(std::abs(diff_left), std::abs(diff_right));
+                double max_diff = max_angular_speed_ * (t - last_update_);
+
+                r_debug("Lt=%f, Rt=%f, Lc=%f, Rc=%f, diff=%f, max=%f, speed=%f, dt=%f",
+                        left_target_, right_target_, left_current_, right_current_,
+                        diff, max_diff, max_angular_speed_, t - last_update_);
+                
+                if (diff > max_diff) {
+                        diff_left *= max_diff / diff;
+                        diff_right *= max_diff / diff;        
+                }
+
+                double left_angle = left_current_ + diff_left;
+                double right_angle = right_current_ + diff_left;
+                
+                return do_turn_wheel(left_angle, right_angle); 
+        }
+        
+        bool StepperSteering::do_turn_wheel(double left_angle, double right_angle)
+        {
+                int16_t steps_left = angle_to_steps(left_angle);
+                int16_t steps_right = angle_to_steps(right_angle);
                 
                 bool success = moveto(steps_left, steps_right); 
 
                 if (success) {
-                        left_angle_ = left_target_;
-                        right_angle_ = right_target_;
-                        log_data(kTargetAngleLeft, left_angle_); 
-                        log_data(kTargetAngleRight, right_target_); 
+                        left_current_ = left_angle;
+                        right_current_ = right_angle;
+                        log_data(kAngleLeft, left_current_); 
+                        log_data(kAngleRight, right_current_); 
                 }
                 
                 return success;
