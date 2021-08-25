@@ -53,7 +53,8 @@ namespace romi {
         DataLog::~DataLog()
         {
                 quitting_ = true;
-                thread_->join();
+                if (thread_ != nullptr)
+                        thread_->join();
                 fclose(fp_);
         }
         

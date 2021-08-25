@@ -1,7 +1,9 @@
 cmake_minimum_required(VERSION 3.10)
 
 # We add the tests whether we are building the binaries or not.
-add_subdirectory(Azhoo/tests)
+if(BUILD_TESTS)
+    add_subdirectory(Azhoo/tests)
+endif()
 
 if (${BUILD_ARDUINO})
 

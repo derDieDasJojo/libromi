@@ -62,4 +62,6 @@ if (${BUILD_ARDUINO})
             )
 endif()
 
-add_subdirectory(test)
+if(BUILD_TESTS)
+    add_subdirectory(test)
+endif()

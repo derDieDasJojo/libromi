@@ -24,8 +24,11 @@
 
 #include <r.h>
 #include "rover/ManualTrackFollower.h"
+#include "api/DataLogAccessor.h"
 
 namespace romi {
+
+        static const std::string kInputName = "navigation-manual-input";
 
         ManualTrackFollower::ManualTrackFollower(IInputDevice& input_device,
                                                  double maximum_angle)
@@ -51,7 +54,9 @@ namespace romi {
         
         double ManualTrackFollower::get_orientation_error()
         {
-                return maximum_angle_ * input_device_.get_direction();
+                double input  = input_device_.get_direction();
+                log_data(kInputName, input);
+                return maximum_angle_ * input;
         }
 }
 

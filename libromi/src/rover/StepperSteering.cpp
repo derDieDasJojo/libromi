@@ -69,7 +69,8 @@ namespace romi {
         StepperSteering::~StepperSteering()
         {
                 quitting_ = true;
-                thread_->join();
+                if (thread_ != nullptr)
+                        thread_->join();
         }
         
         bool StepperSteering::drive(double speed, SteeringData steering)
@@ -169,7 +170,7 @@ namespace romi {
                 }
 
                 double left_angle = left_current_ + diff_left;
-                double right_angle = right_current_ + diff_left;
+                double right_angle = right_current_ + diff_right;
                 
                 return do_turn_wheel(left_angle, right_angle); 
         }
