@@ -40,7 +40,8 @@ namespace romi {
                   settings_(settings),
                   session_(session),
                   mutex_(),
-                  store_script_(false)
+                  store_script_(false),
+                  position_changed_(true)
         {
                 if (!controller_.configure_homing(settings_.homing_[0],
                                                   settings_.homing_[1],
@@ -86,6 +87,7 @@ namespace romi {
         bool Oquam::moveat(int16_t speed_x, int16_t speed_y, int16_t speed_z)
         {
             SynchronizedCodeBlock synchronize(mutex_);
+            position_changed_ = true;
             store_script_ = false;
             return controller_.moveat(speed_x, speed_y, speed_z);
         }
@@ -93,6 +95,7 @@ namespace romi {
         bool Oquam::moveto(double x, double y, double z, double relative_speed)
         {
                 SynchronizedCodeBlock synchronize(mutex_);
+                position_changed_ = true;
                 store_script_ = false;
                 return moveto_synchronized(x, y, z, relative_speed);
         }
@@ -139,18 +142,25 @@ namespace romi {
         bool Oquam::spindle(double speed)
         {
                 r_info("Oquam::spindle %f", speed);
+                position_changed_ = true;
                 return controller_.spindle(speed);
         }
 
         bool Oquam::homing()
         {
+                bool homing_result = true;
                 SynchronizedCodeBlock synchronize(mutex_);
-                return controller_.homing();
+                if (position_changed_) {
+                    homing_result = controller_.homing();
+                    position_changed_ = false;
+                }
+                return homing_result;
         }
                 
         bool Oquam::travel(Path &path, double relative_speed)
         {
                 SynchronizedCodeBlock synchronize(mutex_);
+                position_changed_ = true;
                 store_script_ = true;
                 return travel_synchronized(path, relative_speed);
         }

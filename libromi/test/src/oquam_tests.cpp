@@ -68,20 +68,24 @@ protected:
                 rpp::ClockAccessor::SetInstance(nullptr);
 	}
 
+    void HomingTestsSetUp() {
+        EXPECT_CALL(controller, get_position(NotNull()))
+                .WillRepeatedly(DoAll(SetArrayArgument<0>(position, position+3),
+                                      Return(true)));
+        EXPECT_CALL(controller, configure_homing(_,_,_))
+                .WillRepeatedly(Return(true));
+        EXPECT_CALL(controller, enable())
+                .WillRepeatedly(Return(true));
+        EXPECT_CALL(controller, synchronize(_))
+                .WillRepeatedly(Return(true));
+        EXPECT_CALL(controller, move(_,_,_,_))
+                .WillRepeatedly(Return(true));
+    }
+
         void DefaultSetUp() {
-                EXPECT_CALL(controller, get_position(NotNull()))
-                        .WillRepeatedly(DoAll(SetArrayArgument<0>(position, position+3),
-                                              Return(true)));
-                EXPECT_CALL(controller, configure_homing(_,_,_))
-                        .WillRepeatedly(Return(true));
-                EXPECT_CALL(controller, enable())
-                        .WillRepeatedly(Return(true));
                 EXPECT_CALL(controller, homing())
                         .WillRepeatedly(Return(true));
-                EXPECT_CALL(controller, synchronize(_))
-                        .WillRepeatedly(Return(true));
-                EXPECT_CALL(controller, move(_,_,_,_))
-                        .WillRepeatedly(Return(true));
+                HomingTestsSetUp();
         }
         
 public:
@@ -613,4 +617,140 @@ TEST_F(oquam_tests, test_oquam_travel_zigzag)
         ASSERT_EQ(success, true);
 }
 
+TEST_F(oquam_tests, power_up_calls_homing_after_construct)
+{
+    // Arrange
+    HomingTestsSetUp();
+    EXPECT_CALL(controller, homing())
+            .WillOnce(Return(true));
 
+    romi::Session session(linux, session_directory, romiDeviceData,
+                          softwareVersion, std::move(locationPrivider));
+    session.start("travel_zigzag");
+    Oquam oquam(controller, settings, session);
+
+    // Act
+    auto actual = oquam.power_up();
+
+    // Assert
+    ASSERT_EQ(actual, true);
+}
+
+TEST_F(oquam_tests, power_up_calls_homing_only_once_when_no_movement)
+{
+    // Arrange
+    HomingTestsSetUp();
+    EXPECT_CALL(controller, homing())
+            .WillOnce(Return(true));
+
+    romi::Session session(linux, session_directory, romiDeviceData,
+                          softwareVersion, std::move(locationPrivider));
+    session.start("no_movement");
+    Oquam oquam(controller, settings, session);
+
+    // Act
+    auto actual = oquam.power_up();
+    actual = oquam.power_up();
+    actual = oquam.power_up();
+
+    // Assert
+    ASSERT_EQ(actual, true);
+}
+
+TEST_F(oquam_tests, power_up_calls_homing_after_moveto)
+{
+    // Arrange
+    HomingTestsSetUp();
+
+    EXPECT_CALL(controller, homing())
+    .Times(2)
+    .WillRepeatedly(Return(true));
+
+    romi::Session session(linux, session_directory, romiDeviceData,
+                          softwareVersion, std::move(locationPrivider));
+    session.start("homing_test");
+    Oquam oquam(controller, settings, session);
+
+    // Act
+    auto actual = oquam.power_up();
+    actual = oquam.moveto(1, 1, 1, 0.1);
+
+    actual = oquam.power_up();
+
+    // Assert
+    ASSERT_EQ(actual, true);
+}
+
+TEST_F(oquam_tests, power_up_calls_homing_after_moveat)
+{
+    // Arrange
+    HomingTestsSetUp();
+
+    EXPECT_CALL(controller, homing())
+            .Times(2)
+            .WillRepeatedly(Return(true));
+    EXPECT_CALL(controller, moveat(_,_,_))
+            .WillOnce(Return(true));
+
+    romi::Session session(linux, session_directory, romiDeviceData,
+                          softwareVersion, std::move(locationPrivider));
+    session.start("homing_test");
+    Oquam oquam(controller, settings, session);
+
+    // Act
+    auto actual = oquam.power_up();
+    actual = oquam.moveat(1, 1, 1);
+    actual = oquam.power_up();
+
+    // Assert
+    ASSERT_EQ(actual, true);
+}
+
+TEST_F(oquam_tests, power_up_calls_homing_after_spindle)
+{
+    // Arrange
+    HomingTestsSetUp();
+
+    EXPECT_CALL(controller, homing())
+            .Times(2)
+            .WillRepeatedly(Return(true));
+    EXPECT_CALL(controller, spindle(_))
+            .WillOnce(Return(true));
+
+    romi::Session session(linux, session_directory, romiDeviceData,
+                          softwareVersion, std::move(locationPrivider));
+    session.start("homing_test");
+    Oquam oquam(controller, settings, session);
+
+    // Act
+    auto actual = oquam.power_up();
+    actual = oquam.spindle(1.0);
+    actual = oquam.power_up();
+
+    // Assert
+    ASSERT_EQ(actual, true);
+}
+
+TEST_F(oquam_tests, power_up_calls_homing_after_travel)
+{
+    // Arrange
+    HomingTestsSetUp();
+
+    EXPECT_CALL(controller, homing())
+            .Times(2)
+            .WillRepeatedly(Return(true));
+
+    romi::Session session(linux, session_directory, romiDeviceData,
+                          softwareVersion, std::move(locationPrivider));
+    session.start("homing_test");
+    Oquam oquam(controller, settings, session);
+
+    // Act
+    auto actual = oquam.power_up();
+    Path travel_path;
+    actual = oquam.travel(travel_path, 1.0);
+    actual = oquam.power_up();
+
+    // Assert
+    ASSERT_EQ(actual, true);
+}
