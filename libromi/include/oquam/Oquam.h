@@ -107,6 +107,8 @@ namespace romi {
 
                 bool enable_driver();
                 bool disable_driver();
+        private:
+            bool position_changed_;
         };
 }
 
