@@ -25,5 +25,14 @@
 
 namespace romi {
 
+        static const std::string kDatalogFile = "datalog.txt";
+        
         std::shared_ptr<IDataLog> DataLogAccessor::log_ = nullptr;
+
+        const std::shared_ptr<IDataLog>& DataLogAccessor::get()
+        {
+                if (log_ == nullptr)
+                        log_ = std::make_shared<DataLog>(kDatalogFile);
+                return log_;
+        }
 }

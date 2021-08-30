@@ -32,6 +32,7 @@
 #include <thread>
 #include <mutex>
 #include <atomic>
+#include <filesystem>
 #include "api/IDataLog.h"
 
 namespace romi {
@@ -75,6 +76,7 @@ namespace romi {
         
         public:
                 DataLog(const std::string& filepath);
+                DataLog(const std::filesystem::path& filepath);
                 ~DataLog() override;
                 void store(double time, const std::string& name, double value) override;
                 void store(const std::string& name, double value) override;

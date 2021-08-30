@@ -25,6 +25,7 @@
 #define __ROMI_DATALOGACCESSOR_H
 
 #include <memory>
+#include <string>
 #include "DataLog.h"
 
 namespace romi {
@@ -32,12 +33,7 @@ namespace romi {
     class DataLogAccessor
     {
     public:
-            static const std::shared_ptr<IDataLog>& get()
-            {
-                    if (log_ == nullptr)
-                            log_ = std::make_shared<DataLog>("datalog.txt");
-                    return log_;
-            }
+            static const std::shared_ptr<IDataLog>& get();
             
             static void set(const std::shared_ptr<IDataLog>& log)
             {
