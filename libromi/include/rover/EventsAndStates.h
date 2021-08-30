@@ -27,9 +27,13 @@
 namespace romi {
 
         enum AxisID {
-                axis_direction = 0,          // left stick
+                axis_direction = 0,          // left stick, left-right
+                // axis_xxx = 1,             // left stick, up-down
                 axis_backward_speed = 2,     // L2
+                // axis_xxx = 3,             // right stick, left-right
+                // axis_xxx = 4,             // right stick, up-down
                 axis_forward_speed = 5,      // R2
+                // axis_xxx = 6,             // left/right buttons
                 axis_menu_navigation = 7,    // up/down buttons
                 axis_last = 8,
         };
