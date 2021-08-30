@@ -162,6 +162,6 @@ namespace romi {
 
         std::filesystem::path Session::create_session_file(const std::string& name)
         {
-                return base_directory_ /= name;
+                return base_directory_ / name;
         }
 }
