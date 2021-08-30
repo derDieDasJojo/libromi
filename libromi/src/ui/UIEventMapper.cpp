@@ -120,10 +120,10 @@ namespace romi {
         {
                 int retval = 0;
                         
-                if (event.type == JoystickEvent::Axis) {
+                if (event.type == JoystickEvent::kAxis) {
                         retval = map_axis(joystick, event);
                                 
-                } else if (event.type == JoystickEvent::Button) {
+                } else if (event.type == JoystickEvent::kButton) {
                         retval = map_button(joystick, event);
                 }
                         
