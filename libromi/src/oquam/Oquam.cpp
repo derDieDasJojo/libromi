@@ -188,10 +188,18 @@ namespace romi {
         
         void Oquam::assert_in_range(v3 p) 
         {
-                if (!settings_.range_.is_inside(p)) {
+                if (!settings_.range_.is_inside(p)) { 
+                        double e = settings_.range_.error(p);
                         r_warn("Oquam: Point[%d]: out of bounds: "
-                               "(%0.4f, %0.4f, %0.4f)", p.x(), p.y(), p.z());
-                        throw std::runtime_error("Point out of bounds");
+                               "(%0.6f, %0.6f, %0.6f)"
+                               ", range (%0.6f, %0.6f, %0.6f), "
+                               "error %.6f",
+                               p.x(), p.y(), p.z(),
+                               settings_.range_.max.x(), settings_.range_.max.y(),
+                               settings_.range_.max.z(), e);
+                        if (e > 0.001) { 
+                                throw std::runtime_error("Point out of bounds");
+                        }
                 }
         }
         
@@ -284,11 +292,7 @@ namespace romi {
                         // Initialize the start position
                         int32_t pos_steps[3];
                         convert_position_to_steps(section.p0, pos_steps); 
-                        std::cout<<"k = "<<script.count_slices()<<std::endl;            //!!!!debugging
-                        int count = 0;                                                  //!!!!debugging
                         for (size_t k = 0; k < script.count_slices(); k++) {
-                                count ++;                                               //!!!!debugging
-                                std::cout<<"loop number = "<<count<<std::endl;
                                 execute_move(script.get_slice(k), pos_steps);
                         }
                 }

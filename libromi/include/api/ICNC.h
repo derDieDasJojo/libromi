@@ -24,6 +24,7 @@
 #ifndef __ROMI_ICNC_H
 #define __ROMI_ICNC_H
 
+#include "v3.h"
 #include "api/Path.h"
 #include "api/CNCRange.h"
 #include "api/IActivity.h"
@@ -51,6 +52,7 @@ namespace romi {
                 virtual bool spindle(double speed) = 0;
                 virtual bool travel(Path &path, double relative_speed = 0.1) = 0;
                 virtual bool homing() = 0;
+                virtual bool get_position(v3& position) = 0; 
         };
 }
 

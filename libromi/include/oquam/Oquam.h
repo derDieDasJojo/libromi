@@ -66,6 +66,7 @@ namespace romi {
                 bool spindle(double speed) override;
                 bool homing() override;
                 bool get_range(CNCRange &range) override;
+                bool get_position(v3& position) override; 
 
                 // IActivity interface
                 bool pause_activity() override;
@@ -94,7 +95,6 @@ namespace romi {
                 void execute_script(SmoothPath& script);
                 void execute_move(Section& section, int32_t *pos_steps);
                 void wait_end_of_script(SmoothPath& script); 
-                bool get_position(v3& position); 
                 bool get_position(int32_t *position); 
                 v3 assert_get_position(); 
                 void assert_relative_speed(double relative_speed); 
