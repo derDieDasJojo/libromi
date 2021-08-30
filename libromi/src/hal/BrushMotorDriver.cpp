@@ -36,7 +36,7 @@ static const std::string kDriverLeftMeasuredSpeedName = "driver-left-measured-sp
 static const std::string kDriverRightTargetSpeedName = "driver-right-target-speed";
 static const std::string kDriverRightCurrentSpeedName = "driver-right-current-speed";
 static const std::string kDriverRightMeasuredSpeedName = "driver-right-measured-speed";
-
+        
         
         BrushMotorDriver::BrushMotorDriver(std::unique_ptr<romiserial::IRomiSerialClient>& serial,
                                            JsonCpp &config,
@@ -140,6 +140,8 @@ static const std::string kDriverRightMeasuredSpeedName = "driver-right-measured-
         {
                 bool success = false;
 
+                r_warn("BrushMotorDriver::moveat: (%.3f, %.3f)", left, right);
+                               
                 if (-max_angular_speed_ <= left  && left <= max_angular_speed_
                     && -max_angular_speed_  <= right && right <= max_angular_speed_) {
                                 
