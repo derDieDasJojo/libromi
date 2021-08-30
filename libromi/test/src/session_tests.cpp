@@ -54,7 +54,8 @@ protected:
                 rpp::ClockAccessor::SetInstance(nullptr);
 	}
 
-	void SetDeviceIDDataExpectations(const std::string& deviceType, const std::string& deviceId, int times)
+	void SetDeviceIDDataExpectations(const std::string& deviceType,
+                                         const std::string& deviceId, int times)
         {
                 EXPECT_CALL(deviceData_, RomiDeviceType)
                                 .Times(times)
@@ -64,7 +65,8 @@ protected:
                                 .WillRepeatedly(Return(deviceId));
         }
 
-        void SetSoftwareVersionDDataExpectations(const std::string& versionCurrent, const std::string& versionAlternate)
+        void SetSoftwareVersionDDataExpectations(const std::string& versionCurrent,
+                                                 const std::string& versionAlternate)
         {
                 EXPECT_CALL(softwareVersion_, SoftwareVersionCurrent)
                             .WillOnce(Return(versionCurrent));
@@ -72,13 +74,24 @@ protected:
                     .WillOnce(Return(versionAlternate));
         }
 
-        std::filesystem::path BuildSessionDirName(const std::string& deviceType, const std::string& deviceId, std::string& date_time)
+        std::filesystem::path BuildSessionDirName(const std::string& deviceType,
+                                                  const std::string& deviceId,
+                                                  std::string& date_time)
         {
                 std::string separator("_");
                 std::filesystem::path session_dir = currentdir_;
                 session_dir /= sessions_basedir_;
                 session_dir /= deviceType + separator + deviceId + separator + date_time;
 	        return session_dir;
+        }
+
+        std::filesystem::path BuildSessionFileName(std::string& filename)
+        {
+                std::string separator("_");
+                std::filesystem::path path = currentdir_;
+                path /= sessions_basedir_;
+                path /= filename;
+	        return path;
         }
 
         std::shared_ptr<rpp::MockClock> mockClock_;
@@ -295,7 +308,8 @@ TEST_F(weedersession, store_functions_throw_on_failure)
 
         // Act
         // Assert
-        romi::Session session(mock_linux, sessions_basedir_, deviceData_, softwareVersion_, std::move(mockLocationProvider_));
+        romi::Session session(mock_linux, sessions_basedir_, deviceData_,
+                              softwareVersion_, std::move(mockLocationProvider_));
         session.start(observation_id);
         ASSERT_ANY_THROW(session.store_jpg("file&%//-*", image));
         ASSERT_ANY_THROW(session.store_png("file&%//-*", image));
@@ -306,4 +320,28 @@ TEST_F(weedersession, store_functions_throw_on_failure)
 
 }
 
+TEST_F(weedersession, create_correct_session_file_path)
+{
+        // Arrange
+        rpp::MockLinux mock_linux;
 
+        SetSoftwareVersionDDataExpectations(versionCurrent_, versionAlternate_);
+
+        std::string filename = "test.txt";
+
+        std::filesystem::path expected_path = BuildSessionFileName(filename);
+        
+        std::filesystem::path file_path;
+        // Act
+        try {
+                romi::Session session(mock_linux, sessions_basedir_, deviceData_,
+                                      softwareVersion_, std::move(mockLocationProvider_));
+                file_path = session.create_session_file(filename);
+
+        } catch(std::runtime_error& e){
+                std::cout << e.what();
+        }
+
+        // Assert
+        ASSERT_EQ(file_path, expected_path);
+}
