@@ -30,13 +30,19 @@
 namespace romi {
         
         LinuxJoystick::LinuxJoystick(rpp::ILinux &linux, const std::string& device)
-                : _linux(linux), _fd(-1), _debug(false), _event(), _buttons(), _axes() {
-                
+                : _linux(linux),
+                  _fd(-1),
+                  _debug(false),
+                  _event(),
+                  _buttons(),
+                  _axes()
+        {                
                 try_open_device(device);
                 try_initialize();
         }
         
-        LinuxJoystick::~LinuxJoystick() {
+        LinuxJoystick::~LinuxJoystick()
+        {
                 close_device();
         }
 
@@ -60,7 +66,8 @@ namespace romi {
                 _buttons.resize(num_buttons, false);
         }
 
-        void LinuxJoystick::try_open_device(const std::string& name) {
+        void LinuxJoystick::try_open_device(const std::string& name)
+        {
                 close_device();
                 open_device(name);
                 if (_fd < 0) {
@@ -83,7 +90,7 @@ namespace romi {
 
         void LinuxJoystick::parse_button_event(struct js_event& linux_event)
         {
-                _event.type = JoystickEvent::Button;
+                _event.type = JoystickEvent::kButton;
                 _event.number = linux_event.number;
                 _buttons[linux_event.number] = linux_event.value != 0;
                         
@@ -95,7 +102,7 @@ namespace romi {
 
         void LinuxJoystick::parse_axis_event(struct js_event& linux_event)
         {
-                _event.type = JoystickEvent::Axis;
+                _event.type = JoystickEvent::kAxis;
                 _event.number = linux_event.number;
                 _axes[linux_event.number] = linux_event.value / 32768.0;
 
@@ -118,7 +125,8 @@ namespace romi {
                         parse_axis_event(linux_event);
                         break;
                 default:
-                        r_err("LinuxJoystick::parse_event unknown event type. %d",linux_event.type);
+                        r_err("LinuxJoystick::parse_event unknown event type. %d",
+                              linux_event.type);
                 }
         }
         
@@ -155,7 +163,7 @@ namespace romi {
         void LinuxJoystick::handle_input_event()
         {
                 struct js_event linux_event;
-                if (has_event(0.100)) {
+                if (has_event(0.020)) {
                         read_event(linux_event);
                         parse_event(linux_event);
                 }
@@ -163,7 +171,7 @@ namespace romi {
         
         JoystickEvent& LinuxJoystick::get_next_event()
         {
-                _event.type = JoystickEvent::None;
+                _event.type = JoystickEvent::kNone;
                 handle_input_event();
                 return _event;
         }

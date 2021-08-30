@@ -28,7 +28,7 @@ namespace romi {
 
         struct JoystickEvent
         {
-                enum JoystickEventType { None, Button, Axis };
+                enum JoystickEventType { kNone, kButton, kAxis };
                 
                 JoystickEventType type;
                 uint8_t number;
