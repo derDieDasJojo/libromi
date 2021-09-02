@@ -42,7 +42,12 @@ namespace romi {
 
         bool DifferentialSteering::stop()
         {
-                return motors_.stop();
+                bool success = motors_.stop();
+                if (success) {
+                        left_speed_ = 0.0;
+                        right_speed_ = 0.0;
+                }
+                return success;
         }
 
         bool DifferentialSteering::drive(double speed, SteeringData steering)

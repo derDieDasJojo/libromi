@@ -58,6 +58,12 @@ namespace romi {
         double *vclamp(double *r, const double *v, const double *lo, const double *hi);
         
         //
+
+        enum {
+                kX = 0,
+                kY = 1,
+                kZ = 2
+        };
         
         class v3
         {
@@ -88,15 +94,15 @@ namespace romi {
                 /* } */
                 
                 double& x() {
-                        return _x[0];
+                        return _x[kX];
                 }
                 
                 double& y() {
-                        return _x[1];
+                        return _x[kY];
                 }
                 
                 double& z() {
-                        return _x[2];
+                        return _x[kZ];
                 }
 
                 //
@@ -124,9 +130,9 @@ namespace romi {
                 }
                 
                 void set(double x, double y, double z) {
-                        _x[0] = x;
-                        _x[1] = y;
-                        _x[2] = z;
+                        _x[kX] = x;
+                        _x[kY] = y;
+                        _x[kZ] = z;
                 }
                 //
                                 

@@ -19,5 +19,6 @@ public:
         MOCK_METHOD(bool, power_down, (), (override));
         MOCK_METHOD(bool, stand_by, (), (override));
         MOCK_METHOD(bool, wake_up, (), (override));
+        MOCK_METHOD(bool, get_position, (romi::v3& position), (override)); 
 };
 #pragma GCC diagnostic pop

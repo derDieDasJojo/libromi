@@ -63,7 +63,7 @@ namespace romi {
         {
                 int event = event_none;
                 JoystickEvent& joystick_event = _joystick.get_next_event();
-                if (joystick_event.type != JoystickEvent::None) {
+                if (joystick_event.type != JoystickEvent::kNone) {
                         event = _event_mapper.map(_joystick, joystick_event);
                 }
                 return event;

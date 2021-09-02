@@ -180,7 +180,7 @@ TEST_F(joystick_tests, successfully_read_a_button_event)
                 
                 JoystickEvent &event = joystick.get_next_event();
 
-                ASSERT_EQ(event.type, JoystickEvent::Button);
+                ASSERT_EQ(event.type, JoystickEvent::kButton);
                 ASSERT_EQ(event.number, 5);
                 ASSERT_EQ(joystick.is_button_pressed(5), true);
                 
@@ -232,7 +232,7 @@ TEST_F(joystick_tests, successfully_read_an_axis_event)
 
                 JoystickEvent &event = joystick.get_next_event();
 
-                ASSERT_EQ(event.type, JoystickEvent::Axis);
+                ASSERT_EQ(event.type, JoystickEvent::kAxis);
                 ASSERT_EQ(event.number, 3);
                 ASSERT_EQ(joystick.get_axis(3), 0.5);
                 

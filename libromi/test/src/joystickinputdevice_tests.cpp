@@ -149,7 +149,7 @@ TEST_F(joystickinputdevice_tests, returns_event_none)
                 EXPECT_CALL(joystick, get_next_event())
                         .WillOnce(ReturnRef(joystick_event));
         
-                joystick_event.type = JoystickEvent::None;
+                joystick_event.type = JoystickEvent::kNone;
                 
                 JoystickInputDevice input(joystick, event_mapper);
                 int event = input.get_next_event();
@@ -177,7 +177,7 @@ TEST_F(joystickinputdevice_tests, returns_mapped_event)
                 EXPECT_CALL(event_mapper, map(_,_))
                         .WillOnce(Return(2));
         
-                joystick_event.type = JoystickEvent::Button;
+                joystick_event.type = JoystickEvent::kButton;
                 joystick_event.number = 1; // Not used
                 
                 JoystickInputDevice input(joystick, event_mapper);

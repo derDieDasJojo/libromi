@@ -136,14 +136,15 @@ void loop()
         delay(1);
 }
 
-
 int moveat(int dx, int dy, int dz)
 {
         int err = 0;
         block_t *block = block_buffer_get_empty();
         if (block == 0) {
                 err = -1;
-        } else {                
+        } else if (dx == 0 && dy == 0 && dz == 0) {
+                reset();
+        } else {
                 block->type = BLOCK_MOVEAT;
                 block->data[DT] = 1000;
                 block->data[DX] = dx;

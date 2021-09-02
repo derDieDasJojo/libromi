@@ -49,6 +49,11 @@ namespace romi {
                                 this->write_entries_to_storage_in_background();
                         });
         }
+        
+        DataLog::DataLog(const std::filesystem::path& filepath)
+                : DataLog(filepath.string())
+        {
+        }
 
         DataLog::~DataLog()
         {
