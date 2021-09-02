@@ -36,6 +36,7 @@ namespace romi {
                 handle_input_events();
                 handle_timer_events();
                 handle_script_events();
+                handle_remote_state_events();
         }
         
         void RoverInterface::handle_input_events()
@@ -60,6 +61,13 @@ namespace romi {
                 int event = _rover.script_engine.get_next_event();
                 if (event != 0) 
                         handle_event(event);
+        }
+
+        void RoverInterface::handle_remote_state_events()
+        {
+            int event = _rover.remote_state_input_device_.get_next_event();
+            if (event != 0)
+                handle_event(event);
         }
 
         void RoverInterface::handle_event(int event)

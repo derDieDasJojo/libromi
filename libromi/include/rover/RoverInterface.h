@@ -37,6 +37,7 @@ namespace romi {
                 void handle_input_events();
                 void handle_timer_events();
                 void handle_script_events();
+                void handle_remote_state_events();
                 void handle_event(int event);
                 
         public:

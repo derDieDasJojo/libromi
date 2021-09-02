@@ -21,22 +21,29 @@
   <http://www.gnu.org/licenses/>.
 
  */
-#ifndef _ROMI_IINPUT_DEVICE_H
-#define _ROMI_IINPUT_DEVICE_H
-
-#include "IEventSource.h"
+#include <stdexcept>
+#include <log.h>
+#include "ui/RemoteStateInputDevice.h"
+#include "ui/JoystickInputDevice.h"
+#include "rover/EventsAndStates.h"
 
 namespace romi {
         
-        class IInputDevice : public IEventSource
+        RemoteStateInputDevice::RemoteStateInputDevice()  : nextevent_(0)
         {
-        public:
-                ~IInputDevice() override = default;
-                
-                virtual double get_forward_speed() = 0;
-                virtual double get_backward_speed() = 0;
-                virtual double get_direction() = 0;
-        };
-}
+        }
 
-#endif // _ROMI_INPUT_DEVICE_H
+        int RemoteStateInputDevice::get_next_event()
+        {
+            int event = nextevent_;
+            nextevent_ = 0;
+            return event;
+        }
+
+        void RemoteStateInputDevice::set_next_event(int event)
+        {
+            if ((event >=  event_first_event) && (event < event_last_event))
+                nextevent_ = event;
+        }
+
+}

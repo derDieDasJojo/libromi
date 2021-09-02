@@ -29,6 +29,8 @@
 #include "StringUtils.h"
 #include "session/Session.h"
 #include "data_provider/RoverIdentityProvider.h"
+#include "log.h"
+#include "Logger.h"
 
 
 namespace romi {
@@ -52,11 +54,13 @@ namespace romi {
                 if (!std::filesystem::exists(base_directory_)) {
                         std::filesystem::create_directories(base_directory_);
                 }
+                rpp::Logger::MoveLog(base_directory_);
         }
 
         void Session::start(const std::string &observation_id)
         {
                 observation_id_ = observation_id;
+
                 // Create folder named "DeviceTypeXX_IDXX_DataTimeXX"
                 std::string separator("_");
                 std::string datatime = rpp::ClockAccessor::GetInstance()->datetime_compact_string();
@@ -158,6 +162,11 @@ namespace romi {
         std::filesystem::path Session::current_path()
         {
                 return session_directory_;
+        }
+
+        std::filesystem::path Session::base_directory()
+        {
+            return base_directory_;
         }
 
 }

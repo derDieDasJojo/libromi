@@ -33,7 +33,7 @@ rpp::MemBuffer ScriptHubListener::handle_message(rpp::MemBuffer &message) {
         response = handle_list_request();
     }
     else if (request == "execute") {
-        response = handle_execute_request(json_msg);
+        response = handle_execute_script_request(json_msg);
     }
     else
     {
@@ -49,15 +49,29 @@ rpp::MemBuffer ScriptHubListener::handle_list_request() {
     return response;
 }
 
-rpp::MemBuffer ScriptHubListener::handle_execute_request(JsonCpp &json_msg) {
+std::string ScriptHubListener::handle_execute_state_change(std::string& state) {
+
+   std::string reply = "STATE: " + state + " executed";
+   return reply;
+}
+
+rpp::MemBuffer ScriptHubListener::handle_execute_script_request(JsonCpp &json_msg) {
     rpp::MemBuffer response;
     std::string id = json_msg.str("id");
-    auto scriptlist = rover_.script_engine.scriptList();
+    std::string reply;
 
+    auto scriptlist = rover_.script_engine.scriptList();
     auto index = scriptlist.get_id_index(id);
     if ((index > -1) && ((size_t)index < scriptlist.size()))
+    {
         rover_.script_engine.execute_script(rover_, (size_t)index);
-    std::string reply("Script = " + scriptlist[(size_t)index].id);
+        reply = "SCRIPT " + scriptlist[(size_t)index].id + " executed";
+    }
+    else
+    {
+        reply = handle_execute_state_change(id);
+    }
+
     response.append_string(reply.c_str());
     return response;
 }

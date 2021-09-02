@@ -412,6 +412,13 @@ namespace romi {
                     confirm_navigation_step_1,
                     state_waiting_navigate_confirmation_1);
 
+                // If we get a remote navigation event then we just go straight
+                // to navigation using the state machine.
+                add(state_ready,
+                    event_navigation_direct_mode,
+                    initialize_navigation,
+                    state_ready_to_navigate);
+
                 // The event timer sends the confirmation event when
                 // the button is held long enough.
                 add(state_waiting_navigate_confirmation_1,

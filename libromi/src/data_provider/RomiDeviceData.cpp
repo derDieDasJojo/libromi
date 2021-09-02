@@ -7,7 +7,7 @@ namespace romi {
     }
 
     std::string RomiDeviceData::RomiDeviceHardwareId() {
-            return std::string("deadbeef");
+            return std::string("ROMI1");
     }
 
 }

@@ -21,22 +21,23 @@
   <http://www.gnu.org/licenses/>.
 
  */
-#ifndef _ROMI_IINPUT_DEVICE_H
-#define _ROMI_IINPUT_DEVICE_H
+#ifndef _ROMI_REMOTE_STATE_DEVICE_H
+#define _ROMI_REMOTE_STATE_DEVICE_H
 
-#include "IEventSource.h"
+#include "api/IRemoteStateInputDevice.h"
 
 namespace romi {
         
-        class IInputDevice : public IEventSource
+        class RemoteStateInputDevice : public IRemoteStateInputDevice
         {
         public:
-                ~IInputDevice() override = default;
-                
-                virtual double get_forward_speed() = 0;
-                virtual double get_backward_speed() = 0;
-                virtual double get_direction() = 0;
+                RemoteStateInputDevice();
+                ~RemoteStateInputDevice() override = default;
+                int get_next_event() override;
+                void set_next_event(int event) override;
+        private:
+                int nextevent_;
         };
 }
 
-#endif // _ROMI_INPUT_DEVICE_H
+#endif // _ROMI_REMOTE_STATE_DEVICE_H

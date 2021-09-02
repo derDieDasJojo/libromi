@@ -21,6 +21,7 @@ namespace romi {
         virtual bool store_txt(const std::string& name, const std::string& body) = 0;
         virtual bool store_path(const std::string& filename, int32_t path_number, Path& weeder_path) = 0;
         virtual std::filesystem::path current_path() = 0;
+        virtual std::filesystem::path base_directory() = 0;
     };
 }
 

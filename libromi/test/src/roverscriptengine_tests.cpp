@@ -10,6 +10,7 @@
 #include "mock_notifications.h"
 #include "mock_weeder.h"
 #include "mock_imager.h"
+#include "mock_remotestateinputdevice.h"
 #include "rover/Rover.h"
 #include "rover/RoverScriptEngine.h"
 #include "ui/ScriptList.h"
@@ -31,6 +32,8 @@ protected:
         MockNotifications notifications;
         MockWeeder weeder;
         MockImager imager;
+        MockRemoteStateInputDevice remote_input_device;
+
         JsonCpp json;
 
         
@@ -44,6 +47,7 @@ protected:
                   notifications(),
                   weeder(),
                   imager(),
+                  remote_input_device(),
                   json() {
                 json = JsonCpp::parse("[{ 'id': 'foo', 'title': 'Foo', "
                                       "  'actions': [{'action':'move', 'distance': 1, 'speed': 0.5}]},"
@@ -87,7 +91,8 @@ TEST_F(roverscriptengine_tests, calls_move)
                           script_engine,
                           notifications,
                           weeder,
-                          imager);
+                          imager,
+                          remote_input_device);
 
         EXPECT_CALL(navigation, move(1.0, 0.5))
                 .WillOnce(Return(true));
@@ -111,7 +116,8 @@ TEST_F(roverscriptengine_tests, calls_hoe)
                           script_engine,
                           notifications,
                           weeder,
-                          imager);
+                          imager,
+                          remote_input_device);
 
         EXPECT_CALL(weeder, hoe())
                 .WillOnce(Return(true));
@@ -135,9 +141,11 @@ TEST_F(roverscriptengine_tests, returns_error_event_on_failed_script_1)
                           script_engine,
                           notifications,
                           weeder,
-                          imager);
+                          imager,
+                          remote_input_device);
 
-        EXPECT_CALL(navigation, move(1.0, 0.5))
+
+    EXPECT_CALL(navigation, move(1.0, 0.5))
                 .WillOnce(Return(false));
         
         script_engine.execute_script(rover, 0);
@@ -159,9 +167,11 @@ TEST_F(roverscriptengine_tests, returns_error_event_on_failed_script_2)
                           script_engine,
                           notifications,
                           weeder,
-                          imager);
+                          imager,
+                          remote_input_device);
 
-        EXPECT_CALL(weeder, hoe())
+
+    EXPECT_CALL(weeder, hoe())
                 .WillOnce(Return(false));
         
         script_engine.execute_script(rover, 1);

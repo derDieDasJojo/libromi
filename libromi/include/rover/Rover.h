@@ -26,6 +26,7 @@
 #define __ROMI_ROVER_H
 
 #include "api/IInputDevice.h"
+#include "api/IRemoteStateInputDevice.h"
 #include "api/IDisplay.h"
 #include "api/INotifications.h"
 #include "api/IWeeder.h"
@@ -52,6 +53,7 @@ namespace romi {
                 INotifications& notifications;
                 IWeeder& weeder;
                 IImager& imager;
+                IRemoteStateInputDevice& remote_state_input_device_;
                 
                 Rover(IInputDevice& input_device_,
                       IDisplay& display_,
@@ -62,7 +64,8 @@ namespace romi {
                       IScriptEngine<Rover>& script_engine,
                       INotifications& notifications,
                       IWeeder& weeder,
-                      IImager& imager);
+                      IImager& imager,
+                      IRemoteStateInputDevice& remote_state_input_device);
                 
                 virtual ~Rover() = default;
 

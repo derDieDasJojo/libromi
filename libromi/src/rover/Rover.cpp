@@ -34,7 +34,8 @@ namespace romi {
                      IScriptEngine<Rover>& script_engine_,
                      INotifications& notifications_,
                      IWeeder& weeder_,
-                     IImager& imager_)
+                     IImager& imager_,
+                     IRemoteStateInputDevice& remote_state_input_device)
                 : input_device(input_device_),
                   display(display_),
                   speed_controller(speed_controller_),
@@ -44,7 +45,8 @@ namespace romi {
                   script_engine(script_engine_),
                   notifications(notifications_),
                   weeder(weeder_),
-                  imager(imager_)
+                  imager(imager_),
+                  remote_state_input_device_(remote_state_input_device)
         {
         }
 

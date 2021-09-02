@@ -52,6 +52,7 @@ protected:
 
 	void TearDown() override {
                 rpp::ClockAccessor::SetInstance(nullptr);
+                r_log_cleanup();
 	}
 
 	void SetDeviceIDDataExpectations(const std::string& deviceType, const std::string& deviceId, int times)
@@ -130,6 +131,54 @@ TEST_F(weedersession, can_construct_when_directory_exists)
         // Assert
         ASSERT_NO_THROW(romi::Session session(mock_linux, session_dir, deviceData_, softwareVersion_, std::move(mockLocationProvider_)));
         ASSERT_TRUE(create);
+}
+
+TEST_F(weedersession, logger_set_to_basdirectory_on_construct_when_logger_not_set)
+{
+    // Arrange
+    rpp::Linux linux;
+    std::string session_dir = "weedersession_test";
+
+    SetDeviceIDDataExpectations(devicetype_, devicID_, 1);
+    SetSoftwareVersionDDataExpectations(versionCurrent_, versionAlternate_);
+
+    auto weeder_session_dir = FileUtils::TryGetHomeDirectory(linux);
+    weeder_session_dir /= session_dir;
+    std::filesystem::remove_all(weeder_session_dir);
+
+    // Act
+    romi::Session session(linux, session_dir, deviceData_, softwareVersion_, std::move(mockLocationProvider_));
+    std::filesystem::path log_dir(r_log_get_file());
+    std::filesystem::path session_path(session.base_directory());
+
+    // Assert
+    ASSERT_EQ(session_path, log_dir.parent_path());
+}
+
+TEST_F(weedersession, logger_set_to_basdirectory_on_construct_when_logger_set)
+{
+    // Arrange
+    rpp::Linux linux;
+    std::string session_dir = "weedersession_test";
+
+    SetDeviceIDDataExpectations(devicetype_, devicID_, 1);
+    SetSoftwareVersionDDataExpectations(versionCurrent_, versionAlternate_);
+
+    auto weeder_session_dir = FileUtils::TryGetHomeDirectory(linux);
+    weeder_session_dir /= session_dir;
+    std::filesystem::remove_all(weeder_session_dir);
+
+    std::string original_log_path("./log.txt");
+    r_log_init();
+    r_log_set_file(original_log_path.c_str());
+
+    // Act
+    romi::Session session(linux, session_dir, deviceData_, softwareVersion_, std::move(mockLocationProvider_));
+    std::filesystem::path log_dir(r_log_get_file());
+    std::filesystem::path session_path(session.base_directory());
+
+    // Assert
+    ASSERT_EQ(session_path, log_dir.parent_path());
 }
 
 TEST_F(weedersession, fail_construct_when_fails_to_create_directory)

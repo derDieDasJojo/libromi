@@ -51,6 +51,7 @@ namespace romi {
         bool store_txt(const std::string& name, const std::string& body) override;
         bool store_path(const std::string& filename, int32_t path_number, Path& weeder_path) override;
         std::filesystem::path current_path() override;
+        std::filesystem::path base_directory() override;
 
     private:
         const rpp::ILinux& linux_;

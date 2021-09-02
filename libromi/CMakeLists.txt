@@ -196,12 +196,14 @@ set(SOURCES
         include/rpc/IScriptHub.h
         include/rpc/ScriptHub.h
         include/rpc/WeederAdaptor.h
+        include/rpc/RemoteFunctionCallNames.h
 
         include/ui/CrystalDisplay.h
         include/ui/JoystickInputDevice.h
         include/ui/IJoystickEventMapper.h
         include/ui/LinuxJoystick.h
         include/ui/Menu.h
+        include/ui/RemoteStateInputDevice.h
         include/ui/IScriptEngine.h
         include/ui/ScriptList.h
         include/ui/ScriptMenu.h
@@ -291,6 +293,7 @@ set(SOURCES
         src/ui/JoystickInputDevice.cpp
         src/ui/LinuxJoystick.cpp
         src/ui/UIEventMapper.cpp
+        src/ui/RemoteStateInputDevice.cpp
         src/ui/ScriptList.cpp
         src/ui/ScriptMenu.cpp
 

@@ -15,7 +15,7 @@
 #include "mock_notifications.h"
 #include "mock_weeder.h"
 #include "mock_imager.h"
-
+#include "mock_remotestateinputdevice.h"
 
 using namespace std;
 using namespace testing;
@@ -52,9 +52,10 @@ TEST_F(scripthub_tests, can_construct_scripthub)
     MockNotifications mockNotifications;
     MockWeeder mockWeeder;
     MockImager mockImager;
+    MockRemoteStateInputDevice mockRemoteStateInputDevice;
 
     romi::Rover rover(mockInputDevice, mockDisplay, mockSpeedController, mockNavigation, mockEventTimer,
-                      mockMenu, mockScriptEngine, mockNotifications, mockWeeder, mockImager);
+                      mockMenu, mockScriptEngine, mockNotifications, mockWeeder, mockImager, mockRemoteStateInputDevice);
 
         MockScriptList mockScriptList;
         auto scriptHubListener = std::make_shared<ScriptHubListener>(rover);

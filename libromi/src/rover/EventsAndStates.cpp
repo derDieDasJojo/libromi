@@ -29,6 +29,10 @@ namespace romi {
         const char *event_name(EventID id)
         {
                 switch (id) {
+                case event_first_event:
+                        return "event_first_event";
+                case event_last_event:
+                        return "event_last_event";
                 case event_none:
                         return "event_none";
                 case event_start:
@@ -84,7 +88,9 @@ namespace romi {
                 case event_system_failure:
                         return "event_system_failure";
                 case event_timer_timeout:
-                                return "event_timer_timeout";
+                        return "event_timer_timeout";
+                case event_navigation_direct_mode:
+                        return "event_navigation_direct_mode";
                 default:
                         return "unknown event";
                 }

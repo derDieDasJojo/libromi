@@ -48,6 +48,9 @@ namespace romi {
         };
 
         enum EventID {
+                // MUST be the first event until we refactor to use event enums instead of ints.
+                event_first_event = -2,
+
                 event_system_failure = -1,
                 
                 event_none = 0,
@@ -89,6 +92,11 @@ namespace romi {
                 
                 event_script_finished,
                 event_script_error,
+
+                event_navigation_direct_mode,
+
+                // This must always be the last event.
+                event_last_event
         };
 
         enum StateID {
