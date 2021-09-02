@@ -1,6 +1,8 @@
 
 #include <stdexcept>
+#include <rpc/RemoteFunctionCallNames.h>
 #include <rpc/ScriptHubListener.h>
+#include "rover/EventsAndStates.h"
 #include <iostream>
 
 ScriptHubListener::ScriptHubListener(romi::Rover& rover)
@@ -52,6 +54,15 @@ rpp::MemBuffer ScriptHubListener::handle_list_request() {
 std::string ScriptHubListener::handle_execute_state_change(std::string& state) {
 
    std::string reply = "STATE: " + state + " executed";
+    if (romi::RemoteMessgeTypes::execute_type_start_navigation == state)
+    {
+        rover_.remote_state_input_device_.set_next_event(romi::event_navigation_direct_mode);
+
+    }
+    else if (romi::RemoteMessgeTypes::execute_type_stop_navigation == state)
+    {
+        rover_.remote_state_input_device_.set_next_event(romi::event_stop);
+    }
    return reply;
 }
 
