@@ -16,8 +16,9 @@ class ScriptHubListener : public rcom::IMessageListener{
     private:
         rpp::MemBuffer handle_message(rpp::MemBuffer &message);
         rpp::MemBuffer handle_list_request();
-        std::string handle_execute_state_change(std::string& state);
-        rpp::MemBuffer handle_execute_script_request(JsonCpp &json_msg);
+        std::string handle_execute_remote_state_change(std::string& state);
+        std::string handle_execute_remote_script(const romi::ScriptList &scriptlist, long index);
+        rpp::MemBuffer handle_execute_remote_request(JsonCpp &json_msg);
     private:
         static const std::vector<std::string> commands_;
         romi::Rover& rover_;

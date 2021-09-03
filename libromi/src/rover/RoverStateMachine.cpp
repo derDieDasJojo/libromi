@@ -296,7 +296,22 @@ namespace romi {
                 rover.event_timer.set_timeout(1.0);
                 return true;
         }
-        
+
+        bool execute_script_remote(Rover& rover)
+        {
+            r_debug("execute_script_remote");
+            rover.notifications.notify(RoverNotifications::menu_confirmed);
+            int index = rover.remote_state_input_device_.get_next_script_index();
+            if (index < 0)
+            {
+                rover.display.show(1, "Invalid Remote");
+                return false;
+            }
+            rover.script_engine.execute_script(rover, (size_t)index);
+            rover.display.show(1, "Running");
+            return true;
+        }
+
         bool execute_script(Rover& rover)
         {
                 r_debug("execute_script");
@@ -327,6 +342,13 @@ namespace romi {
                 bool success = reset_rover(rover);
                 show_current_menu(rover);
                 return success;
+        }
+
+        bool reset_script_remote(Rover& rover)
+        {
+            r_debug("reset_script_remote");
+            bool success = reset_rover(rover);
+            return success;
         }
 
         bool continue_script(Rover& rover)
@@ -411,13 +433,6 @@ namespace romi {
                     event_navigation_mode_pressed,
                     confirm_navigation_step_1,
                     state_waiting_navigate_confirmation_1);
-
-                // If we get a remote navigation event then we just go straight
-                // to navigation using the state machine.
-                add(state_ready,
-                    event_navigation_direct_mode,
-                    initialize_navigation,
-                    state_ready_to_navigate);
 
                 // The event timer sends the confirmation event when
                 // the button is held long enough.
@@ -584,6 +599,7 @@ namespace romi {
                 init_menu_mode_transition();
                 init_menu_selection_transitions();
                 init_script_execution_transitions();
+                init_remote_call_transitions();
         }
 
         void RoverStateMachine::init_menu_mode_transition()
@@ -655,6 +671,36 @@ namespace romi {
                     show_current_menu,
                     state_menu);
         }
+
+    void RoverStateMachine::init_remote_call_transitions()
+    {
+        add(state_ready,
+            event_run_script_remote_request,
+            execute_script_remote,
+            state_executing_script_remote);
+
+        add(state_executing_script_remote,
+            event_stop,
+            reset_script_remote,
+            state_ready);
+
+        add(state_executing_script_remote,
+            event_script_finished,
+            reset_script_remote,
+            state_ready);
+
+        add(state_executing_script_remote,
+            event_script_error,
+            reset_script_remote,
+            state_ready);
+
+        // If we get a remote navigation event then we just go straight
+        // to navigation using the state machine.
+        add(state_ready,
+            event_enter_navigation_remote_request,
+            initialize_navigation,
+            state_ready_to_navigate);
+    }
         
         void RoverStateMachine::init_script_execution_transitions()
         {

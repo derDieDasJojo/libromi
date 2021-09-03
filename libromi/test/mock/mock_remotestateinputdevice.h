@@ -6,6 +6,8 @@
 class MockRemoteStateInputDevice : public romi::IRemoteStateInputDevice
 {
 public:
+        MOCK_METHOD(int, get_next_script_index, (), (override));
+        MOCK_METHOD(void, set_next_script_index, (long), (override));
         MOCK_METHOD(int, get_next_event, (), (override));
         MOCK_METHOD(void, set_next_event, (int), (override));
 };

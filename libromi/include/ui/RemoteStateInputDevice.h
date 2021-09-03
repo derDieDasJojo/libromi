@@ -33,9 +33,12 @@ namespace romi {
         public:
                 RemoteStateInputDevice();
                 ~RemoteStateInputDevice() override = default;
+                int get_next_script_index() override;
+                void set_next_script_index(long event) override;
                 int get_next_event() override;
                 void set_next_event(int event) override;
         private:
+                int next_script_;
                 int nextevent_;
         };
 }

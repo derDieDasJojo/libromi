@@ -89,8 +89,10 @@ namespace romi {
                         return "event_system_failure";
                 case event_timer_timeout:
                         return "event_timer_timeout";
-                case event_navigation_direct_mode:
+                case event_enter_navigation_remote_request:
                         return "event_navigation_direct_mode";
+                case event_run_script_remote_request:
+                        return "event_run_script_remote_request";
                 default:
                         return "unknown event";
                 }
@@ -135,6 +137,8 @@ namespace romi {
                                 return "state_system_failure";
                 case state_script_show_failure:
                         return "state_script_show_failure";
+                case state_executing_script_remote:
+                        return "state_executing_script_remote";
                 default:
                         return "unkown state";
                 }

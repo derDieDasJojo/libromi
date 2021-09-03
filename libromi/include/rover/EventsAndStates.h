@@ -97,7 +97,8 @@ namespace romi {
                 event_script_finished,
                 event_script_error,
 
-                event_navigation_direct_mode,
+                event_enter_navigation_remote_request,
+                event_run_script_remote_request,
 
                 // This must always be the last event.
                 event_last_event
@@ -125,6 +126,8 @@ namespace romi {
                 state_executing_script,
                 state_script_paused,
                 state_script_show_failure,
+
+                state_executing_script_remote
         };
 
         const char *event_name(EventID id);

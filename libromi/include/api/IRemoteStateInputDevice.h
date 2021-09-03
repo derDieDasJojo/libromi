@@ -33,6 +33,8 @@ namespace romi {
         public:
                 IRemoteStateInputDevice() = default;
                 ~IRemoteStateInputDevice() override = default;
+                virtual int get_next_script_index() = 0;
+                virtual void set_next_script_index(long event) = 0;
                 virtual void set_next_event(int event) = 0;
         };
 }

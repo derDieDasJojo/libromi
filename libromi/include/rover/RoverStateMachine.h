@@ -48,6 +48,8 @@ namespace romi {
                 void init_menu_mode_transition();
                 void init_menu_selection_transitions();
                 void init_script_execution_transitions();
+                void init_remote_call_transitions();
+
                 
         public:
                 
