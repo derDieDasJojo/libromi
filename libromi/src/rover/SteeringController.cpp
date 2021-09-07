@@ -112,7 +112,7 @@ namespace romi {
         bool SteeringController::moveto(int16_t dt, int16_t left, int16_t right)
         {
                 char buffer[64];
-                rprintf(buffer, 64, "m[%d,%d,%d,%d]", dt, left, right);
+                rprintf(buffer, 64, "m[%d,%d,%d]", dt, left, right);
                 return (send_command(buffer) == 0);                
         }
 
