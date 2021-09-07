@@ -95,10 +95,10 @@ namespace romi {
                 return (send_command("H") == 0 && synchronize(120.0));
         }
         
-        bool SteeringController::move(int16_t dt, int16_t left, int16_t right)
+        bool SteeringController::move(int16_t dt, int16_t steps_left, int16_t steps_right)
         {
                 char buffer[64];
-                rprintf(buffer, 64, "M[%d,%d,%d]", dt, left, right);
+                rprintf(buffer, 64, "M[%d,%d,%d]", dt, steps_left, steps_right);
                 return (send_command(buffer) == 0);
         }
 
@@ -109,10 +109,10 @@ namespace romi {
                 return (send_command(buffer) == 0);
         }
         
-        bool SteeringController::moveto(int16_t dt, int16_t left, int16_t right)
+        bool SteeringController::moveto(int16_t dt, int16_t pos_left, int16_t pos_right)
         {
                 char buffer[64];
-                rprintf(buffer, 64, "m[%d,%d,%d]", dt, left, right);
+                rprintf(buffer, 64, "m[%d,%d,%d]", dt, pos_left, pos_right);
                 return (send_command(buffer) == 0);                
         }
 
