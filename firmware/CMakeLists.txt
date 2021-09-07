@@ -38,32 +38,22 @@ if (${BUILD_ARDUINO})
             install_romiserial_lib
             )
 
-    MESSAGE(WARNING "BLDC, BrushMotorController, SabertoothController, ToolCarrierJrkG2 do not compile. Need updating.")
+    add_custom_target(Steering ALL
+            COMMAND "${ARDUINOCLI_EXE}" "compile" "--clean" "--export-binaries" "--fqbn" "arduino:avr:uno" "${CMAKE_CURRENT_SOURCE_DIR}/Steering"
+            COMMENT
+            "Building Arduino Steering"
+            WORKING_DIRECTORY
+            ${CMAKE_CURRENT_SOURCE_DIR}/Steering
+            DEPENDS
+            install_romiserial_lib
+            )
+
+    MESSAGE(WARNING "BLDC, ToolCarrierJrkG2 do not compile. Need updating.")
 
 #    add_custom_target(BLDC ALL
 #            COMMAND "${ARDUINOCLI_EXE}" "compile" "--clean" "--export-binaries" "--fqbn" "arduino:avr:uno" "${CMAKE_CURRENT_SOURCE_DIR}/BLDC"
 #            COMMENT
 #            "Building Arduino BLDC"
-#            WORKING_DIRECTORY
-#            ${CMAKE_CURRENT_SOURCE_DIR}
-#            DEPENDS
-#            install_romiserial_lib
-#            )
-#
-#    add_custom_target(BrushMotorController ALL
-#            COMMAND "${ARDUINOCLI_EXE}" "compile" "--clean" "--export-binaries" "--fqbn" "arduino:avr:uno" "${CMAKE_CURRENT_SOURCE_DIR}/BrushMotorController"
-#            COMMENT
-#            "Building Arduino BrushMotorController"
-#            WORKING_DIRECTORY
-#            ${CMAKE_CURRENT_SOURCE_DIR}
-#            DEPENDS
-#            install_romiserial_lib
-#            )
-#
-#    add_custom_target(SabertoothController ALL
-#            COMMAND "${ARDUINOCLI_EXE}" "compile" "--clean" "--export-binaries" "--fqbn" "arduino:avr:uno" "${CMAKE_CURRENT_SOURCE_DIR}/SabertoothController"
-#            COMMENT
-#            "Building Arduino SabertoothController"
 #            WORKING_DIRECTORY
 #            ${CMAKE_CURRENT_SOURCE_DIR}
 #            DEPENDS
