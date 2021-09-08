@@ -80,6 +80,7 @@ namespace romi {
                 void append_entries(std::vector<DataLogEntry>& entries);
                 void append_entry(DataLogEntry& entry);
                 void handle_events(double time);
+                void try_create_hub();
                 
                 DataLog(const DataLog& other) = delete;
                 DataLog& operator=(const DataLog& other) = delete;

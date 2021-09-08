@@ -43,12 +43,12 @@ namespace romi {
                   message_(),
                   last_handle_events_(0.0)
         {
-                hub_ = std::make_unique<rcom::MessageHub>("datalog");
                 fp_ = fopen(path.c_str(), "w");
                 if (fp_ == nullptr) {
                         r_err("DataLog: can't open file %s", path.c_str());
                         throw std::runtime_error("DataLog: can't open file");
                 }
+                try_create_hub();
                 thread_ = std::make_unique<std::thread>([this]() {
                                 this->write_entries_to_storage_in_background();
                         });
@@ -58,13 +58,24 @@ namespace romi {
                 : DataLog(filepath.string())
         {
         }
-
+        
         DataLog::~DataLog()
         {
                 quitting_ = true;
                 if (thread_ != nullptr)
                         thread_->join();
                 fclose(fp_);
+        }
+
+        void DataLog::try_create_hub()
+        {
+                try {
+                        hub_ = std::make_unique<rcom::MessageHub>("datalog");
+
+                } catch (const std::runtime_error& re) {
+                        r_err("Failed to create the message hub: %s", re.what());
+                        hub_ = nullptr;
+                }
         }
         
         void DataLog::store(const std::string& name, double value)
@@ -88,7 +99,8 @@ namespace romi {
         
         void DataLog::handle_events(double time)
         {
-                if (time - last_handle_events_ >= 1.0) {
+                if (hub_ != nullptr
+                    && time - last_handle_events_ >= 1.0) {
                         last_handle_events_ = time;
                         hub_->handle_events();
                 }
@@ -163,7 +175,8 @@ namespace romi {
         
         void DataLog::transmit_entries(std::vector<DataLogEntry>& entries)
         {
-                if (hub_->count_links() > 0) {
+                if (hub_ != nullptr
+                    && hub_->count_links() > 0) {
                         message_.clear();
                         append_entries(entries);
                         hub_->broadcast(message_, rcom::kTextMessage, nullptr);
