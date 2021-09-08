@@ -163,9 +163,11 @@ namespace romi {
         
         void DataLog::transmit_entries(std::vector<DataLogEntry>& entries)
         {
-                message_.clear();
-                append_entries(entries);
-                hub_->broadcast(message_, rcom::kTextMessage, nullptr);
+                if (hub_->count_links() > 0) {
+                        message_.clear();
+                        append_entries(entries);
+                        hub_->broadcast(message_, rcom::kTextMessage, nullptr);
+                }
         }
         
         void DataLog::append_entries(std::vector<DataLogEntry>& entries)
