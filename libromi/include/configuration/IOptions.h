@@ -44,6 +44,7 @@ namespace romi {
                 virtual void add_option(Option& option) = 0;
                 virtual void parse(int argc, char **argv) = 0;
                 virtual bool get_flag(const char *name) = 0;
+                virtual bool is_set(const char *name) = 0;
                 virtual std::string get_value(const std::string& name) = 0;
                 virtual bool is_help_requested() = 0;
                 virtual void print_usage() = 0;

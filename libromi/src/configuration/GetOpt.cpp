@@ -99,6 +99,12 @@ namespace romi {
                 return _flags.find(name) != _flags.end();
         }
 
+        bool GetOpt::is_set(const char *name)
+        {
+                auto index = _values.find(name);
+                return (index != _values.end());
+        }
+        
         std::string GetOpt::get_value(const std::string& name)
         {
                 std::string retval;
