@@ -28,6 +28,7 @@
 #include <mutex>
 #include <atomic>
 #include "rover/ISteering.h"
+//#include "rover/ISteeringController.h"
 #include "oquam/ICNCController.h"
 #include "rover/NavigationSettings.h"
 
@@ -36,6 +37,7 @@ namespace romi {
         class StepperSteering : public ISteering
         {
         protected:
+                //ISteeringController& controller_;
                 ICNCController& controller_;
                 NavigationSettings& settings_;
                 int16_t steps_per_second_;
@@ -53,7 +55,6 @@ namespace romi {
                 std::unique_ptr<std::thread> thread_;
                 std::atomic<bool> quitting_;
                 
-                bool turn_wheels(double left_angle, double right_angle);
                 bool set_target(double target_left, double target_right);
                 void run_target_updates();
                 bool angles_need_updating();
@@ -64,6 +65,10 @@ namespace romi {
                 int16_t angle_to_steps(double angle);
 
         public:
+                // StepperSteering(ISteeringController& stepper_controller,
+                //                 NavigationSettings& settings,
+                //                 int16_t steps_per_second,
+                //                 double steps_per_revolution);
                 StepperSteering(ICNCController& stepper_controller,
                                 NavigationSettings& settings,
                                 int16_t steps_per_second,
@@ -76,6 +81,8 @@ namespace romi {
                 bool drive(double speed, SteeringData steering) override;
                 bool forward(double speed) override;
                 bool turn(double speed, double radius) override;
+
+                bool turn_wheels(double left_angle, double right_angle);
         };
 }
 

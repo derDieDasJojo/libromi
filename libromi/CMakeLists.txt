@@ -148,6 +148,7 @@ set(SOURCES
         include/rover/IDistanceMeasure.h
         include/rover/IMUTrackFollower.h
         include/rover/ISteering.h
+        include/rover/ISteeringController.h
         include/rover/ITrackFollower.h
         include/rover/INavigationController.h
         include/rover/L1NavigationController.h
@@ -166,6 +167,7 @@ set(SOURCES
         include/rover/NavigationSettings.h
         include/rover/ISpeedController.h
         include/rover/SpeedConverter.h
+        include/rover/SteeringController.h
         include/rover/StepperSteering.h
         include/rover/WheelOdometry.h
         include/rover/ZeroNavigationController.h
@@ -269,6 +271,7 @@ set(SOURCES
         src/rover/Navigation.cpp
         src/rover/SpeedController.cpp
         src/rover/SpeedConverter.cpp
+        src/rover/SteeringController.cpp
         src/rover/StepperSteering.cpp
         src/rover/WheelOdometry.cpp
 
