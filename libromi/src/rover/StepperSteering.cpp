@@ -34,10 +34,6 @@ namespace romi {
         static const std::string kAngleLeft = "steering-angle-left";
         static const std::string kAngleRight = "steering-angle-right";        
         
-        // StepperSteering::StepperSteering(ICNCController& stepper_controller,
-        //                                  NavigationSettings& settings,
-        //                                  int16_t steps_per_second,
-        //                                  double steps_per_revolution)
         StepperSteering::StepperSteering(ISteeringController& stepper_controller,
                                          NavigationSettings& settings,
                                          int16_t steps_per_second,
@@ -207,11 +203,6 @@ namespace romi {
                 
                 if (steps_left_ != steps_left
                     || steps_right_ != steps_right) {
-                        
-                        // success = controller_.moveto(steps_per_second_,
-                        //                              (int16_t) steps_left,
-                        //                              (int16_t) steps_right,
-                        //                              0); 
                         success = controller_.moveto(steps_per_second_,
                                                      (int16_t) steps_left,
                                                      (int16_t) steps_right); 

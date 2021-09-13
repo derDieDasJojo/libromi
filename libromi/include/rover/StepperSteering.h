@@ -29,7 +29,6 @@
 #include <atomic>
 #include "rover/ISteering.h"
 #include "rover/ISteeringController.h"
-//#include "oquam/ICNCController.h"
 #include "rover/NavigationSettings.h"
 
 namespace romi {
@@ -38,7 +37,6 @@ namespace romi {
         {
         protected:
                 ISteeringController& controller_;
-                //ICNCController& controller_;
                 NavigationSettings& settings_;
                 int16_t steps_per_second_;
                 double steps_per_revolution_;
@@ -69,10 +67,6 @@ namespace romi {
                                 NavigationSettings& settings,
                                 int16_t steps_per_second,
                                 double steps_per_revolution);
-                /* StepperSteering(ICNCController& stepper_controller, */
-                /*                 NavigationSettings& settings, */
-                /*                 int16_t steps_per_second, */
-                /*                 double steps_per_revolution); */
                 ~StepperSteering() override;
                 
                 bool enable() override;
