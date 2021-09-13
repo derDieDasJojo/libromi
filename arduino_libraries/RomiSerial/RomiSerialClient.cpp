@@ -129,7 +129,7 @@ namespace romiserial {
                 JsonCpp response(default_response_);
 
                 if (_debug) {
-                        r_debug("%s RomiSerialClient::try_sending_request: %s", client_name_.c_str(), request.c_str());
+                        r_debug("RomiSerialClient<%s>::try_sending_request: %s", client_name_.c_str(), request.c_str());
                 }
         
                 for (int i = 0; i < 3; i++) {
@@ -153,7 +153,7 @@ namespace romiserial {
                                     || code == kEnvelopeMissingMetadata) {
                                 
                                         if (_debug) {
-                                                r_debug("%s RomiSerialClient::try_sending_request: "
+                                                r_debug("RomiSerialClient<%s>::try_sending_request: "
                                                         "re-sending request: %s", client_name_.c_str(), request.c_str());
                                         }
                                 
@@ -185,7 +185,7 @@ namespace romiserial {
                 const char *message = get_error_message(code);
 
                 if (_debug) {
-                        r_debug("%s RomiSerialClient::make_error: %d, %s", client_name_.c_str(), code, message);
+                        r_debug("RomiSerialClient<%s>::make_error: %d, %s", client_name_.c_str(), code, message);
                 }
 
                 return JsonCpp::construct("[%d,'%s']", code, message);
@@ -201,7 +201,7 @@ namespace romiserial {
                 int code = (int) data.num(0);
         
                 if (_debug) {
-                        r_debug("%s RomiSerialClient::check_error_response: "
+                        r_debug("RomiSerialClient<%s>::check_error_response: "
                                 "Firmware returned error code: %d (%s)", client_name_.c_str(),
                                 code, get_error_message(code));
                 }
@@ -213,19 +213,19 @@ namespace romiserial {
                 } else if (data.length() == 2) {
                         if (data.get(1).isstring()) {
                                 if (_debug) {
-                                        r_debug("%s RomiSerialClient::check_error_response: "
+                                        r_debug("RomiSerialClient<%s>::check_error_response: "
                                                 "Firmware returned error message: '%s'", client_name_.c_str(),
                                                 data.str(1));
                                 }
                         } else {
-                                r_warn("%s RomiSerialClient::check_error_response: "
+                                r_warn("RomiSerialClient<%s>::check_error_response: "
                                        "error with invalid message: '%s'", client_name_.c_str(),
                                        _parser.message());
                                 data = make_error(kInvalidErrorResponse);
                         }  
 
                 } else {
-                        r_warn("%s RomiSerialClient::check_error_response: "
+                        r_warn("RomiSerialClient<%s>::check_error_response: "
                                "error with invalid arguments: '%s'", client_name_.c_str(),
                                _parser.message());
                         data = make_error(kInvalidErrorResponse);
@@ -256,14 +256,15 @@ namespace romiserial {
                                         data  = check_error_response(data);
                         
                         } else {
-                                r_warn("RomiSerialClient::parse_response: "
+                                r_warn("RomiSerialClient<%s>::parse_response: "
                                        "invalid response: '%s'",
+                                       client_name_.c_str(),
                                        _parser.message());
                                 data = make_error(kInvalidResponse);
                         }
                 
                 } else {
-                        r_warn("%s RomiSerialClient::parse_response: "
+                        r_warn("RomiSerialClient<%s>::parse_response: "
                                "invalid response: no values: '%s'", client_name_.c_str(), _parser.message());
                         data = make_error(kEmptyResponse);
                 }
@@ -277,7 +278,7 @@ namespace romiserial {
                 const char *message = _parser.message();
                 if (_parser.length() > 1 && message[0] == '!') {
                         if (_parser.length() > 2) {
-                                r_debug("%s RomiSerialClient: Firmware says: '%s'",
+                                r_debug("RomiSerialClient<%s>: Firmware says: '%s'",
                                         client_name_.c_str(),
                                         message + 1);
                                 is_message = false;
@@ -351,7 +352,7 @@ namespace romiserial {
                                 if (has_message) {
 
                                         if (_debug) {
-                                                r_debug("%s RomiSerialClient::read_response: %s",
+                                                r_debug("RomiSerialClient<%s>::read_response: %s",
                                                         client_name_.c_str(),
                                                         _parser.message());
                                         }
@@ -377,7 +378,7 @@ namespace romiserial {
                                                  * mismatch. Drop this
                                                  * response and try reading
                                                  * the next one. */
-                                                r_warn("%s RomiSerialClient: ID mismatch: "
+                                                r_warn("RomiSerialClient<%s>: ID mismatch: "
                                                        "request(%d) != response(%d): "
                                                        "response: '%s'",
                                                        client_name_.c_str(),
@@ -389,7 +390,7 @@ namespace romiserial {
                                         }
                                 
                                 } else if (_parser.error() != 0) {
-                                        r_warn("%s RomiSerialClient: invalid response: '%s'",
+                                        r_warn("RomiSerialClient<%s>: invalid response: '%s'",
                                                client_name_.c_str(),
                                                _parser.message());
                                         response = make_error(_parser.error());
