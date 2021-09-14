@@ -61,6 +61,9 @@ namespace romi {
                 update_interval_ = 0.200;
                 last_update_ = rpp::ClockAccessor::GetInstance()->time();
 
+                if (!homing())
+                        throw std::runtime_error("StepperSteering: homing failed");
+
                 thread_ = std::make_unique<std::thread>([this]() {
                                 this->run_target_updates();
                         });
@@ -71,6 +74,18 @@ namespace romi {
                 quitting_ = true;
                 if (thread_ != nullptr)
                         thread_->join();
+        }
+        
+        bool StepperSteering::homing()
+        {
+                bool success = false;
+                try {
+                        success = controller_.homing();
+                        
+                } catch (const std::runtime_error& re) {
+                        r_err("StepperSteering: homing failed: %s", re.what());
+                }
+                return success;
         }
         
         bool StepperSteering::drive(double speed, SteeringData steering)
