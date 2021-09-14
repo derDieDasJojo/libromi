@@ -15,8 +15,9 @@
 const uint8_t frameLen = 22;                       // VE.Direct Protocol: max frame size is 18
 const uint8_t nameLen = 9;                         // VE.Direct Protocol: max name size is 9 including /0
 const uint8_t valueLen = 33;                       // VE.Direct Protocol: max value size is 33 including /0
-const uint8_t buffLen = 40;                        // Maximum number of lines possible from the device. Current protocol shows this to be the BMV700 at 33 lines.
+//const uint8_t buffLen = 40;                        // Maximum number of lines possible from the device. Current protocol shows this to be the BMV700 at 33 lines.
 
+const uint8_t relevant_field_max = 9;
 
 class VeDirectFrameHandler {
 
@@ -24,8 +25,8 @@ public:
     VeDirectFrameHandler();
     void rxData(uint8_t inbyte);                // byte of serial data to be passed by the application
 
-    char veName[buffLen][nameLen] = { };        // public buffer for received names
-    int32_t veValue[buffLen] = { };      // public buffer for received values
+    char veName[relevant_field_max][nameLen] = { };        // public buffer for received names
+    int32_t veValue[relevant_field_max] = { };      // public buffer for received values
 
     int frameIndex;                             // which line of the frame are we on
     int veEnd;                                  // current size (end) of the public buffer
@@ -58,6 +59,7 @@ private:
     void logE(char *, const char *);
     bool hexRxEvent(uint8_t);
     int32_t convertValue(char *, char *);
+    bool is_relevant(char *name);
 };
 
 #endif // FRAMEHANDLER_H_

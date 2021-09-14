@@ -35,6 +35,7 @@
 #include <Arduino.h>
 #include "VeDirectFrameHandler.h"
 
+
 //#define MODULE "VE.Frame"	// Victron seems to use this to find out where logging messages were generated
 //
 // The name of the record that contains the checksum.
@@ -44,6 +45,8 @@ static constexpr char NAME_ALARM[] = "ALARM";
 static constexpr char NAME_RELAY[] = "RELAY";
 static constexpr char OFF[] = "OFF";
 static constexpr char CHECKSUM_INVALID[] = "[CHECKSUM] Invalid frame";
+
+static constexpr char relavantFields[relevant_field_max][nameLen] = { "V", "VS", "I", "P", "CE", "SOC", "TTG", "ALARM", "AR" };
 
 VeDirectFrameHandler::VeDirectFrameHandler() :
 	//mStop(false),	// don't know what Victron uses this for, not using
@@ -165,10 +168,13 @@ void VeDirectFrameHandler::rxData(uint8_t inbyte)
  * textRxEvent
  * This function is called every time a new name/value is successfully parsed.  It writes the values to the temporary buffer.
  */
-void VeDirectFrameHandler::textRxEvent(char * mName, char * mValue) {
-    strcpy(tempName[frameIndex], mName);    // copy name to temporary buffer
-    tempValue[frameIndex] = convertValue(mName, mValue);
-	frameIndex++;
+void VeDirectFrameHandler::textRxEvent(char * name, char * value) {
+    if (is_relevant(name))
+    {
+        strcpy(tempName[frameIndex], name);    // copy name to temporary buffer
+        tempValue[frameIndex] = convertValue(name, value);
+        frameIndex++;
+    }
 }
 
 /*
@@ -177,15 +183,17 @@ void VeDirectFrameHandler::textRxEvent(char * mName, char * mValue) {
  */
 int32_t VeDirectFrameHandler::convertValue(char * name, char * value) {
 
-  int32_t converted = 0;
-  if ((strcmp(NAME_ALARM, name) == 0) ||
-      (strcmp(NAME_RELAY, name) == 0)){
-    converted = (strcmp(OFF, value) == 0) ? 0 : 1;
-  }
-  else{
-    converted = static_cast<int32_t>(strtol(mValue, nullptr, 0));
-  }
-  return converted;
+    int32_t converted = 0;
+    if ((strcmp(NAME_ALARM, name) == 0) ||
+        (strcmp(NAME_RELAY, name) == 0))
+    {
+        converted = (strcmp(OFF, value) == 0) ? 0 : 1;
+    }
+    else
+    {
+        converted = atoi(value);
+    }
+    return converted;
 }
 
 /*
@@ -195,27 +203,27 @@ int32_t VeDirectFrameHandler::convertValue(char * name, char * value) {
  *  is created in the public buffer.
  */
 void VeDirectFrameHandler::frameEndEvent(bool valid) {
-	if ( valid ) {
-		for ( int i = 0; i < frameIndex; i++ ) {				// read each name already in the temp buffer
-			bool nameExists = false;
-			for ( int j = 0; j <= veEnd; j++ ) {				// compare to existing names in the public buffer
-				if ( strcmp(tempName[i], veName[j]) == 0 ) {	
-					veValue[j] = tempValue[i];			// overwrite tempValue in the public buffer
-					nameExists = true;
-					break;
-				}
-			}
-			if ( !nameExists ) {
-				strcpy(veName[veEnd], tempName[i]);				// write new Name to public buffer
-				veValue[veEnd] = tempValue[i];			// write new Value to public buffer
-				veEnd++;										// increment end of public buffer
-				if ( veEnd >= buffLen ) {						// stop any buffer overrun
-					veEnd = buffLen - 1;
-				}
-			}
-		}
-	}
-	frameIndex = 0;	// reset frame
+    if ( valid ) {
+        for ( int i = 0; i < frameIndex; i++ ) {				// read each name already in the temp buffer
+            bool nameExists = false;
+            for ( int j = 0; j <= veEnd; j++ ) {				// compare to existing names in the public buffer
+                if ( strcmp(tempName[i], veName[j]) == 0 ) {
+                    veValue[j] = tempValue[i];			// overwrite tempValue in the public buffer
+                    nameExists = true;
+                    break;
+                }
+            }
+            if ( !nameExists ) {
+                strcpy(veName[veEnd], tempName[i]);				// write new Name to public buffer
+                veValue[veEnd] = tempValue[i];			// write new Value to public buffer
+                veEnd++;										// increment end of public buffer
+                if ( veEnd >= relevant_field_max ) {						// stop any buffer overrun
+                    veEnd = relevant_field_max - 1;
+                }
+            }
+        }
+    }
+    frameIndex = 0;	// reset frame
 }
 
 /*
@@ -239,4 +247,15 @@ void VeDirectFrameHandler::logE(char * module, const char * error) {
 bool VeDirectFrameHandler::hexRxEvent(uint8_t inbyte) {
     (void)inbyte;
 	return true;		// stubbed out for future
+}
+
+bool VeDirectFrameHandler::is_relevant(char *name) {
+    bool relevant = false;
+    for (auto relavantField : relavantFields){
+        if(strcmp(relavantField, name) == 0) {
+            relevant = true;
+            break;
+        }
+    }
+    return relevant;
 }
