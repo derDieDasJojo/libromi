@@ -121,20 +121,25 @@ void loop()
         delay(1);
 
         if (print_) {
+                print_status();
                 delay(50);
-                Serial.print(arduino_.left_encoder().get_position());
-                if (arduino_.left_encoder().get_index()) {
-                        Serial.print("***");
-                        arduino_.left_encoder().reset_index();
-                }
-                Serial.print("    ");
-                Serial.print(arduino_.right_encoder().get_position());
-                if (arduino_.right_encoder().get_index()) {
-                        Serial.print("***");
-                        arduino_.right_encoder().reset_index();
-                }
-                Serial.println();
         }
+}
+
+void print_status()
+{
+        Serial.print(arduino_.left_encoder().get_position());
+        if (arduino_.left_encoder().get_index()) {
+                Serial.print("***");
+                arduino_.left_encoder().reset_index();
+        }
+        Serial.print("    ");
+        Serial.print(arduino_.right_encoder().get_position());
+        if (arduino_.right_encoder().get_index()) {
+                Serial.print("***");
+                arduino_.right_encoder().reset_index();
+        }
+        Serial.println();
 }
 
 int moveat(int dx, int dy)
@@ -337,17 +342,20 @@ bool seek_index(int axis, int speed, int max_steps, IEncoder& encoder)
                 moveat(0, speed);
         
         while (true) {
+                romiSerial.handle_input();
+                
                 int32_t current = encoder.get_position();
-                Serial.print(axis);
-                Serial.print(": ");
-                Serial.print(current);
-                Serial.print(" ");
-                Serial.print(start);
-                Serial.print(" ");
-                Serial.print(end);
-                Serial.print(" ");
-                Serial.println(direction);
-        
+                
+                // Serial.print(axis);
+                // Serial.print(": ");
+                // Serial.print(current);
+                // Serial.print(" ");
+                // Serial.print(start);
+                // Serial.print(" ");
+                // Serial.print(end);
+                // Serial.print(" ");
+                // Serial.println(direction);
+                
                 if ((direction > 0 && current > end)
                     || (direction < 0 && current < end)) {
                         break;
