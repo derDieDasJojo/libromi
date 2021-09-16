@@ -60,6 +60,9 @@ namespace romi {
                                       / steps_per_revolution);
                 update_interval_ = 0.200;
                 last_update_ = rpp::ClockAccessor::GetInstance()->time();
+                
+                if (!enable())
+                        throw std::runtime_error("StepperSteering: enable failed");
 
                 if (!homing())
                         throw std::runtime_error("StepperSteering: homing failed");
