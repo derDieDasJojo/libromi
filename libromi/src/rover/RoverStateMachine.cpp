@@ -348,6 +348,7 @@ namespace romi {
         {
             r_debug("reset_script_remote");
             bool success = reset_rover(rover);
+            rover.display.clear(1);
             return success;
         }
 
