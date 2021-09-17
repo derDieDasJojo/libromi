@@ -28,8 +28,7 @@
 #include <mutex>
 #include <atomic>
 #include "rover/ISteering.h"
-//#include "rover/ISteeringController.h"
-#include "oquam/ICNCController.h"
+#include "rover/ISteeringController.h"
 #include "rover/NavigationSettings.h"
 
 namespace romi {
@@ -37,8 +36,7 @@ namespace romi {
         class StepperSteering : public ISteering
         {
         protected:
-                //ISteeringController& controller_;
-                ICNCController& controller_;
+                ISteeringController& controller_;
                 NavigationSettings& settings_;
                 int16_t steps_per_second_;
                 double steps_per_revolution_;
@@ -63,13 +61,10 @@ namespace romi {
                 bool do_turn_wheel(double target_left, double target_right);
                 bool moveto(int16_t steps_left, int16_t steps_right);
                 int16_t angle_to_steps(double angle);
+                bool homing();
 
         public:
-                // StepperSteering(ISteeringController& stepper_controller,
-                //                 NavigationSettings& settings,
-                //                 int16_t steps_per_second,
-                //                 double steps_per_revolution);
-                StepperSteering(ICNCController& stepper_controller,
+                StepperSteering(ISteeringController& stepper_controller,
                                 NavigationSettings& settings,
                                 int16_t steps_per_second,
                                 double steps_per_revolution);

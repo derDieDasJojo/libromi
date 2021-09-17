@@ -34,14 +34,10 @@ namespace romi {
         static const std::string kAngleLeft = "steering-angle-left";
         static const std::string kAngleRight = "steering-angle-right";        
         
-        StepperSteering::StepperSteering(ICNCController& stepper_controller,
+        StepperSteering::StepperSteering(ISteeringController& stepper_controller,
                                          NavigationSettings& settings,
                                          int16_t steps_per_second,
                                          double steps_per_revolution)
-        // StepperSteering::StepperSteering(ISteeringController& stepper_controller,
-        //                                  NavigationSettings& settings,
-        //                                  int16_t steps_per_second,
-        //                                  double steps_per_revolution)
                 : controller_(stepper_controller),
                   settings_(settings),
                   steps_per_second_(steps_per_second),
@@ -64,6 +60,12 @@ namespace romi {
                                       / steps_per_revolution);
                 update_interval_ = 0.200;
                 last_update_ = rpp::ClockAccessor::GetInstance()->time();
+                
+                if (!enable())
+                        throw std::runtime_error("StepperSteering: enable failed");
+
+                if (!homing())
+                        throw std::runtime_error("StepperSteering: homing failed");
 
                 thread_ = std::make_unique<std::thread>([this]() {
                                 this->run_target_updates();
@@ -75,6 +77,18 @@ namespace romi {
                 quitting_ = true;
                 if (thread_ != nullptr)
                         thread_->join();
+        }
+        
+        bool StepperSteering::homing()
+        {
+                bool success = false;
+                try {
+                        success = controller_.homing();
+                        
+                } catch (const std::runtime_error& re) {
+                        r_err("StepperSteering: homing failed: %s", re.what());
+                }
+                return success;
         }
         
         bool StepperSteering::drive(double speed, SteeringData steering)
@@ -207,14 +221,9 @@ namespace romi {
                 
                 if (steps_left_ != steps_left
                     || steps_right_ != steps_right) {
-                        
                         success = controller_.moveto(steps_per_second_,
                                                      (int16_t) steps_left,
-                                                     (int16_t) steps_right,
-                                                     0); 
-                        // success = controller_.moveto(steps_per_second_,
-                        //                              (int16_t) steps_left,
-                        //                              (int16_t) steps_right); 
+                                                     (int16_t) steps_right); 
                         steps_left_ = steps_left;
                         steps_right_ = steps_right;
                 }
