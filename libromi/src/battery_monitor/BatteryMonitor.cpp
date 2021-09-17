@@ -69,7 +69,6 @@ namespace romi
                         {
                             double value = response.num(data_index);
                             datalog_->store(data_names[data_index-1], value);
-                            std::cout << data_names[data_index-1] << " " << value << std::endl;
                         }
                     }
                 }
