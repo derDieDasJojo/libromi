@@ -78,6 +78,7 @@ namespace romi {
                 bool turn(double speed, double radius) override;
 
                 bool turn_wheels(double left_angle, double right_angle);
+                bool initialise() override;
         };
 }
 

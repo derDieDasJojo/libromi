@@ -244,4 +244,8 @@ namespace romi {
         {
                 return controller_.disable();
         }
+
+        bool StepperSteering::initialise() {
+                return homing();
+        }
 }

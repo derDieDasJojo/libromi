@@ -35,8 +35,8 @@ namespace romi {
                 r_info("RoverStateMachine: Powering up");
                 bool success = true;
 
-                success = rover.weeder.power_up();
-                //rover.navigation.power_up();
+                success = rover.weeder.power_up()
+                            && rover.navigation.initialise();
 
                 if (success) {
                         rover.display.show(0, "Ready");
@@ -111,6 +111,7 @@ namespace romi {
         {
                 r_debug("initialize_navigation");
                 rover.speed_controller.stop();
+                rover.navigation.initialise();
                 rover.display.show(0, "Navigating");
                 // set timer to return to main mode
                 rover.event_timer.set_timeout(10.0);
