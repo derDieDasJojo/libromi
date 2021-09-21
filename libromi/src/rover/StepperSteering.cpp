@@ -81,6 +81,7 @@ namespace romi {
         
         bool StepperSteering::homing()
         {
+                r_info("StepperSteering::homing()");
                 bool success = false;
                 try {
                         success = controller_.homing();
@@ -246,6 +247,6 @@ namespace romi {
         }
 
         bool StepperSteering::initialise() {
-                return homing();
+            return homing();
         }
 }
