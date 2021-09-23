@@ -111,11 +111,14 @@ namespace romi {
         bool StepperSteering::turn(double speed, double radius)
         {
                 (void) speed;
-                double left_angle = atan(settings_.wheelbase
-                                         / (radius - settings_.wheeltrack / 2.0));
-                double right_angle = atan(settings_.wheelbase
-                                          / (radius + settings_.wheeltrack / 2.0));
-                return turn_wheels(left_angle, right_angle);
+                // double left_angle = atan(settings_.wheelbase
+                //                          / (radius - settings_.wheeltrack / 2.0));
+                // double right_angle = atan(settings_.wheelbase
+                //                           / (radius + settings_.wheeltrack / 2.0));
+                // return turn_wheels(left_angle, right_angle);
+                
+                double angle = atan(settings_.wheelbase / (radius / 2.0));
+                return turn_wheels(angle, angle);
         }
         
         bool StepperSteering::turn_wheels(double left_angle, double right_angle)
