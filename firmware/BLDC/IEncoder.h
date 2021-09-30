@@ -2,7 +2,7 @@
   bldc_featherwing
 
   Copyright (C) 2019-2020 Sony Computer Science Laboratories
-  Author(s) Peter Hanappe
+  Author(s) Timothée Wintz, Peter Hanappe
 
   bldc_featherwing is Arduino firmware to control a brushless motor.
 

@@ -24,7 +24,6 @@
 #include "ArduinoImpl.h"
 #include "PwmEncoder.h"
 #include "BLDC.h"
-#include "Parser.h"
 #include "PwmOut.h"
 #include "PwmGenerator.h"
 #include "DigitalOut.h"
@@ -54,6 +53,8 @@ BLDC motor(&arduino, &encoder, &pwmGenerator, &sleepPin, &resetPin);
 
 unsigned long prev_time = 0;
 
+using namespace romiserial;
+
 void send_info(IRomiSerial *romiSerial, int16_t *args, const char *string_arg);
 void handle_moveto(IRomiSerial *romiSerial, int16_t *args, const char *string_arg);
 void handle_set_position(IRomiSerial *romiSerial, int16_t *args, const char *string_arg);
@@ -69,20 +70,21 @@ const static MessageHandler handlers[] = {
         { 'C', 1, false, handle_calibrate },
 };
 
-// ArduinoSerial serial(Serial);
-// RomiSerial romiSerial(serial, serial, handlers, sizeof(handlers) / sizeof(MessageHandler));
+//ArduinoSerial serial(Serial); // TODO
+//RomiSerial romiSerial(serial, serial, handlers, sizeof(handlers) / sizeof(MessageHandler)); // TODO
 
-ArduinoSerial serial1(Serial1);
-RomiSerial romiSerial1(serial1, serial1, handlers, sizeof(handlers) / sizeof(MessageHandler));
+ArduinoSerial serial1(Serial1); // TODO
+RomiSerial romiSerial1(serial1, serial1, handlers, sizeof(handlers) / sizeof(MessageHandler)); // TODO
 
 void setup()
 {
-        // Serial.begin(115200);
-        // while (!Serial)
-        //         ;
-        Serial1.begin(115200);
-        while (!Serial1)
-                ;
+        // TODO Serial.begin(115200); 
+        // TODO while (!Serial) 
+                // TODO ;
+        
+        Serial1.begin(115200); // TODO
+        while (!Serial1) // TODO
+                ; // TODO
 
         // Serial.println("OK");
         
@@ -94,14 +96,16 @@ void setup()
 
 void loop()
 {
-        // romiSerial.handle_input();
-        romiSerial1.handle_input();
+        // TODO romiSerial.handle_input(); 
+        romiSerial1.handle_input(); // TODO
+        
         // Serial1.println(counter++);
         // while (Serial1.available()) {
         //         char c = Serial1.read();
         //         Serial1.write(c);
         // }
-        delay(1000);
+        //Serial.println(encoder.getValue());
+        //delay(1000);
 }
 
 void send_info(IRomiSerial *romiSerial, int16_t *args, const char *string_arg)
