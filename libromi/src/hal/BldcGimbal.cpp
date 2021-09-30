@@ -96,21 +96,25 @@ namespace romi {
 
         bool BldcGimbal::power_up()
         {
-                return true;
+                JsonCpp response;
+                serial_.send("P[40]", response);
+                return (response.num(0) == 0);
         }
 
         bool BldcGimbal::power_down()
         {
-                return true;
+                JsonCpp response;
+                serial_.send("P[0]", response);
+                return (response.num(0) == 0);
         }
 
         bool BldcGimbal::stand_by()
         {
-                return true;
+                return power_down();
         }
 
         bool BldcGimbal::wake_up()
         {
-                return true;
+                return power_up();
         }
 }

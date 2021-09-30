@@ -116,6 +116,20 @@ namespace romi {
                 return (send_command(buffer) == 0);                
         }
 
+        bool SteeringController::set_target(int16_t left, int16_t right)
+        {
+                char buffer[64];
+                rprintf(buffer, 64, "T[%d,%d]", left, right);
+                return (send_command(buffer) == 0);                
+        }
+
+        bool SteeringController::set_mode(int16_t mode)
+        {
+                char buffer[64];
+                rprintf(buffer, 64, "C[%d]", mode);
+                return (send_command(buffer) == 0);                
+        }
+
         int SteeringController::is_idle()
         {
                 int idle = -1;

@@ -40,6 +40,9 @@ enum {
 };
 
 extern volatile block_t *current_block;
+extern volatile ControlMode mode_;
+extern int16_t left_target;
+extern int16_t right_target;
 
 uint8_t controller_state;
 
@@ -57,8 +60,9 @@ void send_idle(IRomiSerial *romiSerial, int16_t *args, const char *string_arg);
 void handle_homing(IRomiSerial *romiSerial, int16_t *args, const char *string_arg);
 void handle_enable(IRomiSerial *romiSerial, int16_t *args, const char *string_arg);
 void handle_print(IRomiSerial *romiSerial, int16_t *args, const char *string_arg);
+void handle_target(IRomiSerial *romiSerial, int16_t *args, const char *string_arg);
+void change_mode(IRomiSerial *romiSerial, int16_t *args, const char *string_arg);
 void send_info(IRomiSerial *romiSerial, int16_t *args, const char *string_arg);
-void handle_test(IRomiSerial *romiSerial, int16_t *args, const char *string_arg);
 
 const static MessageHandler handlers[] = {
         { 'm', 3, false, handle_moveto },
@@ -73,7 +77,8 @@ const static MessageHandler handlers[] = {
         { 'H', 0, false, handle_homing },
         { 'E', 1, false, handle_enable },
         { 'D', 1, false, handle_print },
-        { 'T', 1, false, handle_test },
+        { 'T', 2, false, handle_target },
+        { 'C', 1, false, change_mode },
         { '?', 0, false, send_info },
 };
 
@@ -104,7 +109,7 @@ void setup()
 
         init_block_buffer();
         init_pins();
-        init_stepper();
+        init_stepper(&arduino_);
 
         controller_state = STATE_RUNNING;
         enable_stepper_timer();
@@ -435,49 +440,26 @@ void handle_print(IRomiSerial *romiSerial, int16_t *args, const char *string_arg
         romiSerial->send_ok();
 }
 
+void change_mode(IRomiSerial *romiSerial, int16_t *args, const char *string_arg)
+{
+        if (args[0] == kOpenLoopControl) {
+                mode_ = kOpenLoopControl;
+                romiSerial->send_ok();
+        } else if (args[0] == kClosedLoopControl) {
+                mode_ = kClosedLoopControl;
+                romiSerial->send_ok();
+        } else {
+                romiSerial->send_error(1, "Unknown mode");  
+        }
+}
+
+void handle_target(IRomiSerial *romiSerial, int16_t *args, const char *string_arg)
+{
+        left_target = args[0];
+        right_target = args[1];
+}
+
 void send_info(IRomiSerial *romiSerial, int16_t *args, const char *string_arg)
 {
         romiSerial->send("[0,\"Steering\",\"0.1\",\"" __DATE__ " " __TIME__ "\"]"); 
-}
-
-// static bool quit_testing;
-
-// void start_test()
-// {
-//         quit_testing = false;
-//         while (!quit_testing) {
-                
-//                 moveat(1000, 1000, 100);
-//                 delay(500);
-                
-//                 moveat(-1000, -1000, -100);
-//                 delay(500);
-                
-//                 update_zero_switches();
-//                 Serial.print("#![");
-//                 Serial.print(limit_switches[0]);
-//                 Serial.print(',');
-//                 Serial.print(limit_switches[1]);
-//                 Serial.print(',');
-//                 Serial.print(limit_switches[2]);
-//                 Serial.print("]:xxxx\r\n");
-
-//                 romiSerial.handle_input();
-//         }
-// }
-
-// void stop_test()
-// {
-//         quit_testing = true;
-//         moveat(0, 0, 0);
-// }
-
-void handle_test(IRomiSerial *romiSerial, int16_t *args, const char *string_arg)
-{
-        // romiSerial->send_ok();
-        // if (args[0] == 0) {
-        //         stop_test();
-        // } else {
-        //         start_test();
-        // }
 }

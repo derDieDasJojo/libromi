@@ -24,9 +24,15 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include "config.h"
+#include "IArduino.h"
 
 #ifndef _OQUAM_STEPPER_H_
 #define _OQUAM_STEPPER_H_
+
+enum ControlMode {
+        kOpenLoopControl,
+        kClosedLoopControl
+};
 
 /**
  *  \brief The possible states of the stepper thread.
@@ -41,7 +47,7 @@ enum {
  * disabled (see cli()).
  *
  */
-void init_stepper();
+void init_stepper(IArduino *arduino);
 
 
 /**

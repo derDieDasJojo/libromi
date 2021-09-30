@@ -30,19 +30,23 @@
 #include "block.h"
 #include "stepper.h"
 
-volatile int32_t stepper_position_[3];
-volatile int32_t accumulation_error_[3];
-volatile int32_t delta_[3];
+volatile int32_t stepper_position_[2];
+volatile int32_t accumulation_error_[2];
+volatile int32_t delta_[2];
 volatile int32_t dt_;
-volatile int16_t step_dir_[3];
+volatile int16_t step_dir_[2];
 volatile block_t *current_block_;
 volatile int32_t interrupts_ = 0;
 volatile int16_t milliseconds_ = 0;
 volatile int8_t stepper_reset_ = 0;
+volatile ControlMode mode_ = kOpenLoopControl;
+int16_t left_target = 0;
+int16_t right_target = 0;
+static IArduino *arduino_;
 
 void stepper_zero()
 {
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 2; i++) {
                 stepper_position_[i] = 0;
                 accumulation_error_[i] = 0;
         }
@@ -53,8 +57,9 @@ void stepper_reset()
         stepper_reset_ = 1;
 }
 
-void init_stepper()
+void init_stepper(IArduino *arduino)
 {
+        arduino_ = arduino;
         stepper_zero();
         cli();
         init_stepper_timer();
@@ -66,7 +71,6 @@ void get_stepper_position(int32_t *pos)
 {
         pos[0] = stepper_position_[0];
         pos[1] = stepper_position_[1];
-        pos[2] = stepper_position_[2];
 }
 
 bool stepper_is_idle()
@@ -247,7 +251,7 @@ ISR(TIMER2_COMPA_vect)
  * \brief The interrupt service routine for the stepper timer.
  *
  */
-ISR(TIMER1_COMPA_vect)
+static inline do_open_loop_control()
 {
         /* If a reset is requested, set the current block and other
          * state variables to zero and return. */
@@ -414,5 +418,52 @@ ISR(TIMER1_COMPA_vect)
                 }
                 
                 return;
+        }
+}
+
+static inline step_to_target()
+{
+        uint8_t pins = 0;
+        uint8_t dir = 0;
+        int16_t left = (int16_t) arduino_->left_encoder().get_position();
+        int16_t right = (int16_t) arduino_->right_encoder().get_position();
+
+        if (left < left_target) {
+                toggle_left_step(pins);
+        } else if (left > left_target) {
+                toggle_left_step(pins);
+                toggle_dir(dir, LEFT_DIRECTION_BIT);
+        }
+
+        if (right < right_target) {
+                toggle_right_step(pins);
+        } else if (right > right_target) {
+                toggle_right_step(pins);
+                toggle_dir(dir, RIGHT_DIRECTION_BIT);
+        }
+
+        if (pins) {
+                set_dir_pins(dir);
+                set_step_pins(pins);
+                enable_reset_step_pins_timer();
+        }
+}
+
+static inline do_closed_loop_control()
+{
+        static uint8_t down_clocking = 0;
+        down_clocking++;
+        if (down_clocking == 20) {
+                down_clocking = 0;
+                step_to_target();
+        }
+}
+
+ISR(TIMER1_COMPA_vect)
+{
+        if (mode_ == kOpenLoopControl) {
+                do_open_loop_control();
+        } else if (mode_ == kClosedLoopControl) {
+                do_closed_loop_control();
         }
 }

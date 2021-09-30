@@ -53,6 +53,9 @@ namespace romi {
                                     int16_t position_right) = 0;
                 /* Move at a give speed */
                 virtual bool moveat(int16_t speed_left, int16_t speed_right) = 0;
+
+                virtual bool set_target(int16_t left, int16_t right) = 0;
+                virtual bool set_mode(int16_t mode) = 0;
                 
                 virtual bool enable() = 0;
                 virtual bool disable() = 0;

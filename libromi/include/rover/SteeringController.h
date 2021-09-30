@@ -58,6 +58,9 @@ namespace romi {
                 bool moveat(int16_t speed_left, int16_t speed_right_z) override;
                 bool moveto(int16_t millis, int16_t pos_left, int16_t pos_right) override;
                 
+                bool set_target(int16_t left, int16_t right) override;
+                bool set_mode(int16_t mode) override;
+                
                 bool synchronize(double timeout) override;
 
                 bool pause_activity() override;

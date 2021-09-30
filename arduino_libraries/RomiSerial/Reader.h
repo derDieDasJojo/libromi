@@ -29,8 +29,10 @@
 #define __ROMISERIAL_READER_H
 
 #ifndef __ssize_t_defined
+#ifndef	_SSIZE_T_DECLARED
 // Arduino 1.8.13 doesn't seem to define ssize_t
 typedef signed long ssize_t;
+#endif
 #endif
 
 namespace romiserial {
