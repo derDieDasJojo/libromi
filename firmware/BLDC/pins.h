@@ -24,7 +24,7 @@
 #ifndef __PINS_H
 #define __PINS_H
 
-#define TIMS_BOARD
+//#define TIMS_BOARD
 
 // Logic input pins
 #define P_IN1 13

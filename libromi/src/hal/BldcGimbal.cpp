@@ -68,7 +68,7 @@ namespace romi {
         bool BldcGimbal::moveat(double rps)
         {
                 char command[64];
-                snprintf(command, sizeof(command), "V[%d]", (int) (rps * 100.0));
+                snprintf(command, sizeof(command), "V[%d]", (int) (rps * 1000.0));
                 
                 JsonCpp response;
                 serial_.send(command, response);

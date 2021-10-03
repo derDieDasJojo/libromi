@@ -76,22 +76,33 @@ const static MessageHandler handlers[] = {
         { 'C', 1, false, handle_calibrate },
 };
 
+#define USE_SERIAL    0
+#define USE_SERIAL_1  1
+
+#if USE_SERIAL
 ArduinoSerial serial(Serial); // TODO
 RomiSerial romiSerial(serial, serial, handlers, sizeof(handlers) / sizeof(MessageHandler)); // TODO
+#endif
 
+#if USE_SERIAL_1
 ArduinoSerial serial1(Serial1); // TODO
 RomiSerial romiSerial1(serial1, serial1, handlers, sizeof(handlers) / sizeof(MessageHandler)); // TODO
+#endif
 
 
 void setup()
 {
+#if USE_SERIAL
          Serial.begin(115200); // TODO
          while (!Serial) // TODO
                  ; // TODO
+#endif
         
+#if USE_SERIAL_1
         Serial1.begin(115200); // TODO
         while (!Serial1) // TODO
                 ; // TODO
+#endif
 
         // Serial.println("OK");
         
@@ -101,12 +112,15 @@ void setup()
         M0Timer3::get().set_handler(&controller);
 }
 
-static int counter = 0; 
-
 void loop()
 {
+#if USE_SERIAL
         romiSerial.handle_input(); // TODO
+#endif
+        
+#if USE_SERIAL_1
         romiSerial1.handle_input(); // TODO
+#endif
         
         // Serial.println(encoder.getValue());
         // delay(1000);
@@ -134,7 +148,7 @@ void handle_moveto(IRomiSerial *romiSerial, int16_t *args, const char *string_ar
 
 void handle_moveat(IRomiSerial *romiSerial, int16_t *args, const char *string_arg)
 {
-        double rps = (double) args[0] / 100.0;
+        double rps = (double) args[0] / 1000.0;
         controller.set_target_speed(rps);
         romiSerial->send_ok();  
 }
