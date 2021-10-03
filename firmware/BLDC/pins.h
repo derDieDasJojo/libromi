@@ -24,6 +24,8 @@
 #ifndef __PINS_H
 #define __PINS_H
 
+#define TIMS_BOARD
+
 // Logic input pins
 #define P_IN1 13
 #define P_EN1 12
@@ -33,12 +35,18 @@
 #define P_EN3 5
 
 #define P_SLEEP 19
-//#define P_RESET 18
+#if defined(TIMS_BOARD)
+#define P_RESET 18
+#else
 #define P_RESET A0
+#endif
 
 // Encoder pin
-//#define P_ENC SDA
+#if defined(TIMS_BOARD)
+#define P_ENC SDA
+#else
 #define P_ENC A1
+#endif
 
 #endif // __PINS_H
 

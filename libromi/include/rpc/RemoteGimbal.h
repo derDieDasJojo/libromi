@@ -38,7 +38,9 @@ namespace romi {
                 ~RemoteGimbal() override = default;
 
                 bool moveto(double angle_in_degrees) override;
-                bool get_position(double& angle) override;
+                bool moveat(double rps) override;
+                bool get_angle(double& angle) override;
+                bool set_angle(double angle) override;
                 
                 bool pause_activity() override;
                 bool continue_activity() override;

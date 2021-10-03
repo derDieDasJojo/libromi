@@ -36,7 +36,9 @@ namespace romi {
                 virtual ~IGimbal() = default;
                 
                 virtual bool moveto(double angle_in_degrees) = 0;
-                virtual bool get_position(double& value) = 0;
+                virtual bool moveat(double revolutions_per_second) = 0;
+                virtual bool get_angle(double& angle_in_degrees) = 0;
+                virtual bool set_angle(double angle_in_degrees) = 0;
         };
 }
 

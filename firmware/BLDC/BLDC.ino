@@ -28,12 +28,14 @@
 #include "PwmGenerator.h"
 #include "DigitalOut.h"
 #include "pins.h"
+#include "M0Timer3.h"
+#include "Controller.h"
 #include <RomiSerial.h>
 #include <ArduinoSerial.h>
+#include <math.h>
 
 ArduinoImpl arduino;
 PwmEncoder encoder(&arduino, P_ENC, 11, 959);
-Parser parser("XP", "?sC");
 
 PwmOut pwm1(&arduino, P_IN1);
 PwmOut pwm2(&arduino, P_IN2);
@@ -50,37 +52,42 @@ DigitalOut resetPin(&arduino, P_RESET);
 
 
 BLDC motor(&arduino, &encoder, &pwmGenerator, &sleepPin, &resetPin);
+Controller controller(motor, 4.0); // acceleration in revolution/s²
 
 unsigned long prev_time = 0;
 
 using namespace romiserial;
 
 void send_info(IRomiSerial *romiSerial, int16_t *args, const char *string_arg);
+void handle_get_angle(IRomiSerial *romiSerial, int16_t *args, const char *string_arg);
+void handle_set_angle(IRomiSerial *romiSerial, int16_t *args, const char *string_arg);
+void handle_moveat(IRomiSerial *romiSerial, int16_t *args, const char *string_arg);
 void handle_moveto(IRomiSerial *romiSerial, int16_t *args, const char *string_arg);
-void handle_set_position(IRomiSerial *romiSerial, int16_t *args, const char *string_arg);
-void handle_get_position(IRomiSerial *romiSerial, int16_t *args, const char *string_arg);
 void handle_set_power(IRomiSerial *romiSerial, int16_t *args, const char *string_arg);
 void handle_calibrate(IRomiSerial *romiSerial, int16_t *args, const char *string_arg);
 
 const static MessageHandler handlers[] = {
         { '?', 0, false, send_info },
+        { 's', 0, false, handle_get_angle },
+        { 'A', 1, false, handle_set_angle },
+        { 'V', 1, false, handle_moveat },
         { 'M', 1, false, handle_moveto },
-        { 's', 0, false, handle_get_position },
         { 'P', 1, false, handle_set_power },
         { 'C', 1, false, handle_calibrate },
 };
 
-//ArduinoSerial serial(Serial); // TODO
-//RomiSerial romiSerial(serial, serial, handlers, sizeof(handlers) / sizeof(MessageHandler)); // TODO
+ArduinoSerial serial(Serial); // TODO
+RomiSerial romiSerial(serial, serial, handlers, sizeof(handlers) / sizeof(MessageHandler)); // TODO
 
 ArduinoSerial serial1(Serial1); // TODO
 RomiSerial romiSerial1(serial1, serial1, handlers, sizeof(handlers) / sizeof(MessageHandler)); // TODO
 
+
 void setup()
 {
-        // TODO Serial.begin(115200); 
-        // TODO while (!Serial) 
-                // TODO ;
+         Serial.begin(115200); // TODO
+         while (!Serial) // TODO
+                 ; // TODO
         
         Serial1.begin(115200); // TODO
         while (!Serial1) // TODO
@@ -90,21 +97,21 @@ void setup()
         
         motor.wake();
         motor.setPower(0.5f);
+
+        M0Timer3::get().set_handler(&controller);
 }
 
-// static int counter = 0; 
+static int counter = 0; 
 
 void loop()
 {
-        // TODO romiSerial.handle_input(); 
+        romiSerial.handle_input(); // TODO
         romiSerial1.handle_input(); // TODO
         
-        // Serial1.println(counter++);
-        // while (Serial1.available()) {
-        //         char c = Serial1.read();
-        //         Serial1.write(c);
-        // }
-        //Serial.println(encoder.getValue());
+        // Serial.println(encoder.getValue());
+        // delay(1000);
+
+        //Serial.println(controller.t_);
         //delay(1000);
 }
 
@@ -125,7 +132,21 @@ void handle_moveto(IRomiSerial *romiSerial, int16_t *args, const char *string_ar
         }
 }
 
-void handle_get_position(IRomiSerial *romiSerial, int16_t *args, const char *string_arg)
+void handle_moveat(IRomiSerial *romiSerial, int16_t *args, const char *string_arg)
+{
+        double rps = (double) args[0] / 100.0;
+        controller.set_target_speed(rps);
+        romiSerial->send_ok();  
+}
+
+void handle_set_angle(IRomiSerial *romiSerial, int16_t *args, const char *string_arg)
+{
+        double angle = (double) args[0] / 3600.0;
+        motor.setAngle(angle);
+        romiSerial->send_ok();  
+}
+
+void handle_get_angle(IRomiSerial *romiSerial, int16_t *args, const char *string_arg)
 {
         static char buffer[32];
         int value = (int) (3600.0f * encoder.getAngle()); 

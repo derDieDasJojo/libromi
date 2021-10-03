@@ -103,6 +103,12 @@ void BLDC::sleep()
         sleepPin->set(0.0f);
 }
 
+void BLDC::setAngle(double value)
+{
+        phase = angleToPhase(value);
+        generator->setPhase(phase);
+}
+
 void BLDC::setPhase(double value)
 {
         phase = normalizeAngle(value);

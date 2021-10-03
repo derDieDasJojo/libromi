@@ -37,7 +37,9 @@ namespace romi {
                 IGimbal& gimbal_;
                 
                 void execute_moveto(JsonCpp& params, RPCError &error);
-                void execute_get_position(JsonCpp& result, RPCError &error);
+                void execute_moveat(JsonCpp& params, RPCError &error);
+                void execute_get_angle(JsonCpp& result, RPCError &error);
+                void execute_set_angle(JsonCpp& result, RPCError &error);
                 
                 void execute_stop(RPCError &error);
                 void execute_pause(RPCError &error);

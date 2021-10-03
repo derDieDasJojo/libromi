@@ -52,9 +52,6 @@ namespace romi {
                                     JsonCpp& result,
                                     RPCError &error)
         {
-                (void) params;
-                (void) result;
-                
                 r_debug("GimbalAdaptor::execute");
                 
                 error.code = 0;
@@ -64,8 +61,14 @@ namespace romi {
                         if (method == MethodsGimbal::moveto) {
                                 execute_moveto(params, error);
                         
-                        } else if (method == MethodsGimbal::get_position) {
-                                execute_get_position(result, error);
+                        } else if (method == MethodsGimbal::moveat) {
+                                execute_moveat(params, error);
+                        
+                        } else if (method == MethodsGimbal::get_angle) {
+                                execute_get_angle(result, error);
+                        
+                        } else if (method == MethodsGimbal::set_angle) {
+                                execute_set_angle(params, error);
                         
                         } else if (method == MethodsActivity::activity_pause) {
                                 execute_pause(error);
@@ -109,16 +112,36 @@ namespace romi {
                 }
         }
 
-        void GimbalAdaptor::execute_get_position(JsonCpp& result, RPCError &error)
+        void GimbalAdaptor::execute_moveat(JsonCpp& params, RPCError &error)
         {
-                r_debug("GimbalAdaptor::get_position");
+                r_debug("GimbalAdaptor::execute_moveat");
+                double rps = params.num(MethodsGimbal::rps_param);
+                if (!gimbal_.moveat(rps)) {
+                        error.code = 1;
+                        error.message = "Moveat failed";
+                }
+        }
+
+        void GimbalAdaptor::execute_get_angle(JsonCpp& result, RPCError &error)
+        {
+                r_debug("GimbalAdaptor::get_angle");
                 double angle;
-                if (gimbal_.get_position(angle)) {
+                if (gimbal_.get_angle(angle)) {
                         json_object_setnum(result.ptr(), MethodsGimbal::angle_result,
                                            angle); // FIXME: remove old json api
                 } else {
                         error.code = 1;
                         error.message = "Get position failed";
+                }
+        }
+
+        void GimbalAdaptor::execute_set_angle(JsonCpp& params, RPCError &error)
+        {
+                r_debug("GimbalAdaptor::set_angle");
+                double angle = params.num(MethodsGimbal::angle_param);
+                if (!gimbal_.set_angle(angle)) {
+                        error.code = 1;
+                        error.message = "set_angle failed";
                 }
         }
 

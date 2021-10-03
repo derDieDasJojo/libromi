@@ -41,17 +41,35 @@ namespace romi {
                                                     angle);
                 return execute_with_params(MethodsGimbal::moveto, params);
         }
-        
-        bool RemoteGimbal::get_position(double& angle)
+                
+        bool RemoteGimbal::moveat(double rps)
         {
-                r_debug("RemoteGimbal::get_position");
+                r_debug("RemoteGimbal::moveat");
+                JsonCpp params = JsonCpp::construct("{ \"%s\": %.3f}",
+                                                    MethodsGimbal::rps_param,
+                                                    rps);
+                return execute_with_params(MethodsGimbal::moveto, params);
+        }
+        
+        bool RemoteGimbal::get_angle(double& angle)
+        {
+                r_debug("RemoteGimbal::get_angle");
                 bool success = false;
                 JsonCpp result;
-                if (execute_with_result(MethodsGimbal::get_position, result)) {
+                if (execute_with_result(MethodsGimbal::get_angle, result)) {
                         angle = result.num(MethodsGimbal::angle_result);
                         success = true;
                 }
                 return success;
+        }
+        
+        bool RemoteGimbal::set_angle(double angle)
+        {
+                r_debug("RemoteGimbal::set_angle");
+                JsonCpp params = JsonCpp::construct("{ \"%s\": %.3f}",
+                                                    MethodsGimbal::angle_param,
+                                                    angle);
+                return execute_with_params(MethodsGimbal::moveto, params);
         }
 
         bool RemoteGimbal::pause_activity()

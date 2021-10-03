@@ -54,11 +54,11 @@ protected:
         void moveat(float rpm, float dt);
         bool updatePosition(float dt);
                 
-        void setPhase(double value);
+        //void setPhase(double value);
         
-        void incrPhase(double delta) {
-                setPhase(phase + delta);
-        }
+        /* void incrPhase(double delta) { */
+        /*         setPhase(phase + delta); */
+        /* } */
         
         float angleToPhase(float angle);
 
@@ -93,6 +93,14 @@ public:
         void calibrate();
 
         bool moveto(float angle);
+        
+        void setAngle(double value);
+        
+        void setPhase(double value);
+        
+        void incrPhase(double delta) {
+                setPhase(phase + delta);
+        }
 };
 
 #endif // __BLDC_H

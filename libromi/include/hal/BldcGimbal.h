@@ -44,7 +44,9 @@ namespace romi {
                                 
                 // IGimbal
                 bool moveto(double angle_in_degrees) override;
-                bool get_position(double& value) override;
+                bool moveat(double rps) override;
+                bool get_angle(double& value) override;
+                bool set_angle(double value) override;
 
                 // IActivity
                 bool pause_activity() override;

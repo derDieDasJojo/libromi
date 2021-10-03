@@ -30,12 +30,14 @@ namespace romi {
         {
         public:
                 
+                static constexpr const char *get_angle = "gimbal-get-angle";
+                static constexpr const char *set_angle = "gimbal-set-angle";
                 static constexpr const char *moveto = "gimbal-moveto";
-                static constexpr const char *get_position = "gimbal-get-position";
+                static constexpr const char *moveat = "gimbal-moveat";
 
                 static constexpr const char *angle_param = "angle";
                 static constexpr const char *angle_result = "angle";
-
+                static constexpr const char *rps_param = "rps";
         };
 }
 
