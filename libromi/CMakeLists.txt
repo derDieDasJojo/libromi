@@ -345,7 +345,7 @@ target_link_libraries(romi
         romiserial
         r
         rpp
-        rcompp-lite
+        rcom
         fluidsynth
         ortools
         ${PI_CAMERA_LIB})

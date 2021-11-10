@@ -108,6 +108,7 @@ namespace romi {
         }
 
         bool initialize_navigation(Rover& rover)
+
         {
                 r_debug("initialize_navigation");
                 rover.speed_controller.stop();

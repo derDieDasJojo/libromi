@@ -156,7 +156,7 @@ set(SRCS_NAVIGATION
         )
 
 add_executable(libromi_unit_tests_navigation ${SRCS_NAVIGATION})
-target_link_libraries(libromi_unit_tests_navigation romi romi rpp rcompp-lite gtest gmock)
+target_link_libraries(libromi_unit_tests_navigation romi romi rpp rcom gtest gmock)
 
 add_test(
     NAME libromi_unit_tests_navigation
@@ -171,7 +171,7 @@ set(SRCS_CRYSTALDISPLAY
   )
 
 add_executable(libromi_unit_tests_crystaldisplay ${SRCS_CRYSTALDISPLAY})
-target_link_libraries(libromi_unit_tests_crystaldisplay rcompp-lite romi gtest gmock)
+target_link_libraries(libromi_unit_tests_crystaldisplay rcom romi gtest gmock)
 
 add_test(
     NAME libromi_unit_tests_crystaldisplay
@@ -205,7 +205,7 @@ set(SRCS_SCRIPT
   )
 
 add_executable(libromi_unit_tests_script ${SRCS_SCRIPT})
-target_link_libraries(libromi_unit_tests_script rcompp-lite rpp romi rcom-mocks gtest gmock)
+target_link_libraries(libromi_unit_tests_script rcom rpp romi rcom-mocks gtest gmock)
 
 add_test(
     NAME libromi_unit_tests_script
@@ -220,7 +220,7 @@ set(SRCS_STATEMACHINE
   )
 
 add_executable(libromi_unit_tests_statemachine ${SRCS_STATEMACHINE})
-target_link_libraries(libromi_unit_tests_statemachine rcompp-lite romi gtest gmock)
+target_link_libraries(libromi_unit_tests_statemachine rcom romi gtest gmock)
 
 add_test(
     NAME libromi_unit_tests_statemachine
@@ -251,7 +251,7 @@ set(SRCS_SCRIPTMENU
   )
 
 add_executable(libromi_unit_tests_scriptmenu ${SRCS_SCRIPTMENU})
-target_link_libraries(libromi_unit_tests_scriptmenu rcompp-lite romi gtest gmock)
+target_link_libraries(libromi_unit_tests_scriptmenu rcom romi gtest gmock)
 
 add_test(
     NAME libromi_unit_tests_scriptmenu
@@ -297,7 +297,7 @@ set(SRCS_BRUSHMOTORDRIVER
   )
 
 add_executable(libromi_unit_tests_brushmotordriver ${SRCS_BRUSHMOTORDRIVER})
-target_link_libraries(libromi_unit_tests_brushmotordriver romi romiserial rpp rcompp-lite gtest gmock)
+target_link_libraries(libromi_unit_tests_brushmotordriver romi romiserial rpp rcom gtest gmock)
 
 add_test(
     NAME libromi_unit_tests_brushmotordriver
@@ -312,7 +312,7 @@ set(SRCS_RCOMMESSAGEHANDLER
   )
 
 add_executable(libromi_unit_tests_rcommessagehandler ${SRCS_RCOMMESSAGEHANDLER})
-target_link_libraries(libromi_unit_tests_rcommessagehandler romi romiserial rpp rcompp-lite rcom-mocks gtest gmock)
+target_link_libraries(libromi_unit_tests_rcommessagehandler romi romiserial rpp rcom rcom-mocks gtest gmock)
 
 add_test(
     NAME libromi_unit_tests_rcommessagehandler
@@ -328,7 +328,7 @@ set(SRCS_NAVIGATIONCONTROL
 )
 
 add_executable(libromi_unit_tests_navigation_control ${SRCS_NAVIGATIONCONTROL})
-target_link_libraries(libromi_unit_tests_navigation_control romi romiserial rpp rcompp-lite rcom-mocks gtest gmock)
+target_link_libraries(libromi_unit_tests_navigation_control romi romiserial rpp rcom rcom-mocks gtest gmock)
 
 add_test(
     NAME libromi_unit_tests_navigation_control
