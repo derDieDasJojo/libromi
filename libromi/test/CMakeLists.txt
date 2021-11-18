@@ -205,7 +205,7 @@ set(SRCS_SCRIPT
   )
 
 add_executable(libromi_unit_tests_script ${SRCS_SCRIPT})
-target_link_libraries(libromi_unit_tests_script rcom rpp romi rcom-mocks gtest gmock)
+target_link_libraries(libromi_unit_tests_script rcom rpp romi rcommocks gtest gmock)
 
 add_test(
     NAME libromi_unit_tests_script
@@ -312,7 +312,7 @@ set(SRCS_RCOMMESSAGEHANDLER
   )
 
 add_executable(libromi_unit_tests_rcommessagehandler ${SRCS_RCOMMESSAGEHANDLER})
-target_link_libraries(libromi_unit_tests_rcommessagehandler romi romiserial rpp rcom rcom-mocks gtest gmock)
+target_link_libraries(libromi_unit_tests_rcommessagehandler romi romiserial rpp rcom rcommocks gtest gmock)
 
 add_test(
     NAME libromi_unit_tests_rcommessagehandler
@@ -328,7 +328,7 @@ set(SRCS_NAVIGATIONCONTROL
 )
 
 add_executable(libromi_unit_tests_navigation_control ${SRCS_NAVIGATIONCONTROL})
-target_link_libraries(libromi_unit_tests_navigation_control romi romiserial rpp rcom rcom-mocks gtest gmock)
+target_link_libraries(libromi_unit_tests_navigation_control romi romiserial rpp rcom rcommocks gtest gmock)
 
 add_test(
     NAME libromi_unit_tests_navigation_control

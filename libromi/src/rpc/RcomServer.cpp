@@ -25,6 +25,7 @@
 #include <stdexcept>
 #include <string.h>
 #include <MessageHub.h>
+#include <WebSocketServerFactory.h>
 #include "rpc/RcomServer.h"
 
 namespace romi {
@@ -32,17 +33,17 @@ namespace romi {
         std::unique_ptr<IRPCServer> RcomServer::create(const std::string& topic,
                                                        IRPCHandler &handler)
         {
-                std::shared_ptr<rcom::IMessageListener> listener
+             auto webserver_socket_factory = rcom::WebSocketServerFactory::create();
+             std::shared_ptr<rcom::IMessageListener> listener
                         = std::make_shared<RcomMessageHandler>(handler);
-                std::unique_ptr<rcom::IMessageHub> hub
-                        = std::make_unique<rcom::MessageHub>(topic, listener);
-                return std::make_unique<RcomServer>(hub);
+             std::unique_ptr<rcom::IMessageHub> hub
+                        = std::make_unique<rcom::MessageHub>(topic, listener, webserver_socket_factory);
+             return std::make_unique<RcomServer>(hub);
         }
         
         RcomServer::RcomServer(std::unique_ptr<rcom::IMessageHub>& hub)
-                : hub_()
+                : hub_(std::move(hub))
         {
-                hub_ = std::move(hub);
         }
 
         void RcomServer::handle_events()
