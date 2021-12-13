@@ -27,6 +27,7 @@
 
 #include <r.h>
 #include <vector>
+#include "v3.h"
 
 namespace romi {
 
@@ -69,6 +70,11 @@ namespace romi {
                         const double *p0, const double *p1,
                         const double *v0, const double *v1,
                         const double *a);
+
+                Section(double duration, double start_time,
+                        const v3 p0, const v3 p1,
+                        const v3 v0, const v3 v1,
+                        const v3 a);
 
                 void set(double duration, double start_time,
                          const double *p0, const double *p1,

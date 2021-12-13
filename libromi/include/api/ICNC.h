@@ -51,6 +51,8 @@ namespace romi {
                 virtual bool moveat(int16_t speed_x, int16_t speed_y, int16_t speed_z) = 0;
                 virtual bool spindle(double speed) = 0;
                 virtual bool travel(Path &path, double relative_speed = 0.1) = 0;
+                virtual bool helix(double xc, double yc, double alpha, double z,
+                                   double relative_speed = 0.1) = 0;
                 virtual bool homing() = 0;
                 virtual bool get_position(v3& position) = 0; 
         };

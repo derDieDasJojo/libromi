@@ -36,12 +36,16 @@ namespace romi {
                 
                 void execute_get_range(JsonCpp& params, JsonCpp& result,
                                        RPCError &error);
+                void execute_get_position(JsonCpp& params, JsonCpp& result,
+                                          RPCError &error);
                 void execute_moveto(JsonCpp& params, JsonCpp& result,
                                     RPCError &error);
                 void execute_spindle(JsonCpp& params, JsonCpp& result,
                                      RPCError &error);
                 void execute_travel(JsonCpp& params, JsonCpp& result,
                                     RPCError &error);
+                void execute_helix(JsonCpp& params, JsonCpp& result,
+                                   RPCError &error);
                 void execute_homing(RPCError &error);
                 void execute_pause(RPCError &error);
                 void execute_continue(RPCError &error);

@@ -25,11 +25,13 @@
 #include <vector>
 #include <stdexcept>
 #include <iostream>
+#include <algorithm>
 
 #include "oquam/plotter.h"
 #include "oquam/print.h"
 #include "oquam/is_valid.h"
 #include "oquam/Oquam.h"
+#include "oquam/Helix.h"
 
 namespace romi {
         
@@ -182,8 +184,10 @@ namespace romi {
 
         void Oquam::assert_relative_speed(double relative_speed) 
         {
-                if (relative_speed <= 0.0 || relative_speed > 1.0)
-                        throw std::runtime_error("Oquam: invalid speed");
+                if (relative_speed <= 0.0 || relative_speed > 1.0) {
+                        r_err("Oquam: invalid relative speed: %f", relative_speed);
+                        throw std::runtime_error("Oquam: invalid relative speed");
+                }
         }
         
         void Oquam::assert_in_range(v3 p) 
@@ -328,7 +332,7 @@ namespace romi {
                 }
         }
 
-        void Oquam::convert_position_to_steps(double *position, int32_t *steps) 
+        void Oquam::convert_position_to_steps(const double *position, int32_t *steps) 
         {
                 double *scale = settings_.scale_meters_to_steps_;
                 steps[0] = (int32_t) (position[0] * scale[0]);
@@ -396,5 +400,63 @@ namespace romi {
         bool Oquam::wake_up()
         {
                 return enable_driver();
+        }
+
+        bool Oquam::helix(double xc, double yc, double alpha, double z,
+                          double relative_speed)
+        {
+                SynchronizedCodeBlock synchronize(mutex_);
+                position_changed_ = true;
+                store_script_ = true;
+                return helix_synchronized(xc, yc, alpha, z, relative_speed);
+        }
+
+        bool Oquam::helix_synchronized(double xc, double yc, double alpha, double z,
+                                       double relative_speed)
+        {
+                bool success = false;
+                
+                try {
+                        do_helix(xc, yc, alpha, z, relative_speed); 
+                        success = true;
+                        
+                } catch (std::runtime_error& e) {
+                        r_debug("Oquam::helix_synchronized: error: %s", e.what());
+                }
+                
+                return success;
+        }
+        
+        void Oquam::do_helix(double xc, double yc, double alpha, double z,
+                             double relative_speed)
+        {
+                assert_relative_speed(relative_speed);
+                
+                v3 position = assert_get_position();
+
+                double vxy = relative_speed * std::min(settings_.vmax_.x(),
+                                                       settings_.vmax_.y());
+                double vz = relative_speed * settings_.vmax_.z();
+                double axy = std::min(settings_.amax_.x(), settings_.amax_.y());
+                double az = settings_.amax_.z();
+                
+                Helix helix(position.x(), position.y(),
+                            xc, yc, alpha,
+                            position.z(), z,
+                            vxy, axy, vz, az);
+
+                std::vector<Section> slices;
+                helix.slice(slices, settings_.path_slice_duration_);
+                
+                int32_t pos_steps[3];
+                convert_position_to_steps(position.values(), pos_steps);
+
+                for (size_t i = 0; i < slices.size(); i++) {
+                        execute_move(slices[i], pos_steps);
+                }
+
+                double duration = helix.get_duration();
+                double timeout = 10.0 + 1.5 * duration;
+                assert_synchronize(timeout);
         }
 }

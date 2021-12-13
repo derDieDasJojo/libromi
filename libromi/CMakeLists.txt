@@ -135,6 +135,7 @@ set(SOURCES
         include/oquam/ATDC.h
         include/oquam/ICNCController.h
         include/oquam/FakeCNCController.h
+        include/oquam/Helix.h
         include/oquam/is_valid.h
         include/oquam/Oquam.h
         include/oquam/OquamSettings.h
@@ -249,6 +250,7 @@ set(SOURCES
         src/notifications/FluidSoundNotifications.cpp
 
         src/oquam/ATDC.cpp
+        src/oquam/Helix.cpp
         src/oquam/is_valid.cpp
         src/oquam/Oquam.cpp
         src/oquam/OquamSettings.cpp

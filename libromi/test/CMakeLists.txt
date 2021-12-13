@@ -277,6 +277,7 @@ add_test(
 set(SRCS_OQUAM
         src/tests_main.cpp
         src/oquam_section_tests.cpp
+        src/oquam_helix_tests.cpp
         src/oquam_print_tests.cpp
         src/oquam_script_tests.cpp
         src/oquam_tests.cpp
