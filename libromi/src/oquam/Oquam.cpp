@@ -305,6 +305,7 @@ namespace romi {
         void Oquam::execute_move(Section& section, int32_t *pos_steps)
         {
                 int32_t p1[3];
+                
                 convert_position_to_steps(section.p1, p1); 
 
                 int16_t params[4];
@@ -445,6 +446,8 @@ namespace romi {
                             position.z(), z,
                             vxy, axy, vz, az);
 
+                helix.print();
+                
                 std::vector<Section> slices;
                 helix.slice(slices, settings_.path_slice_duration_);
                 

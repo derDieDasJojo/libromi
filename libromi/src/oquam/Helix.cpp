@@ -32,6 +32,30 @@
 
 namespace romi {
 
+        HelixSection::HelixSection() : start_time_(0.0), duration_(0.0),
+                         u0_(0.0), u1_(0.0),
+                         vu0_(0.0), vu1_(0.0),
+                         au_(0.0) {
+        }
+        
+        HelixSection::HelixSection(double start, double duration,
+                                   double u0, double u1, double v0, double v1,
+                                   double a)
+                : start_time_(start), duration_(duration),
+                  u0_(u0), u1_(u1),
+                  vu0_(v0), vu1_(v1),
+                  au_(a) {
+                assert_values();
+        }
+        
+        void HelixSection::assert_values()
+        {
+                if (start_time_ < 0.0)
+                        throw std::runtime_error("HelixSection: negative start time");
+                if (duration_ < 0.0)
+                        throw std::runtime_error("HelixSection: negative duration");
+        }
+
         void HelixSection::accelerate(double v, double a)
         {
                 start_time_ = 0.0;
@@ -108,25 +132,27 @@ namespace romi {
                                          double offset, double slice_duration)
         {
                 double t0 = start_time_ + offset;
-                double t1 = start_time_ + offset + slice_duration;
-                double u0 = get_position_at(t0);
-                double u1 = get_position_at(t1);
-                double v0 = get_speed_at(t0);
-                double v1 = get_speed_at(t1);
+                double t1 = t0 + slice_duration;
+                double duration = t1 - t0;
+                double u0 = get_position_at(offset);
+                double u1 = get_position_at(offset + duration);
+                double v0 = get_speed_at(offset);
+                double v1 = get_speed_at(offset + duration);
                 
-                slices.push_back(HelixSection(t0, t1, u0, u1, v0, v1, au_));
+                slices.push_back(HelixSection(t0, duration, u0, u1, v0, v1, au_));
         }
         
         void HelixSection::last_slice(std::vector<HelixSection>& slices, double offset)
         {
                 double t0 = start_time_ + offset;
                 double t1 = start_time_ + duration_;
+                double duration = t1 - t0;
                 double u0 = get_position_at(t0);
                 double u1 = u1_;
                 double v0 = get_speed_at(t0);
                 double v1 = vu1_;
                 
-                slices.push_back(HelixSection(t0, t1, u0, u1, v0, v1, au_));
+                slices.push_back(HelixSection(t0, duration, u0, u1, v0, v1, au_));
         }
 
         bool HelixSection::u_in_range(double u)
@@ -137,6 +163,13 @@ namespace romi {
         bool HelixSection::time_in_range(double t)
         {
                 return (start_time_ <= t && t < start_time_ + duration_);
+        }
+
+        void HelixSection::print()
+        {
+                r_debug("Section: start time: %f, duration: %f, "
+                        "u0: %f, u1: %f, vu0: %f, vu1: %f, au: %f",
+                        start_time_, duration_, u0_, u1_, vu0_, vu1_, au_);
         }
         
         Helix::Helix(double x0, double y0,
@@ -417,5 +450,28 @@ namespace romi {
         double Helix::get_duration()
         {
                 return deceleration_.start_time_ + deceleration_.duration_;
+        }
+
+
+        void Helix::print()
+        {
+                v3 from, to;
+                from = get_position_at_u(acceleration_.u0_);
+                to = get_position_at_u(acceleration_.u1_);
+                r_debug("Acceleration: from (%.3f, %.3f, %.3f) to (%.3f, %.3f, %.3f)",
+                        from.x(), from.y(), from.z(), to.x(), to.y(), to.z());
+                acceleration_.print();
+                
+                from = get_position_at_u(travel_.u0_);
+                to = get_position_at_u(travel_.u1_);
+                r_debug("Travel: from (%.3f, %.3f, %.3f) to (%.3f, %.3f, %.3f)",
+                        from.x(), from.y(), from.z(), to.x(), to.y(), to.z());
+                travel_.print();
+
+                from = get_position_at_u(deceleration_.u0_);
+                to = get_position_at_u(deceleration_.u1_);
+                r_debug("Deceleration: from (%.3f, %.3f, %.3f) to (%.3f, %.3f, %.3f)",
+                        from.x(), from.y(), from.z(), to.x(), to.y(), to.z());
+                deceleration_.print();
         }
 }

@@ -42,20 +42,10 @@ namespace romi {
                 double vu1_;
                 double au_;
                 
-                HelixSection() : start_time_(0.0), duration_(0.0),
-                                 u0_(0.0), u1_(0.0),
-                                 vu0_(0.0), vu1_(0.0),
-                                 au_(0.0) {
-                }
-
+                HelixSection();
                 HelixSection(double start, double duration,
                              double u0, double u1, double v0, double v1,
-                             double a)
-                        : start_time_(start), duration_(duration),
-                          u0_(u0), u1_(u1),
-                          vu0_(v0), vu1_(v1),
-                          au_(a) {
-                }
+                             double a);
                 
                 void accelerate(double v, double a);
                 void decelerate(double v, double a);
@@ -69,6 +59,8 @@ namespace romi {
                 void last_slice(std::vector<HelixSection>& slices, double offset);
                 bool u_in_range(double u);
                 bool time_in_range(double t);
+                void assert_values();
+                void print();
         };
                 
         class Helix
@@ -122,6 +114,7 @@ namespace romi {
                 v3 get_position_at_u(double u);
                 v3 get_position_at(double t);
                 v3 get_speed_at(double t);
+                void print();
         };
 }
 
