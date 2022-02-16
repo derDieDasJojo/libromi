@@ -22,6 +22,7 @@
 
  */
 #include <algorithm>
+#include <log.h>
 #include "api/Path.h"
 
 namespace romi {
@@ -105,9 +106,9 @@ namespace romi {
                               "Out of range: (%.3f, %.3f), "
                               "(%.3f, %.3f), (%.3f, %.3f)",
                               at(i).x(), at(i).y(), at(i).z(),
-                              range.min.x(), range.max.x(),
-                              range.min.y(), range.max.y(),
-                              range.min.z(), range.max.z());
+                              range.min_.x(), range.max_.x(),
+                              range.min_.y(), range.max_.y(),
+                              range.min_.z(), range.max_.z());
 
                         ok = false;
                 }

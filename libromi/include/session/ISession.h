@@ -3,6 +3,7 @@
 
 #include <filesystem>
 #include <string>
+#include <MemBuffer.h>
 #include "cv/Image.h"
 #include "api/Path.h"
 
@@ -15,7 +16,7 @@ namespace romi {
         virtual void start(const std::string& observation_id) = 0;
         virtual void stop() = 0;
         virtual bool store_jpg(const std::string& name, Image& image) = 0;
-        virtual bool store_jpg(const std::string& name, rpp::MemBuffer& jpeg) = 0;
+        virtual bool store_jpg(const std::string& name, rcom::MemBuffer& jpeg) = 0;
         virtual bool store_png(const std::string& name, Image& image)  = 0;
         virtual bool store_svg(const std::string& name, const std::string& body) = 0;
         virtual bool store_txt(const std::string& name, const std::string& body) = 0;

@@ -24,7 +24,7 @@
 #ifndef __ROMI_NAVIGATION_SETTINGS_H
 #define __ROMI_NAVIGATION_SETTINGS_H
 
-#include <JsonCpp.h>
+#include <json.hpp>
 
 namespace romi {
         
@@ -44,7 +44,7 @@ namespace romi {
                 double maximum_speed;
                 double maximum_acceleration;
 
-                NavigationSettings(JsonCpp &config);
+                NavigationSettings(nlohmann::json &config);
                 virtual ~NavigationSettings() = default;
 
                 double wheel_circumference();

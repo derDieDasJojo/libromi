@@ -10,13 +10,14 @@ using namespace romi;
 const double default_max_angular_speed = 1.7;
 const double default_max_angular_acceleration = 0.2;
 
+// TBD: REFACTOR TEST ASSERTS.
 class brushmotordriver_tests : public ::testing::Test
 {
 protected:
         vector<string> expected_output;
         vector<string> observed_output;
         vector<string> mock_response;
-        JsonCpp driver_config;
+        nlohmann::json driver_config;
         double max_angular_speed;
         double max_angular_acceleration;
         
@@ -28,11 +29,11 @@ protected:
           max_angular_speed(default_max_angular_speed),
           max_angular_acceleration(default_max_angular_acceleration) {
                 const char *config_string = "{"
-                        "'maximum-signal-amplitude': 71,"
-                        "'pid': {'kp': [1, 2], 'ki': [3, 4] },"
-                        "'encoder-steps': 1000,"
-                        "'encoder-directions': {'left': -1, 'right': 1 }}";
-                driver_config = JsonCpp::parse(config_string);
+                        "\"maximum-signal-amplitude\": 71,"
+                        "\"pid\": {\"kp\": [1, 2], \"ki\": [3, 4] },"
+                        "\"encoder-steps\": 1000,"
+                        "\"encoder-directions\": {\"left\": -1, \"right\": 1 }}";
+                driver_config = nlohmann::json::parse(config_string);
 	}
 
 	~brushmotordriver_tests() override = default;
@@ -43,10 +44,10 @@ protected:
 	void TearDown() override {
 	}
 
-        void append_output(const char *s, JsonCpp& response) {
+        void append_output(const char *s, nlohmann::json& response) {
                 size_t index = observed_output.size();
                 observed_output.emplace_back(s);
-                response = JsonCpp::parse(mock_response[index].c_str());
+                response = nlohmann::json::parse(mock_response[index].c_str());
         }
 
         void add_expected_output(MockRomiSerialClient& serial,
@@ -188,7 +189,7 @@ TEST_F(brushmotordriver_tests, returns_false_on_unsuccessful_moveat)
         add_expected_output(*mock_serial, "E[0]", "[0]");
         add_expected_output(*mock_serial, "C[1000,-1,1,1700,200,1,2,3,4,71]", "[0]");
         add_expected_output(*mock_serial, "E[1]", "[0]");
-        add_expected_output(*mock_serial, "V[100,200]", "[1,'Just fooling you']");
+        add_expected_output(*mock_serial, "V[100,200]", "[1,\"Just fooling you\"]");
         std::unique_ptr<romiserial::IRomiSerialClient> serial = std::move(mock_serial);
         
         BrushMotorDriver driver(serial, driver_config,
@@ -245,7 +246,7 @@ TEST_F(brushmotordriver_tests, returns_false_on_unsuccessful_get_encoders)
         add_expected_output(*mock_serial, "E[0]", "[0]");
         add_expected_output(*mock_serial, "C[1000,-1,1,1700,200,1,2,3,4,71]", "[0]");
         add_expected_output(*mock_serial, "E[1]", "[0]");
-        add_expected_output(*mock_serial, "e", "[1,'TEST']");
+        add_expected_output(*mock_serial, "e", "[1,\"TEST\"]");
         std::unique_ptr<romiserial::IRomiSerialClient> serial = std::move(mock_serial);
 
         BrushMotorDriver driver(serial, driver_config,

@@ -37,7 +37,7 @@ namespace romi {
                 CNCRange _range;
                 
         public:
-                explicit FakeCNC(JsonCpp& range) : _range(range){
+                explicit FakeCNC(nlohmann::json& range) : _range(range){
 
                 }
                 

@@ -4,13 +4,15 @@
 #include "IIdentityProvider.h"
 #include "ISoftwareVersion.h"
 #include "IRomiDeviceData.h"
+#include "json.hpp"
+
 namespace romi {
 
     class RoverIdentityProvider : public IIdentityProvider {
     public:
         explicit RoverIdentityProvider(IRomiDeviceData &deviceData, ISoftwareVersion &softwareVersion);
         ~RoverIdentityProvider() override = default;
-        std::string identity() override;
+        nlohmann::json identity() override;
 
     private:
         std::string romi_device_type_;

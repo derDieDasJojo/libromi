@@ -56,22 +56,22 @@ namespace romiserial {
                 uint8_t _id; 
                 bool _debug;
                 EnvelopeParser _parser;
-                JsonCpp default_response_;
+                nlohmann::json default_response_;
                 double timeout_;
                 const std::string client_name_;
                 
                 int make_request(const std::string &command, std::string &request);
-                JsonCpp try_sending_request(std::string &request);
+                nlohmann::json try_sending_request(std::string &request);
                 bool send_request(std::string &request);
-                JsonCpp make_error(int code);
+                nlohmann::json make_error(int code);
                 bool handle_one_char();
                 bool parse_char(int c);
-                JsonCpp parse_response();
-                JsonCpp read_response();
+                nlohmann::json parse_response();
+                nlohmann::json read_response();
                 bool can_write();
                 bool filter_log_message();
-                JsonCpp check_error_response(JsonCpp& data);
-                JsonCpp make_default_response();
+                nlohmann::json check_error_response(nlohmann::json& data);
+                nlohmann::json make_default_response();
                 std::string substitute_metachars(const std::string& command);
 
         public:
@@ -91,7 +91,7 @@ namespace romiserial {
                         return _id;
                 }
         
-                void send(const char *command, JsonCpp& response) override;
+                void send(const char *command, nlohmann::json& response) override;
         
                 /* bool read(uint8_t *data, size_t length) override; */
                 /* bool write(const uint8_t *data, size_t length) override; */

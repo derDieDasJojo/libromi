@@ -10,7 +10,7 @@ ScriptHubListener::ScriptHubListener(romi::Rover& rover)
 
 }
 
-void ScriptHubListener::onmessage(rcom::IWebSocket &link, rpp::MemBuffer &message, rcom::MessageType type) {
+void ScriptHubListener::onmessage(rcom::IWebSocket &link, rcom::MemBuffer &message, rcom::MessageType type) {
 
     if (type == rcom::kTextMessage) {
         auto reply = handle_message(message);
@@ -20,11 +20,11 @@ void ScriptHubListener::onmessage(rcom::IWebSocket &link, rpp::MemBuffer &messag
         throw std::runtime_error("ScriptHubListener::onmessage - invalid binary message received.");
 }
 
-rpp::MemBuffer ScriptHubListener::handle_message(rpp::MemBuffer &message) {
-    rpp::MemBuffer response;
+rcom::MemBuffer ScriptHubListener::handle_message(rcom::MemBuffer &message) {
+    rcom::MemBuffer response;
     std::cout << "Received<" << message.tostring() << ">" << std::endl;
-    JsonCpp json_msg = JsonCpp::parse(message);
-    std::string request = json_msg.str("request");
+    nlohmann::json json_msg = nlohmann::json::parse(message.tostring());
+    std::string request = json_msg.at("request");
 
     if (request == "list") {
         response = handle_list_request();
@@ -38,16 +38,16 @@ rpp::MemBuffer ScriptHubListener::handle_message(rpp::MemBuffer &message) {
     return response;
 }
 
-rpp::MemBuffer ScriptHubListener::handle_list_request() {
-    rpp::MemBuffer response;
+rcom::MemBuffer ScriptHubListener::handle_list_request() {
+    rcom::MemBuffer response;
     auto json_scripts = rover_.script_engine.scriptList().json_scripts();
     response.append_string(json_scripts.c_str());
     return response;
 }
 
-rpp::MemBuffer ScriptHubListener::handle_execute_remote_request(JsonCpp &json_msg) {
-    rpp::MemBuffer response;
-    std::string id = json_msg.str("id");
+rcom::MemBuffer ScriptHubListener::handle_execute_remote_request(nlohmann::json &json_msg) {
+    rcom::MemBuffer response;
+    std::string id = json_msg["id"];
     std::string reply;
 
     auto scriptlist = rover_.script_engine.scriptList();

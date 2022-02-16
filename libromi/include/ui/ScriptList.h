@@ -28,7 +28,7 @@
 #include "Script.h"
 #include <string>
 #include <vector>
-#include <JsonCpp.h>
+#include <json.hpp>
 
 namespace romi {
 
@@ -36,14 +36,14 @@ namespace romi {
         {
         private:
             std::vector<Script> scripts_;
-            JsonCpp json_scripts_;
+            nlohmann::json json_scripts_;
         protected:
                 void load_scripts(const std::string& path);
-                void convert_scripts(JsonCpp& scripts);
-                void convert_script(JsonCpp& script);
-                void convert_script_actions(Script& script, JsonCpp& json_script);
-                void convert_action(Script& script, JsonCpp& action);
-                void convert_move(Script& script, JsonCpp& action);
+                void convert_scripts(nlohmann::json& scripts);
+                void convert_script(nlohmann::json& script);
+                void convert_script_actions(Script& script, nlohmann::json& json_script);
+                void convert_action(Script& script, nlohmann::json& action);
+                void convert_move(Script& script, nlohmann::json& action);
                 void assure_move_params(double distance, double speed);
                 void convert_hoe(Script& script);
                 void convert_homing(Script& script);
@@ -53,7 +53,7 @@ namespace romi {
         public:
 
                 explicit ScriptList(const std::string& path);
-                explicit ScriptList(JsonCpp& json);
+                explicit ScriptList(nlohmann::json& json);
                 ~ScriptList() override = default;
 
                 const Script& operator[](size_t) const override;

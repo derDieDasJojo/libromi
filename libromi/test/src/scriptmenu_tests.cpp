@@ -10,14 +10,14 @@ using namespace romi;
 class scriptmenu_tests : public ::testing::Test
 {
 protected:
-        JsonCpp json;
+        nlohmann::json json;
         
 	scriptmenu_tests() : json()
 	{
-                json = JsonCpp::parse("[{ 'id': 'foo', 'title': 'Foo', "
-                                      "  'actions': [{'action':'move', 'distance': 1, 'speed': 0.5}]},"
-                                      "{ 'id': 'bar', 'title': 'Bar', "
-                                      "  'actions': [{'action':'hoe'}]}]");
+                json = nlohmann::json::parse("[{ \"id\": \"foo\", \"title\": \"Foo\", "
+                                      "  \"actions\": [{\"action\":\"move\", \"distance\": 1, \"speed\": 0.5}]},"
+                                      "{ \"id\": \"bar\", \"title\": \"Bar\", "
+                                      "  \"actions\": [{\"action\":\"hoe\"}]}]");
 	}
 
 	~scriptmenu_tests() override = default;
@@ -37,7 +37,7 @@ TEST_F(scriptmenu_tests, test_constructor)
 
 TEST_F(scriptmenu_tests, test_empty_menu_1)
 {
-        JsonCpp empty = JsonCpp::parse("[]");
+        nlohmann::json empty = nlohmann::json::parse("[]");
         ScriptList scripts(empty);
         ScriptMenu menu(scripts);
         std::string title;
@@ -50,7 +50,7 @@ TEST_F(scriptmenu_tests, test_empty_menu_1)
 
 TEST_F(scriptmenu_tests, test_empty_menu_2)
 {
-        JsonCpp empty = JsonCpp::parse("[]");
+        nlohmann::json empty = nlohmann::json::parse("[]");
         ScriptList scripts(empty);
         ScriptMenu menu(scripts);
         std::string title;
@@ -64,7 +64,7 @@ TEST_F(scriptmenu_tests, test_empty_menu_2)
 
 TEST_F(scriptmenu_tests, test_empty_menu_3)
 {
-        JsonCpp empty = JsonCpp::parse("[]");
+        nlohmann::json empty = nlohmann::json::parse("[]");
         ScriptList scripts(empty);
         ScriptMenu menu(scripts);
         std::string title;

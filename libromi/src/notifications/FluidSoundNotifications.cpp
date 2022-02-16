@@ -22,9 +22,10 @@
 
  */
 
-#include <r.h>
 #include <string>
 #include <stdexcept>
+#include <log.h>
+#include <iostream>
 #include "notifications/FluidSoundNotifications.h"
 
 #if (FLUIDSYNTH_VERSION_MAJOR == 1)
@@ -36,7 +37,7 @@ typedef int fluid_int;
 namespace romi {
 
         FluidSoundNotifications::FluidSoundNotifications(const std::string& soundfont,
-                                                         JsonCpp& sounds)
+                                                         nlohmann::json& sounds)
                 : _settings(nullptr), _synth(nullptr), _adriver(nullptr), _sfont_id(0), _sounds()
         {
                 try {
@@ -93,47 +94,45 @@ namespace romi {
                 }
         }
 
-        void FluidSoundNotifications::try_add_sounds(JsonCpp& sounds)
+        void FluidSoundNotifications::try_add_sounds(nlohmann::json& sounds)
         {
                 try {
                         add_sounds(sounds);
                         
-                } catch (JSONError& je) {
+                } catch (nlohmann::json::exception& je) {
                         r_err("FluidSoundNotification: Failed to get "
                               "user-interface.fluid-sounds.sounds: %s", je.what());
                         throw je;
                 }
         }
         
-        void FluidSoundNotifications::add_sounds(JsonCpp& sounds)
+        void FluidSoundNotifications::add_sounds(nlohmann::json& sounds)
         {
-                sounds.foreach(add_sound, this);
+            for (auto& el : sounds.items())
+            {
+                std::cout << "key: " << el.key() << ", value:" << el.value() << '\n';
+                add_sounds(el.value());
+            }
         }
         
-        int32_t FluidSoundNotifications::add_sound(const char* notification,
-                                                  json_object_t value,
-                                                  void *data)
+        int32_t FluidSoundNotifications::add_sound(const std::string& notification, nlohmann::json& sound)
         {
-                FluidSoundNotifications *fluid = (FluidSoundNotifications *) data;
-                if (json_isobject(value)
-                    && json_object_has(value, "preset")
-                    && json_object_has(value, "volume")) {
-                        int preset = (int) json_object_getnum(value, "preset");
-                        int volume = (int) json_object_getnum(value, "volume");
-                        
-                        fluid->add_sound(notification, preset, volume);
-                        
-                } else {
-                        r_err("FluidSoundNotification: Value '%s' in list of sounds "
-                                "is not valid");
-                }
+            if (sound.is_object())
+            {
+                int preset = sound["preset"];
+                int volume = sound["volume"];
+                add_sound(notification, preset, volume);
+
+            } else {
+                r_err("FluidSoundNotification: Value '%s' in list of sounds is not valid", sound.dump().c_str());
+            }
                 return 0;
         }
 
-        void FluidSoundNotifications::add_sound(const char *notification,
+        void FluidSoundNotifications::add_sound(const std::string& notification,
                                                 int preset, int volume)
         {
-                r_info("FluidSoundNotification: %s -> preset %d", notification, preset);
+                r_info("FluidSoundNotification: %s -> preset %d", notification.c_str(), preset);
                 _sounds.insert(std::pair<std::string, Sound>(notification, Sound(preset, volume)));
         }
                 

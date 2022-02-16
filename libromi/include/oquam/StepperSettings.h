@@ -24,7 +24,7 @@
 #ifndef __OQUAM_STEPPER_SETTINGS_H_
 #define __OQUAM_STEPPER_SETTINGS_H
 
-#include <JsonCpp.h>
+#include <json.hpp>
 
 namespace romi {
                 
@@ -32,13 +32,13 @@ namespace romi {
         {
         protected:
                 
-                void parse_steps_per_revolution(JsonCpp& json);
-                void parse_microsteps(JsonCpp& json);
-                void parse_gears_ratio(JsonCpp& json);
-                void parse_maximum_rpm(JsonCpp& json);
-                void parse_displacement_per_revolution(JsonCpp& json);
-                void parse_maximum_acceleration(JsonCpp& json);
-                void parse_array(JsonCpp& array, double *values);
+                void parse_steps_per_revolution(nlohmann::json& json);
+                void parse_microsteps(nlohmann::json& json);
+                void parse_gears_ratio(nlohmann::json& json);
+                void parse_maximum_rpm(nlohmann::json& json);
+                void parse_displacement_per_revolution(nlohmann::json& json);
+                void parse_maximum_acceleration(nlohmann::json& json);
+                void parse_array(nlohmann::json& array, double *values);
                 void compute_maximum_speed();
                 void compute_steps_per_meter();
                 double compute_duration(double steps, int axis);
@@ -54,7 +54,7 @@ namespace romi {
                 double maximum_speed[3];
                 double steps_per_meter[3];
                 
-                StepperSettings(JsonCpp& json);
+                explicit StepperSettings(nlohmann::json& json);
                 virtual ~StepperSettings() = default;
 
                 double compute_minimum_duration(double steps);

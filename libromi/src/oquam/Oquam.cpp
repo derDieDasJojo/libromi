@@ -195,8 +195,8 @@ namespace romi {
                                ", range (%0.6f, %0.6f, %0.6f), "
                                "error %.6f",
                                p.x(), p.y(), p.z(),
-                               settings_.range_.max.x(), settings_.range_.max.y(),
-                               settings_.range_.max.z(), e);
+                               settings_.range_.max_.x(), settings_.range_.max_.y(),
+                               settings_.range_.max_.z(), e);
                         if (e > 0.001) { 
                                 throw std::runtime_error("Point out of bounds");
                         }
@@ -251,14 +251,11 @@ namespace romi {
 
         void Oquam::store_script_svg(SmoothPath &script)
         {
-                membuf_t *svg = plot_to_mem(script, settings_.range_,
+                rcom::MemBuffer svg = plot_to_mem(script, settings_.range_,
                                             settings_.vmax_.values(),
                                             settings_.amax_.values());
-                if (svg != nullptr) {
-                        session_.store_svg("oquam.svg",
-                                           std::string(membuf_data(svg),
-                                                       membuf_len(svg)));
-                        delete_membuf(svg);
+                if (svg.size() > 0) {
+                        session_.store_svg("oquam.svg", svg.tostring());
                 } else {
                         r_warn("Oquam::store_script: plot failed");
                 }
@@ -266,12 +263,9 @@ namespace romi {
 
         void Oquam::store_script_json(SmoothPath &script)
         {
-                membuf_t *text = new_membuf();
+                rcom::MemBuffer text;
                 print(script, text);
-                session_.store_txt("oquam.json",
-                                   std::string(membuf_data(text),
-                                               membuf_len(text)));
-                delete_membuf(text);
+                session_.store_txt("oquam.json",text.tostring());
         }
 
         void Oquam::check_script(SmoothPath& script, v3& vmax) 

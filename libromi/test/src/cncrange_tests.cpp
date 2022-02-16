@@ -25,12 +25,12 @@ TEST_F(cncrange_tests, test_default_constructor)
 {
         CNCRange range;
 
-        EXPECT_EQ(range.min.x(), 0.0);
-        EXPECT_EQ(range.max.x(), 0.0);
-        EXPECT_EQ(range.min.y(), 0.0);
-        EXPECT_EQ(range.max.y(), 0.0);
-        EXPECT_EQ(range.min.z(), 0.0);
-        EXPECT_EQ(range.max.z(), 0.0);
+        EXPECT_EQ(range.min_.x(), 0.0);
+        EXPECT_EQ(range.max_.x(), 0.0);
+        EXPECT_EQ(range.min_.y(), 0.0);
+        EXPECT_EQ(range.max_.y(), 0.0);
+        EXPECT_EQ(range.min_.z(), 0.0);
+        EXPECT_EQ(range.max_.z(), 0.0);
 }
 
 TEST_F(cncrange_tests, test_constructor_with_values)
@@ -39,35 +39,35 @@ TEST_F(cncrange_tests, test_constructor_with_values)
         double max[3] = {4, 5, 6};
         CNCRange range(min, max);
 
-        EXPECT_EQ(range.min.x(), 1.0);
-        EXPECT_EQ(range.max.x(), 4.0);
-        EXPECT_EQ(range.min.y(), 2.0);
-        EXPECT_EQ(range.max.y(), 5.0);
-        EXPECT_EQ(range.min.z(), 3.0);
-        EXPECT_EQ(range.max.z(), 6.0);
+        EXPECT_EQ(range.min_.x(), 1.0);
+        EXPECT_EQ(range.max_.x(), 4.0);
+        EXPECT_EQ(range.min_.y(), 2.0);
+        EXPECT_EQ(range.max_.y(), 5.0);
+        EXPECT_EQ(range.min_.z(), 3.0);
+        EXPECT_EQ(range.max_.z(), 6.0);
 }
 
 TEST_F(cncrange_tests, test_constructor_using_json)
 {
-        JsonCpp json = JsonCpp::parse("[[1,4],[2,5],[3,6]]");
+        nlohmann::json json = nlohmann::json::parse("[[1,4],[2,5],[3,6]]");
         CNCRange range(json);
 
-        EXPECT_EQ(range.min.x(), 1.0);
-        EXPECT_EQ(range.max.x(), 4.0);
-        EXPECT_EQ(range.min.y(), 2.0);
-        EXPECT_EQ(range.max.y(), 5.0);
-        EXPECT_EQ(range.min.z(), 3.0);
-        EXPECT_EQ(range.max.z(), 6.0);
+        EXPECT_EQ(range.min_.x(), 1.0);
+        EXPECT_EQ(range.max_.x(), 4.0);
+        EXPECT_EQ(range.min_.y(), 2.0);
+        EXPECT_EQ(range.max_.y(), 5.0);
+        EXPECT_EQ(range.min_.z(), 3.0);
+        EXPECT_EQ(range.max_.z(), 6.0);
 }
 
 TEST_F(cncrange_tests, constructor_throw_error_when_json_invalid)
 {
-        JsonCpp json = JsonCpp::parse("[[1,4],[2,5]]");
+        nlohmann::json json = nlohmann::json::parse("[[1,4],[2,5]]");
 
         try {
                 CNCRange range(json);
                 FAIL() << "Expected an exception";
-        } catch (JSONError& e) {
+        } catch (nlohmann::json::exception& e) {
                 // OK
         }
 }

@@ -1,7 +1,8 @@
 #include <stdexcept>
 #include "data_provider/JsonFieldNames.h"
 #include "data_provider/GpsLocationProvider.h"
-#include "JsonCpp.h"
+#include "json.hpp"
+#include <log.h>
 
 namespace romi {
 
@@ -20,29 +21,22 @@ namespace romi {
                 return true;
         }
         
-        std::string GpsLocationProvider::get_location_string()
+        nlohmann::json GpsLocationProvider::location()
         {
                 if (!update_location_estimate()) {
                         r_warn("GpsLocationProvider: update failed. "
                                "Returning old estimates");
                 }
 
-                json_object_t coordinate_object = json_object_create();
-                json_object_setnum(coordinate_object, JsonFieldNames::latitude.data(),
-                                   latitude_);
-                json_object_setnum(coordinate_object, JsonFieldNames::longitude.data(),
-                                   longitude_);
-                std::string locationString;
-                JsonCpp locationData(coordinate_object);
-                locationData.tostring(locationString, k_json_pretty | k_json_sort_keys);
+            nlohmann::json coordinate_object = nlohmann::json::object({ {JsonFieldNames::latitude.data(),  latitude_},
+                                                                        {JsonFieldNames::longitude.data(), longitude_}});
 
-                json_unref(coordinate_object);
-                return locationString;
+            return coordinate_object.dump(4);
         }
 
-        v3 GpsLocationProvider::get_location()
+        v3 GpsLocationProvider::coordinates()
         {
-                throw std::runtime_error("GpsLocationProvider::get_location: "
+                throw std::runtime_error("GpsLocationProvider::coordinates: "
                                          "NOT IMPLEMENTED YET");
         }
 }

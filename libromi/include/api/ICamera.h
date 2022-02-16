@@ -26,7 +26,7 @@
 #define __ROMI_ICAMERA_H
 
 #include "cv/Image.h"
-#include "JsonCpp.h"
+#include "json.hpp"
 #include "MemBuffer.h"
 
 namespace romi {
@@ -35,7 +35,7 @@ namespace romi {
         public:
                 virtual ~ICamera() = default;
                 virtual bool grab(Image &image) = 0;
-                virtual rpp::MemBuffer& grab_jpeg() = 0;
+                virtual rcom::MemBuffer& grab_jpeg() = 0;
         };
 }
 

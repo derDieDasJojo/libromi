@@ -29,7 +29,7 @@
 #include <stdexcept>
 #include <mutex>
 #include <thread>
-#include <JsonCpp.h>
+#include <json.hpp>
 
 #include "api/ICamera.h"
 #include "cv/Image.h"
@@ -67,7 +67,7 @@ namespace romi {
                 
                 bool grab(Image &image) override;
 
-                rpp::MemBuffer& grab_jpeg() override {
+                rcom::MemBuffer& grab_jpeg() override {
                         throw std::runtime_error("USBCamera::grab_jpeg: Not implemented");
                 }
         };

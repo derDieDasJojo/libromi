@@ -46,7 +46,7 @@ namespace romi {
 
         private:
             void monitor_loop();
-            bool check_response(const char *command, JsonCpp& response);
+            bool check_response(const char *command, nlohmann::json& response);
 
             template<class ChronoDuration>
             bool wait_for(ChronoDuration duration) {

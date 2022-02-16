@@ -1,34 +1,35 @@
 #include <stdlib.h>
 #include <iostream>
+#include <log.h>
 #include <rpc/RcomClient.h>
 #include <ClockAccessor.h>
 
-void print(JsonCpp& obj)
+void print(nlohmann::json& obj)
 {
-        std::string s;
-        obj.tostring(s, k_json_pretty);
+        std::string s = obj.dump(4);
         std::cout << s << std::endl;
 }
 
 
-JsonCpp python_eval(const std::string& expression)
+nlohmann::json python_eval(const std::string& expression)
 {
-        JsonCpp response;
+        nlohmann::json response;
         romi::RPCError error;
         
-        JsonCpp params = JsonCpp::construct("{\"expression\": \"%s\"}",
-                                            expression.c_str());
+        nlohmann::json params{
+                {"expression", expression}
+        };
+
         
         r_debug("python.eval('%s')", expression.c_str());
         auto rpc = romi::RcomClient::create("python", 30);
         rpc->execute("eval", params, response, error);
         
         if (error.code == 0) {
-                if (response.get("error").num("code") == 0) {
-                        //print(response);
-                        return response.get("result");
+                if (response["error"]["code"] == 0) {
+                        return response.at("result");
                 } else {
-                        throw std::runtime_error(response.get("error").str("message"));
+                        throw std::runtime_error(response["error"]["message"]);
                 }
         } else {
                         throw std::runtime_error(error.message.c_str());
@@ -50,7 +51,7 @@ int main(int argc, char **argv)
         
         try {
                 const char *expression = get_expression(argc, argv);
-                JsonCpp result = python_eval(expression);
+                nlohmann::json result = python_eval(expression);
                 print(result);
                 
         } catch (std::exception& e) {

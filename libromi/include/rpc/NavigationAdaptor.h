@@ -34,8 +34,8 @@ namespace romi {
         protected:
                 INavigation &navigation_;
                 
-                void execute_moveat(JsonCpp& params, RPCError &error);
-                void execute_move(JsonCpp& params, RPCError &error);
+                void execute_moveat(nlohmann::json& params, RPCError &error);
+                void execute_move(nlohmann::json& params, RPCError &error);
                 void execute_stop(RPCError &error);
                 void execute_pause(RPCError &error);
                 void execute_continue(RPCError &error);
@@ -46,12 +46,12 @@ namespace romi {
                 ~NavigationAdaptor() override = default;
 
                 void execute(const std::string& method,
-                             JsonCpp& params,
-                             JsonCpp& result,
+                             nlohmann::json& params,
+                             nlohmann::json& result,
                              RPCError &error) override;
                 void execute(const std::string& method,
-                             JsonCpp &params,
-                             rpp::MemBuffer& result,
+                             nlohmann::json &params,
+                             rcom::MemBuffer& result,
                              RPCError &status) override;
         };
 }

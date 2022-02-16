@@ -40,7 +40,7 @@ namespace romi {
         protected:
                 std::string filename_;
                 Image image_;
-                rpp::MemBuffer filebuffer_;
+                rcom::MemBuffer filebuffer_;
                 bool open();
                 
         public:
@@ -50,7 +50,7 @@ namespace romi {
         
                 bool grab(Image &image) override;
                 
-                rpp::MemBuffer& grab_jpeg() override;
+                rcom::MemBuffer& grab_jpeg() override;
         };
 }
 

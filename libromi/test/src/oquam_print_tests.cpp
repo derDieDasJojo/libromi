@@ -1,6 +1,6 @@
 #include "gtest/gtest.h"
 #include "gmock/gmock.h"
-#include "JsonCpp.h"
+#include "json.hpp"
 #include "oquam/SmoothPath.h"
 #include "oquam/print.h"
 
@@ -39,20 +39,17 @@ TEST_F(oquam_print_tests, test_valid_json_without_slices)
         script.moveto(0.00, 0.00, 0.0, 1.0);
         script.convert(vmax, amax, deviation, period, maxlen);
 
-        membuf_t *text = new_membuf();
-
+        rcom::MemBuffer text;
         try {
                 print(script, text, false);
-                membuf_append_zero(text);
-                JsonCpp json = JsonCpp::parse(membuf_data(text));
+                nlohmann::json json = nlohmann::json::parse(text.tostring());
                 
-        } catch (JSONError& je) {
-                printf("Generated JSON:\n%s", membuf_data(text));
+        } catch (nlohmann::json::exception& je) {
+                printf("Generated JSON:\n%s", text.tostring().c_str());
                 r_err("Parsing failed: %s", je.what());
                 FAIL() << "Failed to parse the JSON";
         }
 
-        delete_membuf(text);
 }
 
 TEST_F(oquam_print_tests, test_valid_json_with_slices)
@@ -64,18 +61,14 @@ TEST_F(oquam_print_tests, test_valid_json_with_slices)
         script.moveto(0.00, 0.00, 0.0, 1.0);
         script.convert(vmax, amax, deviation, period, maxlen);
 
-        membuf_t *text = new_membuf();
-
+        rcom::MemBuffer text;
         try {
                 print(script, text, true);
-                membuf_append_zero(text);
-                JsonCpp json = JsonCpp::parse(membuf_data(text));
+                nlohmann::json json = nlohmann::json::parse(text.tostring());
                 
-        } catch (JSONError& je) {
-                printf("Generated JSON:\n%s", membuf_data(text));
+        } catch (nlohmann::json::exception& je) {
+                printf("Generated JSON:\n%s", text.tostring().c_str());
                 r_err("Parsing failed: %s", je.what());
                 FAIL() << "Failed to parse the JSON";
         }
-
-        delete_membuf(text);
 }

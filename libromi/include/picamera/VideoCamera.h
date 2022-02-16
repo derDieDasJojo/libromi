@@ -46,7 +46,7 @@ namespace romi {
                 ~VideoCamera() override;
                 
                 bool grab(Image &image) override;
-                rpp::MemBuffer& grab_jpeg();
+                rcom::MemBuffer& grab_jpeg();
         };
 }
 

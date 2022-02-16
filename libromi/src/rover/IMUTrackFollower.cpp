@@ -22,7 +22,7 @@
 
  */
 
-#include <r.h>
+#include <log.h>
 #include "rover/IMUTrackFollower.h"
 
 namespace romi {
@@ -71,16 +71,16 @@ namespace romi {
         
         double IMUTrackFollower::get_orientation()
         {
-                JsonCpp response;
+                nlohmann::json response;
                 double orientation;
                 
                 romi_client_->send("o", response);
-                bool success = response.num(0) == 0;
+                bool success = response[0] == 0;
                 if (success) {
-                        orientation = response.num(1);
+                        orientation = response[1];
                 } else {
                         r_err("IMUTrackFollower::get_orientation failed: code %d",
-                              (int) response.num(0));
+                              (int) response[0]);
                         throw std::runtime_error("IMUTrackFollower::get_orientation failed");
                 }
                  return orientation;

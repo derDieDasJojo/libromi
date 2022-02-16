@@ -9,7 +9,7 @@ public:
         MOCK_METHOD(void, start, (const std::string& observation_id), (override));
         MOCK_METHOD(void, stop, (), (override));
         MOCK_METHOD(bool, store_jpg, (const std::string& name, romi::Image& image), (override));
-        MOCK_METHOD(bool, store_jpg, (const std::string& name, rpp::MemBuffer& jpeg), (override));
+        MOCK_METHOD(bool, store_jpg, (const std::string& name, rcom::MemBuffer& jpeg), (override));
         MOCK_METHOD(bool, store_png, (const std::string& name, romi::Image& image) , (override));
         MOCK_METHOD(bool, store_svg, (const std::string& name, const std::string& body), (override));
         MOCK_METHOD(bool, store_txt, (const std::string& name, const std::string& body), (override));

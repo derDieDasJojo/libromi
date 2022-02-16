@@ -9,7 +9,7 @@ using namespace romi;
 class navigationsettings_tests : public ::testing::Test
 {
 protected:
-        JsonCpp config;
+        nlohmann::json config;
         
 	navigationsettings_tests() : config(){
                 const char * config_string = "{"
@@ -18,7 +18,7 @@ protected:
                         "'encoder-steps': 1000.0,"
                         "'maximum-speed': 3.0, "
                         "'maximum-acceleration': 0.1 }";
-                config = JsonCpp::parse(config_string);
+                config = nlohmann::json::parse(config_string);
 	}
 
 	~navigationsettings_tests() override = default;

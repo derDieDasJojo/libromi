@@ -71,8 +71,8 @@ namespace romi {
 
                 // ILocationProvider
                 bool update_orientation_estimate() override;
-                v3 get_location() override;
-                std::string get_location_string() override;
+                v3 coordinates() override;
+                nlohmann::json location() override;
                 
                 // IOrientationProvider
                 bool update_location_estimate() override;

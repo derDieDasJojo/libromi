@@ -21,7 +21,8 @@
   <http://www.gnu.org/licenses/>.
 
  */
-#include <r.h>
+#include <log.h>
+#include <iostream>
 #include "rpc/CNCAdaptor.h"
 #include "rpc/MethodsRover.h"
 
@@ -33,8 +34,8 @@ namespace romi {
         }
 
         void CNCAdaptor::execute(const std::string& method,
-                                 JsonCpp &params,
-                                 rpp::MemBuffer& result,
+                                 nlohmann::json &params,
+                                 rcom::MemBuffer& result,
                                  RPCError &error)
         {
                 (void) method;
@@ -44,8 +45,8 @@ namespace romi {
                 error.message = "Unknown method";
         }
 
-        void CNCAdaptor::execute(const std::string& method, JsonCpp& params,
-                                 JsonCpp& result, RPCError &error)
+        void CNCAdaptor::execute(const std::string& method, nlohmann::json& params,
+                                 nlohmann::json& result, RPCError &error)
         {
                 r_debug("CNCAdaptor::execute");
 
@@ -103,16 +104,21 @@ namespace romi {
                 }
         }
 
-        void CNCAdaptor::execute_get_range(__attribute__((unused))JsonCpp& params, JsonCpp& result,
+        void CNCAdaptor::execute_get_range(__attribute__((unused))nlohmann::json& params, nlohmann::json& result,
                                           RPCError &error)
         {
                 r_debug("CNCAdaptor::execute_get_range");
                 CNCRange range;
                 if (cnc_.get_range(range)) {
-                        result = JsonCpp::construct("[[%f,%f],[%f,%f],[%f,%f]]",
-                                                    range.min.x(), range.max.x(),
-                                                    range.min.y(), range.max.y(),
-                                                    range.min.z(), range.max.z());
+                        result = nlohmann::json::array({
+                                                             nlohmann::json::array(
+                                                                     {range.min_.x(), range.max_.x()}),
+                                                             nlohmann::json::array(
+                                                                     {range.min_.y(), range.max_.y()}),
+                                                             nlohmann::json::array(
+                                                                     {range.min_.z(), range.max_.z()})
+                                                         });
+
                 } else {
                         r_err("CNCAdaptor::execute_get_range failed");
                         error.code = 1;
@@ -120,28 +126,24 @@ namespace romi {
                 }
         }
         
-        void CNCAdaptor::execute_moveto(JsonCpp& params, __attribute__((unused))JsonCpp& result,
+        void CNCAdaptor::execute_moveto(nlohmann::json& params, __attribute__((unused))nlohmann::json& result,
                                        RPCError &error)
         {
                 r_debug("CNCAdaptor::execute_moveto");
-
                 {
-                        char buffer[256];
-                        json_tostring(params.ptr(), k_json_compact, buffer, 256);
-                        r_debug("CNCAdaptor::execute_moveto: %s", buffer);
+                        r_debug("CNCAdaptor::execute_moveto: %s", params.dump().c_str());
                 }
 
-                if (!params.has("x") && !params.has("y") && !params.has("z")) {
+                if (!params.contains("x") && !params.contains("y") && !params.contains("z") ) {
                         r_err("CNCAdaptor::execute_moveto failed: missing parameters");
                         error.code = RPCError::kInvalidParams;
                         error.message = "missing x, y, or z parameters";
-                        
                 } else {
                         
-                        double x = params.num("x", ICNC::UNCHANGED);
-                        double y = params.num("y", ICNC::UNCHANGED);
-                        double z = params.num("z", ICNC::UNCHANGED);
-                        double v = params.num("speed", 0.2);
+                        double x = params.value("x", ICNC::UNCHANGED);
+                        double y = params.value("y", ICNC::UNCHANGED);
+                        double z = params.value("z", ICNC::UNCHANGED);
+                        double v = params.value("speed", 0.2);
                         
                         r_debug("CNCAdaptor::execute_moveto: %f, %f, %f", x, y, z);
                                 
@@ -152,39 +154,37 @@ namespace romi {
                 }
         }
         
-        void CNCAdaptor::execute_spindle(JsonCpp& params, __attribute__((unused))JsonCpp& result,
+        void CNCAdaptor::execute_spindle(nlohmann::json& params, __attribute__((unused))nlohmann::json& result,
                                         RPCError &error)
         {
                 r_debug("CNCAdaptor::execute_spindle");
                 
                 try {
-                        double speed = params.num("speed");
+                        double speed = params["speed"];
                         if (!cnc_.spindle(speed)) {
                                 error.code = 1;
                                 error.message = "spindle failed";
                         }
 
-                } catch (JSONError &je) {
+                } catch (nlohmann::json::exception & je) {
                         r_err("CNCAdaptor::execute_spindle failed: %s", je.what());
                         error.code = RPCError::kInvalidParams;
                         error.message = je.what();
                 }
         }
         
-        void CNCAdaptor::execute_travel(JsonCpp& params, __attribute__((unused))JsonCpp& result,
+        void CNCAdaptor::execute_travel(nlohmann::json& params, __attribute__((unused))nlohmann::json& result,
                                        RPCError &error)
         {
                 r_debug("CNCAdaptor::execute_travel");
                 
                 try {
                         Path path;
-                        double speed = params.num("speed", 0.1);
-                        JsonCpp p = params.array("path");
-                        for (size_t i = 0; i < p.length(); i++) {
-                                v3 pt;
-                                JsonCpp a = p.array(i);
-                                pt.set(a.num(0), a.num(1), a.num(2));
-                                path.push_back(pt);
+                        double speed = params.value("speed", 0.1);
+
+                        nlohmann::json p = params.at("path");
+                        for (auto & i : p) {
+                                path.emplace_back(i[0], i[1], i[2]);
                         }
 
                         if (!cnc_.travel(path, speed)) {
@@ -192,7 +192,7 @@ namespace romi {
                                 error.message = "travel failed";
                         }
 
-                } catch (JSONError &je) {
+                } catch (nlohmann::json::exception& je) {
                         r_err("CNCAdaptor::execute_spindle failed: %s", je.what());
                         error.code = RPCError::kInvalidParams;
                         error.message = je.what();

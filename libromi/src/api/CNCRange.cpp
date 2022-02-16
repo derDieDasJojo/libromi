@@ -26,39 +26,39 @@
 
 namespace romi {
         
-        CNCRange::CNCRange() : min(0.0), max(0.0) {
+        CNCRange::CNCRange() : min_(0.0), max_(0.0) {
         }
         
         CNCRange::CNCRange(const double *xmin, const double *xmax)
-                : min(xmin), max(xmax) {
+                : min_(xmin), max_(xmax) {
         }
         
         CNCRange::CNCRange(v3 xmin, v3 xmax)
-                : min(xmin), max(xmax) {
+                : min_(xmin), max_(xmax) {
         }
         
-        CNCRange::CNCRange(JsonCpp& json) : min(0.0), max(0.0) {
+        CNCRange::CNCRange(nlohmann::json& json) : min_(0.0), max_(0.0) {
                 init(json);
         }
         
-        void CNCRange::init(JsonCpp& range)
+        void CNCRange::init(nlohmann::json& range)
         {
                 for (size_t i = 0; i < 3; i++) {
-                        min.set(i, range.array(i).num(0));
-                        max.set(i, range.array(i).num(1));
+                        min_.set(i, range[i][0]);
+                        max_.set(i, range[i][1]);
                 }
         }
 
         v3 CNCRange::dimensions() const
         {
-                return max - min;
+                return max_ - min_;
         }
         
         bool CNCRange::is_inside(double x, double y, double z)
         {
-                return ((x >= min.x()) && (x <= max.x())
-                        && (y >= min.y()) && (y <= max.y())
-                        && (z >= min.z()) && (z <= max.z()));
+                return ((x >= min_.x()) && (x <= max_.x())
+                        && (y >= min_.y()) && (y <= max_.y())
+                        && (z >= min_.z()) && (z <= max_.z()));
         }
 
         bool CNCRange::is_inside(v3 p)
@@ -70,20 +70,20 @@ namespace romi {
         {
                 double dx[3] = { 0.0, 0.0, 0.0 };
         
-                if (x < min.x())
-                        dx[0] = min.x() - x;
-                else if (x > max.x())
-                        dx[0] = x - max.x();
+                if (x < min_.x())
+                        dx[0] = min_.x() - x;
+                else if (x > max_.x())
+                        dx[0] = x - max_.x();
                 
-                if (y < min.y())
-                        dx[1] = min.y() - y;
-                else if (y > max.y())
-                        dx[1] = y - max.y();
+                if (y < min_.y())
+                        dx[1] = min_.y() - y;
+                else if (y > max_.y())
+                        dx[1] = y - max_.y();
                 
-                if (z < min.z())
-                        dx[2] = min.z() - z;
-                else if (z > max.z())
-                        dx[2] = z - max.z();
+                if (z < min_.z())
+                        dx[2] = min_.z() - z;
+                else if (z > max_.z())
+                        dx[2] = z - max_.z();
         
                 return vnorm(dx);
         }
@@ -95,6 +95,6 @@ namespace romi {
         
         v3 CNCRange::clamp(v3 p) const
         {
-                return p.clamp(min, max);
+                return p.clamp(min_, max_);
         }
 }

@@ -50,7 +50,7 @@ protected:
 	void TearDown() override {
 	}
 public:
-    bool capture_send( rpp::MemBuffer& message, rcom::MessageType type)
+    bool capture_send( rcom::MemBuffer& message, rcom::MessageType type)
     {
         (void) type;
         actual_reply_text_ = message;
@@ -58,7 +58,7 @@ public:
     }
 
 public:
-    rpp::MemBuffer actual_reply_text_;
+    rcom::MemBuffer actual_reply_text_;
     MockWebSocket mockWebSocket_;
     MockInputDevice mockInputDevice_;
     MockDisplay mockDisplay_;
@@ -100,7 +100,7 @@ TEST_F(scripthublistener_tests, onmessage_binary_message_throws)
     auto scriptHubListener = std::make_shared<ScriptHubListener>(rover);
     MockWebSocket mockWebSocket;
 
-    rpp::MemBuffer request;
+    rcom::MemBuffer request;
     request.printf(R"({"request": "list"})");
 
     // Act
@@ -124,7 +124,7 @@ TEST_F(scripthublistener_tests, onmessage_list_returns_json)
                       mockMenu_, mockScriptEngine_, mockNotifications_, mockWeeder_, mockImager_, mockRemoteStateInputDevice_);
     auto scriptHubListener = std::make_shared<ScriptHubListener>(rover);
 
-    rpp::MemBuffer request;
+    rcom::MemBuffer request;
     request.printf(R"({"request": "list"})");
     // Act
     scriptHubListener->onmessage(mockWebSocket_, request, rcom::kTextMessage);

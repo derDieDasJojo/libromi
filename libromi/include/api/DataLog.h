@@ -65,7 +65,7 @@ namespace romi {
                 std::unique_ptr<std::thread> thread_;
                 std::atomic<bool> quitting_;
                 std::unique_ptr<rcom::MessageHub> hub_;
-                rpp::MemBuffer message_;
+                rcom::MemBuffer message_;
                 double last_handle_events_;
                 
                 uint32_t get_index(const std::string& name);

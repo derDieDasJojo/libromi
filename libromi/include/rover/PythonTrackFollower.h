@@ -49,12 +49,12 @@ namespace romi {
                 size_t image_counter_;
                 
                 void try_update();
-                rpp::MemBuffer& grab_image();
+                rcom::MemBuffer& grab_image();
                 std::string get_image_name();
                 std::string get_image_path(std::string& filename);
-                void store_image(rpp::MemBuffer& jpg, std::string& path);
-                JsonCpp send_python_request(const std::string& path);
-                void parse_response(JsonCpp& response);
+                void store_image(rcom::MemBuffer& jpg, std::string& path);
+                nlohmann::json send_python_request(const std::string& path);
+                void parse_response(nlohmann::json& response);
                 
         public:
                 PythonTrackFollower(ICamera& camera,

@@ -30,32 +30,25 @@
 namespace romi {
         
         SpeedController::SpeedController(INavigation &navigation,
-                                         JsonCpp& config)
+                                         nlohmann::json& config)
                 : _navigation(navigation), _fast(), _accurate()
         {
                 try {
-                        JsonCpp fast_config = (config.get("user-interface")
-                                               .get("speed-controller")
-                                               .get("fast"));
-                        JsonCpp accurate_config = (config.get("user-interface")
-                                                   .get("speed-controller")
-                                                   .get("accurate"));
-                
+                        nlohmann::json fast_config(config.at("user-interface").at("speed-controller").at("fast"));
+                        nlohmann::json accurate_config = (config.at("user-interface").at("speed-controller").at("accurate"));
                         _fast.parse(fast_config);
                         _accurate.parse(accurate_config);
-                        
-                } catch (JSONError &je) {
+
+                        if (!_accurate.is_valid())
+                            throw std::range_error("Invalid settings for accurate speed controller");
+                        if (!_fast.is_valid())
+                            throw std::range_error("Invalid settings for fast speed controller");
+                } catch (nlohmann::json::exception& je) {
                         r_err("SpeedController::SpeedController: failed to "
                               "parse the configuration");
                         throw;
                 }
-                
-                if (!_accurate.is_valid()) 
-                        throw std::range_error("Invalid settings for "
-                                               "accurate speed controller");
-                if (!_fast.is_valid())
-                        throw std::range_error("Invalid settings for "
-                                               "fast speed controller");
+
         }
 
         SpeedController::SpeedController(INavigation &navigation,

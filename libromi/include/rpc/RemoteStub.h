@@ -35,9 +35,9 @@ namespace romi {
         protected:
                 std::unique_ptr<IRPCClient> client_;
 
-                bool execute(const std::string& method, JsonCpp& params, JsonCpp& result);
-                bool execute_with_params(const std::string& method, JsonCpp& params);
-                bool execute_with_result(const std::string& method, JsonCpp& result);
+                bool execute(const std::string& method, nlohmann::json& params, nlohmann::json& result);
+                bool execute_with_params(const std::string& method, nlohmann::json& params);
+                bool execute_with_result(const std::string& method, nlohmann::json& result);
                 bool execute_simple_request(const std::string& method);
 
         public:

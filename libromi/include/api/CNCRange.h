@@ -25,7 +25,7 @@
 #ifndef __ROMI_CNC_RANGE_H
 #define __ROMI_CNC_RANGE_H
 
-#include "JsonCpp.h"
+#include "json.hpp"
 #include "v3.h"
 #include "IRange.h"
 
@@ -34,15 +34,15 @@ namespace romi {
         class CNCRange : public IRange
         {
             public:
-                v3 min;
-                v3 max;
+                v3 min_;
+                v3 max_;
             public:
                 CNCRange();
-                explicit CNCRange(JsonCpp &range);
+                explicit CNCRange(nlohmann::json &range);
                 CNCRange(const double *min, const double *max);
                 CNCRange(v3 min, v3 max);
 
-                void init(JsonCpp &range) override;
+                void init(nlohmann::json &range) override;
 
                 v3 dimensions() const override;
 

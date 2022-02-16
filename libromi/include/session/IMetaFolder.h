@@ -3,6 +3,7 @@
 
 #include <filesystem>
 #include <MemBuffer.h>
+#include <json.hpp>
 #include "cv/Image.h"
 #include "api/Path.h"
 
@@ -13,7 +14,7 @@ namespace romi {
         IMetaFolder() = default;
         virtual ~IMetaFolder() = default;
         virtual void try_store_jpg(const std::string &filename, romi::Image &image, const std::string &observationId) = 0;
-        virtual void try_store_jpg(const std::string &filename, rpp::MemBuffer& jpeg, const std::string &observationId) = 0;
+        virtual void try_store_jpg(const std::string &filename, rcom::MemBuffer& jpeg, const std::string &observationId) = 0;
         virtual void try_store_png(const std::string &filename, romi::Image &image, const std::string &observationId) = 0;
         virtual void
         try_store_svg(const std::string &filename, const std::string& body, const std::string &observationId) = 0;

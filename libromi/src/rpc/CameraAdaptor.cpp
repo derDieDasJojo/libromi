@@ -21,7 +21,7 @@
   <http://www.gnu.org/licenses/>.
 
  */
-#include <r.h>
+#include <log.h>
 #include "rpc/CameraAdaptor.h"
 #include "rpc/MethodsCamera.h"
 
@@ -33,8 +33,8 @@ namespace romi {
         }
 
         void CameraAdaptor::execute(const std::string& method,
-                                    JsonCpp &params,
-                                    rpp::MemBuffer& result,
+                                    nlohmann::json &params,
+                                    rcom::MemBuffer& result,
                                     RPCError &error)
         {
                 (void) params;
@@ -45,7 +45,7 @@ namespace romi {
                 try {
                         if (method == MethodsCamera::grab_jpeg_binary) {
                                 
-                                rpp::MemBuffer& jpeg = camera_.grab_jpeg();
+                                rcom::MemBuffer& jpeg = camera_.grab_jpeg();
                                 result.append(jpeg); // TODO: can we avoid a copy?
                                 
                         } else {
@@ -62,8 +62,8 @@ namespace romi {
         }
         
         
-        void CameraAdaptor::execute(const std::string& method, JsonCpp& params,
-                                    JsonCpp& result, RPCError& error)
+        void CameraAdaptor::execute(const std::string& method, nlohmann::json& params,
+                                    nlohmann::json& result, RPCError& error)
         {
                 (void) params;
 
@@ -85,9 +85,9 @@ namespace romi {
         
                 static constexpr const char *grab_jpeg_json = "camera-grab-jpeg";
                         
-        void CameraAdaptor::grab_jpeg_json(JsonCpp& result, RPCError& error)
+        void CameraAdaptor::grab_jpeg_json(nlohmann::json& result, RPCError& error)
         {
-                rpp::MemBuffer& jpeg = camera_.grab_jpeg();
+                rcom::MemBuffer& jpeg = camera_.grab_jpeg();
 
                 if (jpeg.size() > 0) {
                         encode(jpeg, result);
@@ -98,15 +98,13 @@ namespace romi {
                 }
         }
 
-        void CameraAdaptor::encode(rpp::MemBuffer& jpeg, JsonCpp& result)
+        void CameraAdaptor::encode(rcom::MemBuffer& jpeg, nlohmann::json& result)
         {
-                // TODO: that's two copies...
-                char *data = encode_base64(jpeg.data().data(), jpeg.size());
-                json_object_setstr(result.ptr(), "jpeg", data);
-                r_free(data);
+                std::string data = encode_base64(jpeg.data().data(), jpeg.size());
+                result["jpeg"] = data;
         }
         
-        char *CameraAdaptor::encode_base64(const uint8_t *s, size_t ilen)
+        std::string CameraAdaptor::encode_base64(const uint8_t *s, size_t ilen)
         {
                 static const char table[] = {
                         'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
@@ -121,7 +119,7 @@ namespace romi {
 
                 size_t olen = 4 * ((ilen + 2) / 3);
 
-                char *t = (char *) r_alloc(olen+1);
+                std::string t(olen+1, 0);
                 t[olen] = 0;
 
                 uint8_t a, b, c;

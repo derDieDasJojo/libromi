@@ -26,7 +26,7 @@ protected:
 
 TEST_F(scriptlist_tests, successfully_load_empty_scriplist)
 {
-        JsonCpp json = JsonCpp::parse("[]");
+        nlohmann::json json = nlohmann::json::parse("[]");
         ScriptList scripts(json);
 
         ASSERT_EQ(scripts.size(), 0);
@@ -34,7 +34,7 @@ TEST_F(scriptlist_tests, successfully_load_empty_scriplist)
 
 TEST_F(scriptlist_tests, successfully_load_simple_scriplist)
 {
-        JsonCpp json = JsonCpp::parse("[{ 'id': 'foo', 'title': 'bar', 'actions': []}]");
+        nlohmann::json json = nlohmann::json::parse(R"([{ "id": "foo", "title": "bar", "actions": []}])");
         ScriptList scripts(json);
 
         ASSERT_EQ(scripts.size(), 1);
@@ -45,7 +45,7 @@ TEST_F(scriptlist_tests, successfully_load_simple_scriplist)
 
 TEST_F(scriptlist_tests, successfully_load_scriplist_with_hoe_action)
 {
-        JsonCpp json = JsonCpp::parse("[{ 'id': 'foo', 'title': 'bar', 'actions': [{'action':'hoe'}]}]");
+        nlohmann::json json = nlohmann::json::parse(R"([{ "id": "foo", "title": "bar", "actions": [{"action":"hoe"}]}])");
         ScriptList scripts(json);
 
         ASSERT_EQ(scripts.size(), 1);
@@ -58,7 +58,7 @@ TEST_F(scriptlist_tests, successfully_load_scriplist_with_hoe_action)
 
 TEST_F(scriptlist_tests, successfully_load_scriplist_with_move_action)
 {
-        JsonCpp json = JsonCpp::parse("[{ 'id': 'foo', 'title': 'bar', 'actions': [{'action':'move', 'distance': 1, 'speed': 0.5}]}]");
+        nlohmann::json json = nlohmann::json::parse(R"([{ "id": "foo", "title": "bar", "actions": [{"action":"move", "distance": 1, "speed": 0.5}]}])");
         ScriptList scripts(json);
 
         ASSERT_EQ(scripts.size(), 1);
@@ -72,8 +72,7 @@ TEST_F(scriptlist_tests, successfully_load_scriplist_with_move_action)
 
 TEST_F(scriptlist_tests, successfully_load_scriplist_with_two_scripts)
 {
-        JsonCpp json = JsonCpp::parse("[{ 'id': 'foo', 'title': 'Foo', 'actions': [{'action':'move', 'distance': 1, 'speed': 0.5}]},"
-                                      "{ 'id': 'bar', 'title': 'Bar', 'actions': [{'action':'hoe'}]}]");
+        nlohmann::json json = nlohmann::json::parse(R"([{ "id": "foo", "title": "Foo", "actions": [{"action":"move", "distance": 1, "speed": 0.5}]}, { "id": "bar", "title": "Bar", "actions": [{"action":"hoe"}]}])");
         ScriptList scripts(json);
 
         ASSERT_EQ(scripts.size(), 2);
@@ -93,7 +92,7 @@ TEST_F(scriptlist_tests, successfully_load_scriplist_with_two_scripts)
 
 TEST_F(scriptlist_tests, throws_runtime_exception_on_invalid_move_1)
 {
-        JsonCpp json = JsonCpp::parse("[{ 'id': 'foo', 'title': 'bar', 'actions': [{'action':'move'}]}]");
+        nlohmann::json json = nlohmann::json::parse(R"([{ "id": "foo", "title": "bar", "actions": [{"action":"move"}]}])");
 
         try {
                 ScriptList scripts(json);
@@ -109,7 +108,7 @@ TEST_F(scriptlist_tests, throws_runtime_exception_on_invalid_move_1)
 
 TEST_F(scriptlist_tests, throws_runtime_exception_on_invalid_move_2)
 {
-        JsonCpp json = JsonCpp::parse("[{ 'id': 'foo', 'title': 'bar', 'actions': [{'action':'move', 'distance': 1}]}]");
+        nlohmann::json json = nlohmann::json::parse(R"([{ "id": "foo", "title": "bar", "actions": [{"action":"move", "distance": 1}]}])");
 
         try {
                 ScriptList scripts(json);
@@ -125,7 +124,7 @@ TEST_F(scriptlist_tests, throws_runtime_exception_on_invalid_move_2)
 
 TEST_F(scriptlist_tests, throws_runtime_exception_on_invalid_move_3)
 {
-        JsonCpp json = JsonCpp::parse("[{ 'id': 'foo', 'title': 'bar', 'actions': [{'action':'move', 'distance': 100000, 'speed': 0.5}]}]");
+        nlohmann::json json = nlohmann::json::parse(R"([{ "id": "foo", "title": "bar", "actions": [{"action":"move", "distance": 100000, "speed": 0.5}]}])");
 
         try {
                 ScriptList scripts(json);
@@ -141,7 +140,7 @@ TEST_F(scriptlist_tests, throws_runtime_exception_on_invalid_move_3)
 
 TEST_F(scriptlist_tests, throws_runtime_exception_on_invalid_move_4)
 {
-        JsonCpp json = JsonCpp::parse("[{ 'id': 'foo', 'title': 'bar', 'actions': [{'action':'move', 'distance': 1, 'speed': 100}]}]");
+        nlohmann::json json = nlohmann::json::parse(R"([{ "id": "foo", "title": "bar", "actions": [{"action":"move", "distance": 1, "speed": 100}]}])");
 
         try {
                 ScriptList scripts(json);
@@ -172,7 +171,7 @@ TEST_F(scriptlist_tests, throws_runtime_exception_on_missing_script_file)
 TEST_F(scriptlist_tests, successfully_loads_a_scrip_file)
 {
         FILE* fp = fopen("/tmp/scriptlist_tests.json", "w");
-        const char *json = "[{ 'id': 'foo', 'title': 'bar', 'actions': [{'action':'move', 'distance': 1, 'speed': 0.5}]}]";
+        const char *json = R"([{ "id": "foo", "title": "bar", "actions": [{"action":"move", "distance": 1, "speed": 0.5}]}])";
         fprintf(fp, "%s", json);
         fclose(fp);
         
@@ -200,7 +199,7 @@ TEST_F(scriptlist_tests, successfully_loads_a_scrip_file)
 TEST_F(scriptlist_tests, throws_runtime_exception_on_invalid_script_file_1)
 {
         FILE* fp = fopen("/tmp/scriptlist_tests.json", "w");
-        const char *json = "[{ 'id': 'foo', 'title': 'bar', 'actions': [{'action':'move'}]}]";
+        const char *json = R"([{ "id": "foo", "title": "bar", "actions": [{"action":"move"}]}])";
         fprintf(fp, "%s", json);
         fclose(fp);
         
@@ -221,7 +220,7 @@ TEST_F(scriptlist_tests, throws_runtime_exception_on_invalid_script_file_1)
 TEST_F(scriptlist_tests, throws_runtime_exception_on_invalid_script_file_2)
 {
         FILE* fp = fopen("/tmp/scriptlist_tests.json", "w");
-        const char *json = "[{ 'id': 'foo', 'title': 'bar', 'actions': [{'action':'move', 'distance': 1, 'speed': 10}]}]";
+        const char *json = R"([{ "id": "foo", "title": "bar", "actions": [{"action":"move", "distance": 1, "speed": 10}]}])";
         fprintf(fp, "%s", json);
         fclose(fp);
         

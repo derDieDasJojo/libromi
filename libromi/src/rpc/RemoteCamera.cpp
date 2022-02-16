@@ -22,6 +22,7 @@
 
  */
 
+#include <log.h>
 #include "cv/ImageIO.h"
 #include "rpc/RemoteCamera.h"
 #include "rpc/MethodsCamera.h"
@@ -37,16 +38,16 @@ namespace romi {
         bool RemoteCamera::grab(Image &image) 
         {
                 bool success = false;
-                rpp::MemBuffer& jpeg = grab_jpeg();
+                rcom::MemBuffer& jpeg = grab_jpeg();
                 if (jpeg.size() > 0) {
                         success = ImageIO::load_from_buffer(image, jpeg.data());
                 }
                 return success;
         }
         
-        rpp::MemBuffer& RemoteCamera::grab_jpeg()
+        rcom::MemBuffer& RemoteCamera::grab_jpeg()
         {
-                JsonCpp params;
+                nlohmann::json params;
                 RPCError error;
 
                 output_.clear();
@@ -61,7 +62,8 @@ namespace romi {
                 return output_;
         }
 
-        // bool RemoteCamera::decode(JsonCpp& result)
+        // TBD: YAGNI
+        // bool RemoteCamera::decode(nlohmann::json& result)
         // {
         //         const char *jpeg_base64 = result.str("jpeg");
         //         size_t length = strlen(jpeg_base64);

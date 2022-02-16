@@ -34,13 +34,13 @@ namespace romi {
         protected:
                 ICNC &cnc_;
                 
-                void execute_get_range(JsonCpp& params, JsonCpp& result,
+                void execute_get_range(nlohmann::json& params, nlohmann::json& result,
                                        RPCError &error);
-                void execute_moveto(JsonCpp& params, JsonCpp& result,
+                void execute_moveto(nlohmann::json& params, nlohmann::json& result,
                                     RPCError &error);
-                void execute_spindle(JsonCpp& params, JsonCpp& result,
+                void execute_spindle(nlohmann::json& params, nlohmann::json& result,
                                      RPCError &error);
-                void execute_travel(JsonCpp& params, JsonCpp& result,
+                void execute_travel(nlohmann::json& params, nlohmann::json& result,
                                     RPCError &error);
                 void execute_homing(RPCError &error);
                 void execute_pause(RPCError &error);
@@ -57,12 +57,12 @@ namespace romi {
                 ~CNCAdaptor() override = default;
                 
                 void execute(const std::string& method,
-                             JsonCpp& params,
-                             JsonCpp& result,
+                             nlohmann::json& params,
+                             nlohmann::json& result,
                              RPCError &error) override;
                 void execute(const std::string& method,
-                             JsonCpp &params,
-                             rpp::MemBuffer& result,
+                             nlohmann::json &params,
+                             rcom::MemBuffer& result,
                              RPCError &status) override;
         };
 }

@@ -20,7 +20,7 @@ namespace romi {
 
         // TBD: Refactor this out to the constuctor.
         void try_store_jpg(const std::string &filename, romi::Image &image, const std::string &observationId) override;
-        void try_store_jpg(const std::string &filename, rpp::MemBuffer& jpeg, const std::string &observationId) override;
+        void try_store_jpg(const std::string &filename, rcom::MemBuffer& jpeg, const std::string &observationId) override;
         void try_store_png(const std::string &filename, romi::Image &image, const std::string &observationId) override;
         void try_store_svg(const std::string &filename, const std::string& body, const std::string &observationId) override;
         void try_store_txt(const std::string &filename, const std::string& text, const std::string &observationId) override;
@@ -34,11 +34,12 @@ namespace romi {
         void add_file_metadata(const std::string &filename, const std::string &ovservationId);
         void CheckInput(Image& image) const;
         void CheckInput(const std::string& string_data, bool empty_ok) const;
+        void CheckInput(rcom::MemBuffer& jpeg) const;
+        void SaveMetaData() const;
         std::shared_ptr<IIdentityProvider> identityProvider_;
         std::shared_ptr<ILocationProvider> locationProvider_;
-        void CheckInput(rpp::MemBuffer& jpeg) const;
         std::filesystem::path folderPath_;
-        std::unique_ptr<JsonCpp> meta_data_;
+        std::unique_ptr<nlohmann::json> meta_data_;
         std::recursive_mutex metadata_file_mutex_;
     };
 

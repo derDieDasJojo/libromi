@@ -22,7 +22,7 @@
 
  */
 
-#include <r.h>
+#include <log.h>
 #include <ClockAccessor.h>
 #include "rover/PythonTrackFollower.h"
 
@@ -87,14 +87,14 @@ namespace romi {
                 r_debug("PythonTrackFollower: store: %.6f s", clock->time()-start_time);
                 
                 auto path = get_image_path(filename);
-                JsonCpp response = send_python_request(path);
+                nlohmann::json response = send_python_request(path);
                 r_debug("PythonTrackFollower: python: %.6f s", clock->time()-start_time);
                 
                 parse_response(response);
                 r_debug("PythonTrackFollower: parse: %.6f s", clock->time()-start_time);
         }
 
-        rpp::MemBuffer& PythonTrackFollower::grab_image()
+        rcom::MemBuffer& PythonTrackFollower::grab_image()
         {
                 image_counter_++;
                 return camera_.grab_jpeg();
@@ -115,7 +115,7 @@ namespace romi {
                 return path.string();
         }
 
-        void PythonTrackFollower::store_image(rpp::MemBuffer& jpg, std::string& name)
+        void PythonTrackFollower::store_image(rcom::MemBuffer& jpg, std::string& name)
         {
                 if (!session_.store_jpg(name, jpg)) {
                         r_err("PythonTrackFollower::store_image: store_jpg failed");
@@ -123,33 +123,35 @@ namespace romi {
                 }
         }
 
-        JsonCpp PythonTrackFollower::send_python_request(const std::string& path)
+        nlohmann::json PythonTrackFollower::send_python_request(const std::string& path)
         {
-                JsonCpp response;
+                nlohmann::json response;
                 romi::RPCError error;
                 
-                JsonCpp params = JsonCpp::construct("{\"path\": \"%s\"}", path.c_str());
-        
+                nlohmann::json params;
+                params["path"] = path;
+
+
                 rpc_->execute(function_name_, params, response, error);
                 
                 if (error.code != 0) {
                         r_warn("Failed to call Python: %s", error.message.c_str());
                         throw std::runtime_error("Failed to call Python");
                         
-                } else if (response.get("error").num("code") != 0) {
-                        const char *message = response.get("error").str("message");
-                        r_warn("Failed to call Python: %s", message);
+                } else if (response["error"]["code"] != 0) {
+                        std::string message = response["error"]["message"];
+                        r_warn("Failed to call Python: %s", message.c_str());
                         throw std::runtime_error("Failed to call Python");
                 }
 
                 return response;
         }
                 
-        void PythonTrackFollower::parse_response(JsonCpp& response)
+        void PythonTrackFollower::parse_response(nlohmann::json& response)
         {
-                cross_track_error_ = response.get("result").num(kCrossTrackErrorKey);
+                cross_track_error_ = response["result"][kCrossTrackErrorKey];
                 cross_track_error_ /= pixels_per_meter_;
-                orientation_error_ = response.get("result").num(kOrientationErrorKey);
+                orientation_error_ = response["result"][kOrientationErrorKey];
                 r_debug("cross_track_error %f, orientation_error %f",
                         cross_track_error_, orientation_error_);
         }

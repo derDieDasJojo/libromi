@@ -34,21 +34,21 @@ namespace romi {
         protected:
                 ICamera& camera_;
 
-                void grab_jpeg_json(JsonCpp& result, RPCError& error);
-                void encode(rpp::MemBuffer& jpeg, JsonCpp& result);
-                char *encode_base64(const uint8_t *s, size_t ilen);
+                void grab_jpeg_json(nlohmann::json& result, RPCError& error);
+                void encode(rcom::MemBuffer& jpeg, nlohmann::json& result);
+                std::string encode_base64(const uint8_t *s, size_t ilen);
                 
         public:
                 CameraAdaptor(ICamera& camera);
                 ~CameraAdaptor() override = default;
         
                 void execute(const std::string& method,
-                             JsonCpp& params,
-                             JsonCpp& result,
-                             RPCError& status);
+                             nlohmann::json& params,
+                             nlohmann::json& result,
+                             RPCError& status) override;
                 void execute(const std::string& method,
-                             JsonCpp &params,
-                             rpp::MemBuffer& result,
+                             nlohmann::json &params,
+                             rcom::MemBuffer& result,
                              RPCError &status) override;
         };
 }

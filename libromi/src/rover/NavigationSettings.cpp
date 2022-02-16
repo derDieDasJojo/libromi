@@ -26,18 +26,18 @@
 
 namespace romi {
         
-        NavigationSettings::NavigationSettings(JsonCpp &config)
+        NavigationSettings::NavigationSettings(nlohmann::json &config)
                 : wheel_diameter(0.0),
                   wheelbase(0.0),
                   wheeltrack(0.0),
                   maximum_speed(0.0),
                   maximum_acceleration(0.0)
         {
-                wheel_diameter = config.num(kWheelDiameterKey);
-                wheelbase = config.num(kWheelbaseKey);
-                wheeltrack = config.num(kWheeltrackKey);
-                maximum_speed = config.num(kMaximumSpeedKey);
-                maximum_acceleration = config.num(kMaximumAccelerationKey);
+                wheel_diameter = config[kWheelDiameterKey];
+                wheelbase = config[kWheelbaseKey];
+                wheeltrack = config[kWheeltrackKey];
+                maximum_speed = config[kMaximumSpeedKey];
+                maximum_acceleration = config[kMaximumAccelerationKey];
         }
         
         double NavigationSettings::wheel_circumference()
