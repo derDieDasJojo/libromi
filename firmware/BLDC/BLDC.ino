@@ -148,14 +148,14 @@ void handle_moveto(IRomiSerial *romiSerial, int16_t *args, const char *string_ar
 
 void handle_moveat(IRomiSerial *romiSerial, int16_t *args, const char *string_arg)
 {
-        double rps = (double) args[0] / 1000.0;
+        float rps = (float) args[0] / 1000.0;
         controller.set_target_speed(rps);
         romiSerial->send_ok();  
 }
 
 void handle_set_angle(IRomiSerial *romiSerial, int16_t *args, const char *string_arg)
 {
-        double angle = (double) args[0] / 3600.0;
+        float angle = (float) args[0] / 3600.0;
         motor.setAngle(angle);
         romiSerial->send_ok();  
 }

@@ -24,16 +24,7 @@
 #include "BLDC.h"
 #include <math.h>
 
-float normalizeAngle(float angle)
-{
-        while (angle < 0.0f)
-                angle += 1.0f;
-        while (angle >= 1.0f)
-                angle -= 1.0f;
-        return angle;
-}
-
-double normalizeAngle(double angle)
+static inline float normalizeAngle(float angle)
 {
         while (angle < 0.0)
                 angle += 1.0;
@@ -65,12 +56,12 @@ BLDC::BLDC(IArduino *_arduino,
         kp = 10.0;
 }
 
-void BLDC::setOffsetAngleZero(double angle)
+void BLDC::setOffsetAngleZero(float angle)
 {
         offsetAngleZero = normalizeAngle(angle);
 }
 
-void BLDC::setTargetPosition(double position)
+void BLDC::setTargetPosition(float position)
 {
         targetPosition = normalizeAngle(position + offsetAngleZero);
 }
@@ -103,13 +94,13 @@ void BLDC::sleep()
         sleepPin->set(0.0f);
 }
 
-void BLDC::setAngle(double value)
+void BLDC::setAngle(float angle)
 {
-        phase = angleToPhase(value);
+        phase = angleToPhase(angle);
         generator->setPhase(phase);
 }
 
-void BLDC::setPhase(double value)
+void BLDC::setPhase(float value)
 {
         phase = normalizeAngle(value);
         generator->setPhase(phase);
@@ -123,6 +114,7 @@ void BLDC::moveat(float rpm, float dt)
 
 float BLDC::angleToPhase(float angle)
 {
+        angle = normalizeAngle(angle);
         float phase = 11.0f * angle;
         int pole = (int) phase;
         phase -= (float) pole;
@@ -151,14 +143,14 @@ bool BLDC::updatePosition(float dt)
         // Serial.print(',');
         
         // The speed is proportional to the error...
-        double speed = kp * error;
+        float speed = kp * error;
 
         // Serial.print(speed, 5);
         // Serial.print(',');
         
         // ... but the acceleration should not surpass the maximum
         // acceleration.
-        double acceleration = (speed - lastSpeed) / dt;
+        float acceleration = (speed - lastSpeed) / dt;
         if (acceleration < -maxAcceleration)
                 acceleration = -maxAcceleration;
         else if (acceleration > maxAcceleration)
@@ -246,7 +238,7 @@ void BLDC::calibrate()
                         setPhase(iphase / 360.0);
                         arduino->delay(1000);
 
-                        double angle = encoder->getAngle();
+                        float angle = encoder->getAngle();
                         // Serial.print(angle, 5);
                         // Serial.print(", ");
                         // Serial.println(pole + iphase / 360.0, 5);
