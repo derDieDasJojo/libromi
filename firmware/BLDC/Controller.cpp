@@ -29,8 +29,7 @@ Controller::Controller(BLDC& motor, float max_acceleration)
           speed_(0.0),
           target_speed_(0.0),
           max_acceleration_(max_acceleration),
-          last_time_(0.0),
-          t_(0.0)
+          last_time_(0.0)
 {
 }
 
