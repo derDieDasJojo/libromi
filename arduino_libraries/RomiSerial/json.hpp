@@ -35,7 +35,7 @@ SOFTWARE.
  * removed, but marked deprecated. See "Generate documentation" section in  *
  * file doc/README.md.                                                      *
 \****************************************************************************/
-# define JSON_DIAGNOSTICS 1
+#define JSON_DIAGNOSTICS 1
 
 #ifndef INCLUDE_NLOHMANN_JSON_HPP_
 #define INCLUDE_NLOHMANN_JSON_HPP_
