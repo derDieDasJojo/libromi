@@ -1,3 +1,4 @@
+#include <stdexcept>
 #include "configuration/ConfigurationProvider.h"
 
 namespace romi {
