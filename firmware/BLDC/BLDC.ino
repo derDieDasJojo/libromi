@@ -76,8 +76,8 @@ const static MessageHandler handlers[] = {
         { 'C', 1, false, handle_calibrate },
 };
 
-#define USE_SERIAL    1
-#define USE_SERIAL_1  0
+#define USE_SERIAL    0
+#define USE_SERIAL_1  1
 
 #if USE_SERIAL
 ArduinoSerial serial(Serial); // TODO
