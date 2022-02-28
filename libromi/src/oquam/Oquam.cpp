@@ -125,11 +125,11 @@ namespace romi {
         {
                 v3 p = assert_get_position();
                 if (x != UNCHANGED)
-                        p.x() = x;
+                        p.x(x);
                 if (y != UNCHANGED)
-                        p.y() = y;
+                        p.y(y);
                 if (z != UNCHANGED)
-                        p.z() = z;
+                        p.z(z);
                 return p;
         }
         
@@ -199,8 +199,10 @@ namespace romi {
                                ", range (%0.6f, %0.6f, %0.6f), "
                                "error %.6f",
                                p.x(), p.y(), p.z(),
-                               settings_.range_.max.x(), settings_.range_.max.y(),
-                               settings_.range_.max.z(), e);
+                               settings_.range_.xmax(),
+                               settings_.range_.ymax(),
+                               settings_.range_.zmax(),
+                               e);
                         if (e > 0.001) { 
                                 throw std::runtime_error("Point out of bounds");
                         }

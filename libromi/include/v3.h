@@ -68,7 +68,7 @@ namespace romi {
         class v3
         {
         protected:
-                double _x[3];
+                double x_[3];
                         
                 
         public:
@@ -90,19 +90,31 @@ namespace romi {
                 }
                 
                 /* v3(const v3& v) { */
-                /*         set(v._x); */
+                /*         set(v.x_); */
                 /* } */
                 
-                double& x() {
-                        return _x[kX];
+                double x() const {
+                        return x_[kX];
                 }
                 
-                double& y() {
-                        return _x[kY];
+                double y() const {
+                        return x_[kY];
                 }
                 
-                double& z() {
-                        return _x[kZ];
+                double z() const {
+                        return x_[kZ];
+                }
+
+                void x(double value) {
+                        x_[kX] = value;
+                }
+                
+                void y(double value) {
+                        x_[kY] = value;
+                }
+                
+                void z(double value) {
+                        x_[kZ] = value;
                 }
 
                 //
@@ -117,97 +129,97 @@ namespace romi {
                 }
                 
                 void set(double v) {
-                        vset(_x, v);
+                        vset(x_, v);
                 }
                 
                 void set(size_t i , double v) {
                         if (i < 3)
-                                _x[i] = v;
+                                x_[i] = v;
                 }
                 
                 void set(const double *v) {
-                        vcopy(_x, v);
+                        vcopy(x_, v);
                 }
                 
                 void set(double x, double y, double z) {
-                        _x[kX] = x;
-                        _x[kY] = y;
-                        _x[kZ] = z;
+                        x_[kX] = x;
+                        x_[kY] = y;
+                        x_[kZ] = z;
                 }
                 //
                                 
                 const double *values() const {
-                        return _x;
+                        return x_;
                 }
 
                 v3 operator+(const v3& b) const {
                         v3 r;
-                        vadd(r._x, _x, b._x);
+                        vadd(r.x_, x_, b.x_);
                         return r;
                 }
                 
                 v3 operator-(const v3& b) const {
                         v3 r;
-                        vsub(r._x, _x, b._x);
+                        vsub(r.x_, x_, b.x_);
                         return r;
                 }
 
                 v3 operator*(const v3& b) const {
                         v3 r;
-                        vmul(r._x, _x, b._x);
+                        vmul(r.x_, x_, b.x_);
                         return r;
                 }
 
                 double dot(const v3& b) const {
-                        return vdot(_x, b._x);
+                        return vdot(x_, b.x_);
                 }
                 
                 v3 operator+(double b) const {
                         v3 r;
-                        sadd(r._x, _x, b);
+                        sadd(r.x_, x_, b);
                         return r;
                 }
                 
                 v3 operator-(double b) const {
                         v3 r;
-                        sadd(r._x, _x, -b);
+                        sadd(r.x_, x_, -b);
                         return r;
                 }
                 
                 v3 operator*(double b) const {
                         v3 r;
-                        smul(r._x, _x, b);
+                        smul(r.x_, x_, b);
                         return r;
                 }
                 
                 v3 operator/(double b) const {
                         v3 r;
-                        sdiv(r._x, _x, b);
+                        sdiv(r.x_, x_, b);
                         return r;
                 }
                 
                 double norm() const {
-                        return vnorm(_x);
+                        return vnorm(x_);
                 }
                 
                 v3 normalize() const {
                         v3 r;
-                        sdiv(r._x, _x, norm());
+                        sdiv(r.x_, x_, norm());
                         return r;
                 }
                 
                 double dist(const v3& a) const {
-                        return vdist(_x, a._x);
+                        return vdist(x_, a.x_);
                 }
                 
                 v3 clamp(const v3& lo, const v3& hi) const {
                         v3 r;
-                        vclamp(r._x, _x, lo._x, hi._x);
+                        vclamp(r.x_, x_, lo.x_, hi.x_);
                         return r;
                 }
 
                 bool operator==(const v3& b) const {
-                        return veq(_x, b._x);
+                        return veq(x_, b.x_);
                 }
         };
         

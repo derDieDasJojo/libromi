@@ -256,8 +256,9 @@ namespace romi {
         bool is_valid(SmoothPath& script, CNCRange& range, 
                       const double *vmax, const double *amax)
         {
-                return is_valid(script, range.min.values(),
-                                range.max.values(), vmax, amax);
+                v3 min = range.min();
+                v3 max = range.max();
+                return is_valid(script, min.values(), max.values(), vmax, amax);
         }
         
 

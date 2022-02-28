@@ -34,19 +34,30 @@ namespace romi {
         {
         public:
                 virtual ~IRange() = default;
-                virtual void init(JsonCpp &range)=0;
+                virtual void init(JsonCpp &range) = 0;
+                virtual void init(v3 min, v3 max) = 0;
                 
-                virtual v3 dimensions() const =0;
+                virtual v3 min() const = 0;
+                virtual v3 max() const = 0;
+                virtual v3 dimensions() const = 0;
                 
-                virtual bool is_inside(double x, double y, double z)=0;
-                virtual bool is_inside(v3 p)=0;
+                virtual bool is_inside(double x, double y, double z) = 0;
+                virtual bool is_inside(v3 p) = 0;
                 
                 // Computes the distance of a point that lies outside
                 // the range to the border of the range.
-                virtual double error(double x, double y, double z)=0;
-                virtual double error(v3 p)=0;
+                virtual double error(double x, double y, double z) = 0;
+                virtual double error(v3 p) = 0;
 
-                virtual v3 clamp(v3 p) const=0;
+                virtual v3 clamp(v3 p) const = 0;
+                
+                virtual double xmin() const = 0;
+                virtual double xmax() const = 0;
+                virtual double ymin() const = 0;
+                virtual double ymax() const = 0;
+                virtual double zmin() const = 0;
+                virtual double zmax() const = 0;
+                
         };
 }
 

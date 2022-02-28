@@ -691,7 +691,8 @@ namespace romi {
         membuf_t *plot_to_mem(SmoothPath& script, CNCRange& range,
                               const double *vmax, const double *amax)
         {
-                return plot_to_mem(script, range.min.values(),
-                                   range.max.values(), vmax, amax);
+                v3 min = range.min();
+                v3 max = range.max();
+                return plot_to_mem(script, min.values(), max.values(), vmax, amax);
         }
 }

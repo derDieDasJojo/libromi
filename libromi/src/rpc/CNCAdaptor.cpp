@@ -119,9 +119,9 @@ namespace romi {
                 CNCRange range;
                 if (cnc_.get_range(range)) {
                         result = JsonCpp::construct("[[%f,%f],[%f,%f],[%f,%f]]",
-                                                    range.min.x(), range.max.x(),
-                                                    range.min.y(), range.max.y(),
-                                                    range.min.z(), range.max.z());
+                                                    range.xmin(), range.xmax(),
+                                                    range.ymin(), range.ymax(),
+                                                    range.zmin(), range.zmax());
                 } else {
                         r_err("CNCAdaptor::execute_get_range failed");
                         error.code = 1;

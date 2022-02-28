@@ -25,12 +25,12 @@ TEST_F(cncrange_tests, test_default_constructor)
 {
         CNCRange range;
 
-        EXPECT_EQ(range.min.x(), 0.0);
-        EXPECT_EQ(range.max.x(), 0.0);
-        EXPECT_EQ(range.min.y(), 0.0);
-        EXPECT_EQ(range.max.y(), 0.0);
-        EXPECT_EQ(range.min.z(), 0.0);
-        EXPECT_EQ(range.max.z(), 0.0);
+        EXPECT_EQ(range.xmin(), 0.0);
+        EXPECT_EQ(range.xmax(), 0.0);
+        EXPECT_EQ(range.ymin(), 0.0);
+        EXPECT_EQ(range.ymax(), 0.0);
+        EXPECT_EQ(range.zmin(), 0.0);
+        EXPECT_EQ(range.zmax(), 0.0);
 }
 
 TEST_F(cncrange_tests, test_constructor_with_values)
@@ -39,12 +39,12 @@ TEST_F(cncrange_tests, test_constructor_with_values)
         double max[3] = {4, 5, 6};
         CNCRange range(min, max);
 
-        EXPECT_EQ(range.min.x(), 1.0);
-        EXPECT_EQ(range.max.x(), 4.0);
-        EXPECT_EQ(range.min.y(), 2.0);
-        EXPECT_EQ(range.max.y(), 5.0);
-        EXPECT_EQ(range.min.z(), 3.0);
-        EXPECT_EQ(range.max.z(), 6.0);
+        EXPECT_EQ(range.xmin(), 1.0);
+        EXPECT_EQ(range.xmax(), 4.0);
+        EXPECT_EQ(range.ymin(), 2.0);
+        EXPECT_EQ(range.ymax(), 5.0);
+        EXPECT_EQ(range.zmin(), 3.0);
+        EXPECT_EQ(range.zmax(), 6.0);
 }
 
 TEST_F(cncrange_tests, test_constructor_using_json)
@@ -52,12 +52,12 @@ TEST_F(cncrange_tests, test_constructor_using_json)
         JsonCpp json = JsonCpp::parse("[[1,4],[2,5],[3,6]]");
         CNCRange range(json);
 
-        EXPECT_EQ(range.min.x(), 1.0);
-        EXPECT_EQ(range.max.x(), 4.0);
-        EXPECT_EQ(range.min.y(), 2.0);
-        EXPECT_EQ(range.max.y(), 5.0);
-        EXPECT_EQ(range.min.z(), 3.0);
-        EXPECT_EQ(range.max.z(), 6.0);
+        EXPECT_EQ(range.xmin(), 1.0);
+        EXPECT_EQ(range.xmax(), 4.0);
+        EXPECT_EQ(range.ymin(), 2.0);
+        EXPECT_EQ(range.ymax(), 5.0);
+        EXPECT_EQ(range.zmin(), 3.0);
+        EXPECT_EQ(range.zmax(), 6.0);
 }
 
 TEST_F(cncrange_tests, constructor_throw_error_when_json_invalid)
