@@ -59,12 +59,11 @@ namespace romi {
                 ~Oquam() override = default;
                 
                 // ICNC interface, See ICNC.h for more info
-                bool moveto(double x, double y, double z,
-                            double relative_speed = 0.1) override;
+                bool moveto(double x, double y, double z, double relative_speed) override;
                 bool moveat(int16_t speed_x, int16_t speed_y, int16_t speed_z) override;
-                bool travel(Path &path, double relative_speed = 0.1) override;
+                bool travel(Path &path, double relative_speed) override;
                 bool helix(double xc, double yc, double alpha, double z,
-                           double relative_speed = 0.1) override;
+                           double relative_speed) override;
                 bool spindle(double speed) override;
                 bool homing() override;
                 bool get_range(CNCRange &range) override;

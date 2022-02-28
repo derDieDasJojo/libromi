@@ -48,7 +48,7 @@ namespace romi {
                 bool travel(Path &path, double relative_speed) override;
                 bool homing() override;
                 bool helix(double xc, double yc, double alpha, double z,
-                           double relative_speed = 0.1) override;
+                           double relative_speed) override;
 
                 bool pause_activity() override;
                 bool continue_activity() override;
