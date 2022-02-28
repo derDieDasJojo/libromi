@@ -87,6 +87,7 @@ set(SOURCES
         include/api/IEventSource.h
         include/api/IGimbal.h
         include/api/IImager.h
+        include/api/IImagingDevice.h
         include/api/IInputDevice.h
         include/api/IMotorDriver.h
         include/api/INavigation.h
@@ -100,6 +101,9 @@ set(SOURCES
         include/battery_monitor/IBatteryMonitor.h
         include/battery_monitor/BatteryMonitor.h
 
+        include/cablebot/CablebotBase.h
+        include/cablebot/Cablebot.h
+        
         include/camera/FileCamera.h
         include/camera/USBCamera.h
         include/camera/Imager.h
@@ -223,6 +227,9 @@ set(SOURCES
         src/api/EventTimer.cpp
 
         src/battery_monitor/BatteryMonitor.cpp
+
+        src/cablebot/Cablebot.cpp
+        src/cablebot/CablebotBase.cpp
 
         src/hal/BldcGimbal.cpp
         src/hal/BrushMotorDriver.cpp
