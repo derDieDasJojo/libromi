@@ -25,7 +25,7 @@
 
 namespace romi {
         
-        FakeGimbal::FakeGimbal(romiserial::IRomiSerialClient& serial)
+        FakeGimbal::FakeGimbal()
                 : angle_(0.0)
         {
         }
@@ -38,6 +38,7 @@ namespace romi {
 
         bool FakeGimbal::moveat(double rps)
         {
+                (void) rps;
                 return true;
         }
                         

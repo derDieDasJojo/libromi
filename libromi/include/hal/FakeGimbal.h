@@ -34,7 +34,7 @@ namespace romi {
                 double angle_;
                 
         public:
-                FakeGimbal(romiserial::IRomiSerialClient& serial);
+                FakeGimbal();
                 virtual ~FakeGimbal() = default;
                                 
                 // IGimbal
