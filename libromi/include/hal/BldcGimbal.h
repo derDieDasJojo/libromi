@@ -32,7 +32,11 @@ namespace romi {
         class BldcGimbal : public IGimbal
         {
         protected:
+
+                static const constexpr double kDefaultPower = 0.4; // in range ]0,1] 
+                
                 romiserial::IRomiSerialClient& serial_;
+                double power_;
 
                 double clamp(double angle_in_degrees);
                 int angle_to_arg(double angle);
