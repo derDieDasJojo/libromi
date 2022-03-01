@@ -31,7 +31,6 @@ namespace romi {
         public:
                 
                 static constexpr const char *grab_jpeg_binary = "camera-grab-jpeg-binary";
-                static constexpr const char *grab_jpeg_json = "camera-grab-jpeg-json";
 
         };
 }
