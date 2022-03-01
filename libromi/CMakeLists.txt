@@ -62,7 +62,9 @@ if(${PI_BUILD})
       src/picamera/Semaphore.cpp
       src/picamera/StillCamera.cpp
       src/picamera/VideoCamera.cpp
-      src/picamera/VideoEncoder.cpp)
+      src/picamera/VideoEncoder.cpp
+      include/cablebot/Cablebot.h
+      src/cablebot/Cablebot.cpp)
 else()
    set(PICAMERA_SOURCES)
 endif()
@@ -87,7 +89,6 @@ set(SOURCES
         include/api/IEventSource.h
         include/api/IGimbal.h
         include/api/IImager.h
-        include/api/IImagingDevice.h
         include/api/IInputDevice.h
         include/api/IMotorDriver.h
         include/api/INavigation.h
@@ -102,7 +103,6 @@ set(SOURCES
         include/battery_monitor/BatteryMonitor.h
 
         include/cablebot/CablebotBase.h
-        include/cablebot/Cablebot.h
         
         include/camera/FileCamera.h
         include/camera/USBCamera.h
@@ -133,6 +133,7 @@ set(SOURCES
 
         include/hal/BldcGimbal.h
         include/hal/BrushMotorDriver.h
+        include/hal/ImagingDevice.h
 
         include/notifications/FluidSoundNotifications.h
 
@@ -228,11 +229,11 @@ set(SOURCES
 
         src/battery_monitor/BatteryMonitor.cpp
 
-        src/cablebot/Cablebot.cpp
         src/cablebot/CablebotBase.cpp
 
         src/hal/BldcGimbal.cpp
         src/hal/BrushMotorDriver.cpp
+        src/hal/ImagingDevice.cpp
 
         src/configuration/ConfigurationProvider.cpp
         src/configuration/GetOpt.cpp
