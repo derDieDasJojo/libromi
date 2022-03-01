@@ -133,6 +133,7 @@ set(SOURCES
 
         include/hal/BldcGimbal.h
         include/hal/BrushMotorDriver.h
+        include/hal/FakeGimbal.h
         include/hal/ImagingDevice.h
 
         include/notifications/FluidSoundNotifications.h
@@ -233,6 +234,7 @@ set(SOURCES
 
         src/hal/BldcGimbal.cpp
         src/hal/BrushMotorDriver.cpp
+        src/hal/FakeGimbal.cpp
         src/hal/ImagingDevice.cpp
 
         src/configuration/ConfigurationProvider.cpp
