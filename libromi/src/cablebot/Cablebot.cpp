@@ -22,90 +22,57 @@
 
  */
 
-#include <math.h>
 #include <r.h>
 #include "cablebot/Cablebot.h"
+#include "picamera/PiCamera.h"
+#include "hal/BldcGimbal.h"
+#include "cablebot/CablebotBase.h"
 
 namespace romi {
         
-        Cablebot::Cablebot(std::unique_ptr<ICNC>& base,
-                           std::unique_ptr<IGimbal>& gimbal,
-                           std::unique_ptr<ICamera>& camera)
-                : base_(std::move(base)),
-                  gimbal_(std::move(gimbal)),
-                  camera_(std::move(camera)),
-                  camera_range_()
+        std::unique_ptr<ImagingDevice> Cablebot::create(CameraMode mode,
+                                                        size_t width,
+                                                        size_t height,
+                                                        int32_t fps,
+                                                        uint32_t bitrate)
         {
-                camera_range_.init(v3(0.0, -90.0, 0.0),
-                                   v3(0.0, 90.0, 0.0)); // TODO
-        }
-        
-        bool Cablebot::get_range(CNCRange &range) 
-        {
-                return base_->get_range(range);
-        }
+                // Camera
+                std::unique_ptr<romi::PiCameraSettings> settings;
 
-        bool Cablebot::moveto(double x, double y, double z, double relative_speed)
-        {
-                return base_->moveto(x, y, z, relative_speed);
-        }
-        
-        bool Cablebot::moveat(int16_t speed_x, int16_t speed_y, int16_t speed_z)
-        {
-                return base_->moveat(speed_x, speed_y, speed_z);
-        }
-        
-        bool Cablebot::lookat(double pan, double tilt)
-        {
-                validate_orientation(pan, tilt);
-                return gimbal_->moveto(tilt);
-        }
-
-        void Cablebot::validate_orientation(double pan, double tilt)
-        {
-                if (!camera_range_.is_inside(pan, tilt, 0.0)) {
-                        r_err("Cablebot::validate_orientation: Orientation out of range: "
-                                "(%.3f,%.3f)", pan, tilt);
-                        throw std::runtime_error("Cablebot::validate_orientation: "
-                                                 "Orientation out of range");
+                if (mode == kVideoMode) {
+                        r_info("Camera: video mode, %d fps, %d bps",
+                               (int) fps, (int) bitrate);
+                        settings = std::make_unique<romi::HQVideoCameraSettings>(width,
+                                                                                 height,
+                                                                                 fps);
+                        settings->bitrate_ = bitrate;
+                        
+                } else if (mode == kStillMode) {
+                        r_info("Camera: still mode.");
+                        settings = std::make_unique<romi::HQStillCameraSettings>(width,
+                                                                                 height);
                 }
-        }
-        
-        bool Cablebot::helix(double xc, double yc, double alpha, double z,
-                             double relative_speed)
-        {
-                (void) xc;
-                (void) yc;
-                (void) alpha;
-                (void) z;
-                (void) relative_speed;
-                r_err("Cablebot::helix: Not implemented");
-                throw std::runtime_error("Cablebot::helix: Not implemented");
-        }
                 
-        bool Cablebot::homing()
-        {
-                return base_->homing();
-        }
-        
-        bool Cablebot::get_position(v3& position)
-        {
-                return base_->get_position(position);
-        }
-        
-        bool Cablebot::get_camera_position(double& pan, double& tilt)
-        {
-                double angle;
-                bool success = gimbal_->get_angle(angle);
-                if (success) {
-                        pan = 0.0;
-                        tilt = angle;
-                }
-                return success;
-        }
-        
-        rpp::MemBuffer& Cablebot::grab_jpeg()
-        {
-                return camera_->grab_jpeg();
+                std::unique_ptr<romi::ICamera> camera = romi::PiCamera::create(*settings);
+
+                // Base
+                std::unique_ptr<romiserial::IRomiSerialClient> base_serial;
+                std::unique_ptr<romi::ICNC> base;
+                r_info("Connecting to base at %s", kSerialBase);
+                base_serial = romiserial::RomiSerialClient::create(kSerialBase,
+                                                                   "CablebotBase");
+                base = std::make_unique<romi::CablebotBase>(base_serial);
+
+                // Gimbal
+                std::unique_ptr<romiserial::IRomiSerialClient> gimbal_serial;
+                std::unique_ptr<romi::IGimbal> gimbal;
+                
+                r_info("Connecting to gimbal at %s", kSerialGimbal);
+                gimbal_serial = romiserial::RomiSerialClient::create(kSerialGimbal,
+                                                                     "BldcGimbal");
+                gimbal = std::make_unique<romi::BldcGimbal>(*gimbal_serial);
+
+                // Cablebot
+                return std::make_unique<ImagingDevice>(camera, base, gimbal);
         }
 }

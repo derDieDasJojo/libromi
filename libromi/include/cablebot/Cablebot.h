@@ -24,53 +24,30 @@
 #ifndef __ROMI_CABLEBOT_H
 #define __ROMI_CABLEBOT_H
 
-#include <stdexcept>
 #include <memory>
-#include "api/IImagingDevice.h"
-#include "api/ICNC.h"
-#include "api/IGimbal.h"
-#include "api/ICamera.h"
+#include "hal/ImagingDevice.h"
 
 namespace romi {
         
-        class Cablebot : public IImagingDevice
+        class Cablebot
         {
-        protected:
-                std::unique_ptr<ICNC> base_;
-                std::unique_ptr<IGimbal> gimbal_;
-                std::unique_ptr<ICamera> camera_;
-                CNCRange camera_range_;
-                
-                void validate_coordinates(double x, double y, double z);
-                void validate_speed(double v);
-                void validate_orientation(double pan, double tilt);
-                
         public:
-                Cablebot(std::unique_ptr<ICNC>& base,
-                         std::unique_ptr<IGimbal>& gimbal,
-                         std::unique_ptr<ICamera>& camera);
-                
-                virtual ~Cablebot() = default;
 
-                bool get_range(CNCRange &range) override;
-                //virtual bool get_camera_range(CameraRange &range) override;
+                enum CameraMode { kVideoMode, kStillMode };
 
-                bool moveto(double x, double y, double z,
-                            double relative_speed) override;
-                
-                bool moveat(int16_t speed_x, int16_t speed_y, int16_t speed_z) override;
+                static const uint32_t kDefaultBitrate = 25000000;
+                static const uint32_t kHighBitrate = 25000000;
+                static const uint32_t kAverageBitrate = 17000000;
+                static const uint32_t kLowBitrate = 8000000;
 
-                bool lookat(double pan_in_degrees, double tilt_in_degrees) override;
+                static const char *kSerialBase = "/dev/serial0";
+                static const char *kSerialGimbal = "/dev/serial1";
                 
-                bool helix(double xc, double yc, double alpha, double z,
-                           double relative_speed = 0.1) override;
-                
-                bool homing() override;
-                
-                bool get_position(v3& position) override; 
-                bool get_camera_position(double& pan, double& tilt) override; 
-
-                rpp::MemBuffer& grab_jpeg() override;
+                static std::unique_ptr<ImagingDevice> create(CameraMode mode,
+                                                             size_t width,
+                                                             size_t height,
+                                                             int32_t fps,
+                                                             uint32_t bitrate);
         };
 }
 
