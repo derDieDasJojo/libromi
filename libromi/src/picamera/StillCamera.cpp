@@ -54,5 +54,25 @@ namespace romi {
                 encoder_.finish_capture();
                 return encoder_.get_buffer();
         }
+
+        bool StillCamera::power_up()
+        {
+                return true;
+        }
+        
+        bool StillCamera::power_down()
+        {
+                return true;
+        }
+        
+        bool StillCamera::stand_by()
+        {
+                return true;
+        }
+        
+        bool StillCamera::wake_up()
+        {
+                return true;
+        }
 }
 

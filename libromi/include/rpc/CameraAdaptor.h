@@ -34,9 +34,10 @@ namespace romi {
         protected:
                 ICamera& camera_;
 
-                void grab_jpeg_json(JsonCpp& result, RPCError& error);
-                void encode(rpp::MemBuffer& jpeg, JsonCpp& result);
-                char *encode_base64(const uint8_t *s, size_t ilen);
+                void execute_power_up(RPCError &error);
+                void execute_power_down(RPCError &error);
+                void execute_stand_by(RPCError &error);
+                void execute_wake_up(RPCError &error);
                 
         public:
                 CameraAdaptor(ICamera& camera);

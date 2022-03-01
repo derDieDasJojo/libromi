@@ -36,15 +36,7 @@ namespace romi {
                 static constexpr const char *ClassName = "remote-camera";
 
         protected:
-                /* uint8_t decoding_table_[256]; */
                 rpp::MemBuffer output_;
-                
-                /* void build_decoding_table(); */
-                /* bool try_decode_base64(const char *data, size_t input_length); */
-                /* bool decode_base64(const char *data, size_t length); */
-                /* bool decode(JsonCpp& result); */
-                /* bool assert_values(const char *data, size_t len); */
-                /* uint8_t get_value(const char *data, size_t i); */
 
         public:
                 RemoteCamera(std::unique_ptr<IRPCClient>& client);
@@ -52,6 +44,12 @@ namespace romi {
 
                 bool grab(Image &image) override;
                 rpp::MemBuffer& grab_jpeg() override;
+
+                // Power device interface
+                bool power_up() override;
+                bool power_down() override;
+                bool stand_by() override;
+                bool wake_up() override;
         };
 }
 

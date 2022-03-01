@@ -33,8 +33,8 @@
 
 namespace romi {
         
-        class VideoCamera : public PiCamera {
-
+        class VideoCamera : public PiCamera
+        {
         protected:
 
                 arm::CameraComponent camera_;
@@ -47,6 +47,12 @@ namespace romi {
                 
                 bool grab(Image &image) override;
                 rpp::MemBuffer& grab_jpeg();
+
+                // Power device interface
+                bool power_up() override;
+                bool power_down() override;
+                bool stand_by() override;
+                bool wake_up() override;
         };
 }
 
