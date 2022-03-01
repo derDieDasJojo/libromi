@@ -37,13 +37,13 @@ namespace romi {
         {
         public:
 
-                std::unique_ptr<ICamera> camera_;
-                std::unique_ptr<ICNC> cnc_;
-                std::unique_ptr<IGimbal> gimbal_;
+                std::shared_ptr<ICamera> camera_;
+                std::shared_ptr<ICNC> cnc_;
+                std::shared_ptr<IGimbal> gimbal_;
                 
-                ImagingDevice(std::unique_ptr<ICamera>& camera,
-                              std::unique_ptr<ICNC>& cnc,
-                              std::unique_ptr<IGimbal>& gimbal);
+                ImagingDevice(std::shared_ptr<ICamera>& camera,
+                              std::shared_ptr<ICNC>& cnc,
+                              std::shared_ptr<IGimbal>& gimbal);
                 
                 virtual ~ImagingDevice() = default;
 

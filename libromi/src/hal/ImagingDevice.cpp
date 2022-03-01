@@ -26,12 +26,12 @@
 
 namespace romi {
         
-        ImagingDevice::ImagingDevice(std::unique_ptr<ICamera>& camera,
-                                     std::unique_ptr<ICNC>& cnc,
-                                     std::unique_ptr<IGimbal>& gimbal)
-                : camera_(std::move(camera)),
-                  cnc_(std::move(cnc)),
-                  gimbal_(std::move(gimbal))
+        ImagingDevice::ImagingDevice(std::shared_ptr<ICamera>& camera,
+                                     std::shared_ptr<ICNC>& cnc,
+                                     std::shared_ptr<IGimbal>& gimbal)
+                : camera_(camera),
+                  cnc_(cnc),
+                  gimbal_(gimbal)
         {
         }
 
