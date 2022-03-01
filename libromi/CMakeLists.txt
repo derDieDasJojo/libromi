@@ -321,28 +321,34 @@ set(SOURCES
         )
 
 set(DATA_PROVIDER_SOURCES
-        include/data_provider/JsonFieldNames.h
+        include/data_provider/CNCLocationProvider.h
+        include/data_provider/Gps.h
+        include/data_provider/GpsLocationProvider.h
         include/data_provider/IGPS.h
+        include/data_provider/IIdentityProvider.h
         include/data_provider/ILocationProvider.h
         include/data_provider/IOrientationProvider.h
-        include/data_provider/GpsLocationProvider.h
-        src/data_provider/GpsLocationProvider.cpp
-        include/data_provider/IIdentityProvider.h
-        include/data_provider/RoverIdentityProvider.h
-        src/data_provider/RoverIdentityProvider.cpp
         include/data_provider/ISoftwareVersion.h
-        include/data_provider/SoftwareVersion.h
-        src/data_provider/SoftwareVersion.cpp
+        include/data_provider/JsonFieldNames.h
         include/data_provider/RomiDeviceData.h
-        src/data_provider/RomiDeviceData.cpp
-        src/session/Session.cpp
-        include/session/ISession.h
-        include/session/Session.h
-        include/session/MetaFolder.h
-        include/session/IMetaFolder.h
-        src/session/MetaFolder.cpp
+        include/data_provider/RoverIdentityProvider.h
+        include/data_provider/SoftwareVersion.h
+        
+        src/data_provider/CNCLocationProvider.cpp
         src/data_provider/Gps.cpp
-        include/data_provider/Gps.h
+        src/data_provider/GpsLocationProvider.cpp        
+        src/data_provider/RoverIdentityProvider.cpp
+        src/data_provider/SoftwareVersion.cpp
+        src/data_provider/RomiDeviceData.cpp
+        
+        include/session/IMetaFolder.h
+        include/session/ISession.h
+        include/session/MetaFolder.h
+        include/session/Session.h
+        
+        src/session/MetaFolder.cpp
+        src/session/Session.cpp
+        
         include/debug_tools/debug_data_dumper.h
         src/debug_tools/debug_data_dumper.cpp)
 
