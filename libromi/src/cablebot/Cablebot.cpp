@@ -26,6 +26,7 @@
 #include "cablebot/Cablebot.h"
 #include "picamera/PiCamera.h"
 #include "hal/BldcGimbal.h"
+#include "hal/FakeGimbal.h"
 #include "cablebot/CablebotBase.h"
 
 namespace romi {
@@ -53,24 +54,25 @@ namespace romi {
                                                                                  height);
                 }
                 
-                std::unique_ptr<romi::ICamera> camera = romi::PiCamera::create(*settings);
+                std::shared_ptr<romi::ICamera> camera = romi::PiCamera::create(*settings);
 
                 // Base
                 std::unique_ptr<romiserial::IRomiSerialClient> base_serial;
-                std::unique_ptr<romi::ICNC> base;
+                std::shared_ptr<romi::ICNC> base;
                 r_info("Connecting to base at %s", kSerialBase);
                 base_serial = romiserial::RomiSerialClient::create(kSerialBase,
                                                                    "CablebotBase");
-                base = std::make_unique<romi::CablebotBase>(base_serial);
+                base = std::make_shared<romi::CablebotBase>(base_serial);
 
                 // Gimbal
-                std::unique_ptr<romiserial::IRomiSerialClient> gimbal_serial;
-                std::unique_ptr<romi::IGimbal> gimbal;
+                //std::unique_ptr<romiserial::IRomiSerialClient> gimbal_serial;
+                std::shared_ptr<romi::IGimbal> gimbal;
                 
-                r_info("Connecting to gimbal at %s", kSerialGimbal);
-                gimbal_serial = romiserial::RomiSerialClient::create(kSerialGimbal,
-                                                                     "BldcGimbal");
-                gimbal = std::make_unique<romi::BldcGimbal>(*gimbal_serial);
+                // r_info("Connecting to gimbal at %s", kSerialGimbal);
+                // gimbal_serial = romiserial::RomiSerialClient::create(kSerialGimbal,
+                //                                                      "BldcGimbal");
+		//gimbal = std::make_unique<romi::BldcGimbal>(*gimbal_serial);
+		gimbal = std::make_shared<romi::FakeGimbal>();
 
                 // Cablebot
                 return std::make_unique<ImagingDevice>(camera, base, gimbal);

@@ -40,8 +40,8 @@ namespace romi {
                 static const uint32_t kAverageBitrate = 17000000;
                 static const uint32_t kLowBitrate = 8000000;
 
-                static const char *kSerialBase = "/dev/serial0";
-                static const char *kSerialGimbal = "/dev/serial1";
+                static const constexpr char *kSerialBase = "/dev/serial0";
+                static const constexpr char *kSerialGimbal = "/dev/serial1";
                 
                 static std::unique_ptr<ImagingDevice> create(CameraMode mode,
                                                              size_t width,
