@@ -34,11 +34,21 @@ namespace romi {
         class CablebotBase : public ICNC
         {
         protected:
+
+                static const constexpr double kPrecision = 36.0;
+                
                 std::unique_ptr<romiserial::IRomiSerialClient> serial_;
                 CNCRange range_;
+                double diameter_;
+                double circumference_;
 
                 void validate_coordinates(double x, double y, double z);
                 void validate_speed(double v);
+                bool send_command(const char *command);
+                int16_t position_to_steps(double x);
+                double steps_to_position(double steps);
+                bool enable_driver();
+                bool disable_driver();
                 
         public:
                 CablebotBase(std::unique_ptr<romiserial::IRomiSerialClient>& serial);
@@ -55,6 +65,17 @@ namespace romi {
                 bool travel(Path &path, double relative_speed) override;
                 bool helix(double xc, double yc, double alpha, double z,
                            double relative_speed) override;
+                
+                // IActivity interface
+                bool pause_activity() override;
+                bool continue_activity() override;
+                bool reset_activity() override;
+
+                // Power device interface
+                bool power_up() override;
+                bool power_down() override;
+                bool stand_by() override;
+                bool wake_up() override;
         };
 }
 

@@ -22,6 +22,9 @@
 
  */
 
+#include <math.h>
+#include <limits.h>
+#include <stdexcept>
 #include <r.h>
 #include "cablebot/CablebotBase.h"
 
@@ -29,27 +32,63 @@ namespace romi {
         
         CablebotBase::CablebotBase(std::unique_ptr<romiserial::IRomiSerialClient>& serial)
                 : serial_(std::move(serial)),
-                  range_()
+                  range_(),
+                  diameter_(0.04),
+                  circumference_(0.0)
         {
+                circumference_ = diameter_ * M_PI;
                 range_.init(v3(0.0), v3(20.0, 0.0, 0.0)); // TODO
         }
 
+        int16_t CablebotBase::position_to_steps(double x)
+        {
+                double turns = x / circumference_;
+                double steps = kPrecision * turns;
+                if (steps > SHRT_MAX || steps < SHRT_MIN) {
+                        r_err("CablebotBase::position_to_turns: steps out of range: "
+                              "position: %0.3f, turns: 0.3f, "
+                              "steps: %0.1f, precision: %0.3f",
+                              x, turns, steps, kPrecision);
+                        throw std::runtime_error("CablebotBase::position_to_turns: "
+                                                 "steps out of range");
+                }
+                return (int16_t) steps;
+        }
+        
+        double CablebotBase::steps_to_position(double steps)
+        {
+                double turns = (double) steps / kPrecision;
+                return turns * circumference_;
+        }
+        
         bool CablebotBase::get_range(CNCRange &range)
         {
                 range = range_;
                 return true;
         }
         
+        bool CablebotBase::send_command(const char *command)
+        {
+                JsonCpp response;
+                serial_->send(command, response);
+                
+                bool success = (response.num(0) == 0);
+                if (!success)
+                        r_err("CablebotBase::send_command: %s: %s",
+                              command, response.str(1));
+                
+                return success;
+        }
         
         bool CablebotBase::moveto(double x, double y, double z, double relative_speed)
         {
-                (void) x;
-                (void) y;
-                (void) z;
-                (void) relative_speed;
-                r_err("CablebotBase::moveto: Not implemented");
-                throw std::runtime_error("CablebotBase::moveto: Not implemented");
-                return false;
+                validate_coordinates(x, y, z);
+                validate_speed(relative_speed);
+                
+                char command[64];
+                snprintf(command, sizeof(command), "m[%d]", position_to_steps(x));
+                
+                return send_command(command);
         }
         
         void CablebotBase::validate_coordinates(double x, double y, double z)
@@ -83,17 +122,22 @@ namespace romi {
         
         bool CablebotBase::homing()
         {
-                r_err("CablebotBase::homing: Not implemented");
-                throw std::runtime_error("CablebotBase::homing: Not implemented");
-                return false;
+                return send_command("H");
         }
         
         bool CablebotBase::get_position(v3& position)
         {
-                (void) position;
-                r_err("CablebotBase::get_position: Not implemented");
-                throw std::runtime_error("CablebotBase::get_position: Not implemented");
-                return false;
+                JsonCpp response;
+                serial_->send("P", response);
+                
+                bool success = (response.num(0) == 0);
+                if (success) {
+                        double steps = response.num(1);
+                        position.x(steps_to_position(steps));
+                        position.y(0.0);
+                        position.z(0.0);
+                }
+                return success;
         }
         
         bool CablebotBase::spindle(double speed)
@@ -124,5 +168,53 @@ namespace romi {
                 r_err("CablebotBase::helix: Not implemented");
                 throw std::runtime_error("CablebotBase::helix: Not implemented");
                 return false;
+        }
+
+        bool CablebotBase::pause_activity()
+        {
+                r_err("CablebotBase::pause_activity: Not implemented");
+                throw std::runtime_error("CablebotBase::pause_activity: Not implemented");
+        }
+        
+        bool CablebotBase::continue_activity()
+        {
+                r_err("CablebotBase::continue_activity: Not implemented");
+                throw std::runtime_error("CablebotBase::continue_activity: Not implemented");
+        }
+        
+        bool CablebotBase::reset_activity()
+        {
+                r_err("CablebotBase::reset_activity: Not implemented");
+                throw std::runtime_error("CablebotBase::reset_activity: Not implemented");
+        }
+
+        bool CablebotBase::enable_driver()
+        {
+                return send_command("E[1]");
+        }
+
+        bool CablebotBase::disable_driver()
+        {
+                return send_command("E[0]");
+        }
+
+        bool CablebotBase::power_up()
+        {
+                return enable_driver() && homing();
+        }
+        
+        bool CablebotBase::power_down()
+        {
+                return disable_driver();
+        }
+        
+        bool CablebotBase::stand_by()
+        {
+                return disable_driver();
+        }
+        
+        bool CablebotBase::wake_up()
+        {
+                return enable_driver();
         }
 }
