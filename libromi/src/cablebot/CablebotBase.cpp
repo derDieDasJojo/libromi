@@ -37,7 +37,7 @@ namespace romi {
                   circumference_(0.0)
         {
                 circumference_ = diameter_ * M_PI;
-                range_.init(v3(0.0), v3(20.0, 0.0, 0.0)); // TODO
+                range_.init(v3(0.0), v3(100.0, 0.0, 0.0)); // TODO
         }
 
         int16_t CablebotBase::position_to_steps(double x)
