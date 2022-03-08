@@ -184,7 +184,7 @@ namespace romi {
 
                         nlohmann::json p = params.at("path");
                         for (auto & i : p) {
-                                path.emplace_back(i[0], i[1], i[2]);
+                                path.emplace_back(i.at(0), i.at(1), i.at(2));
                         }
 
                         if (!cnc_.travel(path, speed)) {
