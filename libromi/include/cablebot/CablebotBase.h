@@ -49,7 +49,11 @@ namespace romi {
                 double steps_to_position(double steps);
                 bool enable_driver();
                 bool disable_driver();
-                
+                void try_moveto(double x, double relative_speed);
+                void send_moveto(double x, double relative_speed);
+                void synchronize(double timeout);
+                bool is_on_target();
+
         public:
                 CablebotBase(std::unique_ptr<romiserial::IRomiSerialClient>& serial);
                 virtual ~CablebotBase() = default;
