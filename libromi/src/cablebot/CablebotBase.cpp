@@ -26,6 +26,7 @@
 #include <limits.h>
 #include <stdexcept>
 #include <r.h>
+#include <ClockAccessor.h>
 #include "cablebot/CablebotBase.h"
 
 namespace romi {
@@ -82,13 +83,23 @@ namespace romi {
         
         bool CablebotBase::moveto(double x, double y, double z, double relative_speed)
         {
-                validate_coordinates(x, y, z);
-                validate_speed(relative_speed);
-                
-                char command[64];
-                snprintf(command, sizeof(command), "m[%d]", position_to_steps(x));
-                
-                return send_command(command);
+                bool success = false;
+                try {
+                        validate_coordinates(x, y, z);
+                        validate_speed(relative_speed);
+                        try_moveto(x, relative_speed);
+                        success = true;
+                        
+                } catch (std::runtime_error& e) {
+                        r_err("CablebotBase::moveto: %s", e.what());
+                }
+                return success;
+        }
+        
+        void CablebotBase::try_moveto(double x, double relative_speed)
+        {
+                send_moveto(x, relative_speed);
+                synchronize(180.0); // Fixme: compute as distance x speed x factor
         }
         
         void CablebotBase::validate_coordinates(double x, double y, double z)
@@ -108,6 +119,50 @@ namespace romi {
                         throw std::runtime_error("Cablebot::validate_speed: "
                                                  "Invalid speed");
                 }
+        }
+        
+        void CablebotBase::send_moveto(double x, double relative_speed)
+        {
+                (void) relative_speed; // TODO: improve firmware API for speeds
+                char command[64];
+                snprintf(command, sizeof(command), "m[%d]", position_to_steps(x));
+                if (!send_command(command)) {
+                        throw std::runtime_error("Cablebot::send_command: "
+                                                 "send_command failed");
+                }
+        }
+        
+        void CablebotBase::synchronize(double timeout)
+        {
+                auto clock = rpp::ClockAccessor::GetInstance();
+                double start_time = clock->time();
+                
+                while (true) {
+                        if (is_on_target()) {
+                                break;
+                        } else {
+                                clock->sleep(0.2);
+                        }
+
+                        double now = clock->time();
+                        if (timeout >= 0.0 && (now - start_time) >= timeout) {
+                                throw std::runtime_error("CablebotBase::synchronize: "
+                                                         "time out");
+                        }
+                }
+        }
+        
+        bool CablebotBase::is_on_target()
+        {
+                JsonCpp response;
+                serial_->send("p", response);
+                
+                bool success = (response.num(0) == 0.0);
+                if (!success) {
+                        r_err("CablebotBase::is_on_target: %s", response.str(1));
+                        throw std::runtime_error("CablebotBase::is_on_target");
+                }
+                return response.num(1) != 0.0;
         }
                        
         bool CablebotBase::moveat(int16_t speed_x, int16_t speed_y, int16_t speed_z)
