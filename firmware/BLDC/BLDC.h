@@ -31,9 +31,6 @@
 
 #define SINE_TABLE_SIZE 384
 
-float normalizeAngle(float angle);
-double normalizeAngle(double angle);
-
 class BLDC
 {
 protected:
@@ -42,21 +39,21 @@ protected:
         IPwmGenerator *generator;
         IOutputPin *sleepPin;
         IOutputPin *resetPin;
-        double targetPosition;
-        double offsetAngleZero;
-        double speed;
-        double lastSpeed;
-        double maxAcceleration;
-        double kp;
+        float targetPosition;
+        float offsetAngleZero;
+        float speed;
+        float lastSpeed;
+        float maxAcceleration;
+        float kp;
         float power;
-        double phase;
+        float phase;
         
         void moveat(float rpm, float dt);
         bool updatePosition(float dt);
                 
-        //void setPhase(double value);
+        //void setPhase(float value);
         
-        /* void incrPhase(double delta) { */
+        /* void incrPhase(float delta) { */
         /*         setPhase(phase + delta); */
         /* } */
         
@@ -79,11 +76,11 @@ public:
             normalized angle: a value of 1 is equal to an absolute
             angle of 360°. Values larger than 1 or smaller than zero
             will be mapped to the [0,1] range.  */
-        void setTargetPosition(double pos);
+        void setTargetPosition(float pos);
 
         /** Set the offset that corresponds to a 0° angle on your
          * device.  */
-        void setOffsetAngleZero(double pos);        
+        void setOffsetAngleZero(float pos);        
 
         void wake();
         void sleep();
@@ -94,11 +91,11 @@ public:
 
         bool moveto(float angle);
         
-        void setAngle(double value);
+        void setAngle(float value);
         
-        void setPhase(double value);
+        void setPhase(float value);
         
-        void incrPhase(double delta) {
+        void incrPhase(float delta) {
                 setPhase(phase + delta);
         }
 };

@@ -50,8 +50,8 @@ TEST_F(gps_location_provider_tests, will_create_location)
         romi::GpsLocationProvider locationProvider(gps);
 
         // Act
-        std::string actual = locationProvider.location();
+        nlohmann::json actual = locationProvider.location();
 
         // Assert
-        ASSERT_EQ(actual, expected.dump(4));
+        ASSERT_EQ(actual.dump(4), expected.dump(4));
 }

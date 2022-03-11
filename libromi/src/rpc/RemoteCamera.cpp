@@ -26,13 +26,13 @@
 #include "cv/ImageIO.h"
 #include "rpc/RemoteCamera.h"
 #include "rpc/MethodsCamera.h"
+#include "rpc/MethodsPowerDevice.h"
 
 namespace romi {
         
         RemoteCamera::RemoteCamera(std::unique_ptr<IRPCClient>& client)
                 : RemoteStub(client), output_()
         {
-                /* build_decoding_table(); */
         }
         
         bool RemoteCamera::grab(Image &image) 
@@ -61,108 +61,28 @@ namespace romi {
 
                 return output_;
         }
-
-        // TBD: YAGNI
-        // bool RemoteCamera::decode(nlohmann::json& result)
-        // {
-        //         const char *jpeg_base64 = result.str("jpeg");
-        //         size_t length = strlen(jpeg_base64);
-        //         return try_decode_base64(jpeg_base64, length);;
-        // }
-
-        // bool RemoteCamera::try_decode_base64(const char *data, size_t input_length)
-        // {
-        //         bool success = false;
-                
-        //         if ((input_length % 4) == 0
-        //             && assert_values(data, input_length)) {
-        //                 success = decode_base64(data, input_length);
-        //         }
-        //         return success;
-        // }
         
-        // bool RemoteCamera::assert_values(const char *data, size_t len)
-        // {
-        //         bool success = true;
-
-        //         size_t newlen = len;
-        //         if (len > 1 && data[len - 1] == '=')
-        //                 newlen--;
-        //         if (len > 2 && data[len - 2] == '=')
-        //                 newlen--;
-                
-        //         for (size_t i = 0; i < newlen; i++) {
-        //                 if (decoding_table_[(int)data[i]] == 255) {
-        //                         success = false;
-        //                         break;
-        //                 }
-        //         }
-        //         return success;
-        // }
+        bool RemoteCamera::power_up()
+        {
+                r_debug("RemoteCamera::power_up");
+                return execute_simple_request(MethodsPowerDevice::power_up);
+        }
         
-        // // https://stackoverflow.com/questions/342409/how-do-i-base64-encode-decode-in-c
-        // bool RemoteCamera::decode_base64(const char *data, size_t input_length)
-        // {
-        //         size_t output_length = input_length / 4 * 3;
+        bool RemoteCamera::power_down()
+        {
+                r_debug("RemoteCamera::power_down");
+                return execute_simple_request(MethodsPowerDevice::power_down);
+        }
         
-        //         if (data[input_length - 1] == '=')
-        //                 output_length--;
-        //         if (data[input_length - 2] == '=')
-        //                 output_length--;
-
-        //         size_t i = 0;
-        //         size_t j = 0;
+        bool RemoteCamera::stand_by()
+        {
+                r_debug("RemoteCamera::stand_by");
+                return execute_simple_request(MethodsPowerDevice::stand_by);
+        }
         
-        //         while (i < input_length) {
-
-        //                 uint32_t sextet_a = get_value(data, i++);
-        //                 uint32_t sextet_b = get_value(data, i++);
-        //                 uint32_t sextet_c = get_value(data, i++);
-        //                 uint32_t sextet_d = get_value(data, i++);
-
-        //                 uint32_t triple = ((sextet_a << 3 * 6)
-        //                                    | (sextet_b << 2 * 6)
-        //                                    | (sextet_c << 1 * 6)
-        //                                    | (sextet_d << 0 * 6));
-                
-        //                 if (j++ < output_length)
-        //                         output_.put((uint8_t) ((triple >> 2 * 8) & 0xff));
-        //                 if (j++ < output_length)
-        //                         output_.put((uint8_t) ((triple >> 1 * 8) & 0xff));
-        //                 if (j++ < output_length)
-        //                         output_.put((uint8_t) ((triple >> 0 * 8) & 0xff));
-        //         }
-
-        //         return true;
-        // }
-        
-        // uint8_t RemoteCamera::get_value(const char *data, size_t i)
-        // {
-        //         uint8_t value;
-        //         if (data[i] == '=') {
-        //                 value = 0;
-        //         } else {
-        //                 value = decoding_table_[(int)data[i]];
-        //         }
-        //         return value;
-        // }
-
-        // // https://stackoverflow.com/questions/342409/how-do-i-base64-encode-decode-in-c
-        // void RemoteCamera::build_decoding_table()
-        // {
-        //         char encoding_table[] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
-        //                                  'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P',
-        //                                  'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X',
-        //                                  'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f',
-        //                                  'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n',
-        //                                  'o', 'p', 'q', 'r', 's', 't', 'u', 'v',
-        //                                  'w', 'x', 'y', 'z', '0', '1', '2', '3',
-        //                                  '4', '5', '6', '7', '8', '9', '+', '/'};
-                
-        //         for (int i = 0; i < 256; i++)
-        //                 decoding_table_[i] = 255;
-                
-        //         for (uint8_t i = 0; i < 64; i++)
-        //                 decoding_table_[(int)encoding_table[i]] = (uint8_t) i;
-        // }
+        bool RemoteCamera::wake_up()
+        {
+                r_debug("RemoteCamera::wake_up");
+                return execute_simple_request(MethodsPowerDevice::wake_up);
+        }
 }

@@ -239,12 +239,13 @@ TEST_F(oquam_tests, constructor_copies_range)
 
         CNCRange range;
         oquam.get_range(range);
-        ASSERT_EQ(range.min_.x(), xmin[0]);
-        ASSERT_EQ(range.max_.x(), xmax[0]);
-        ASSERT_EQ(range.min_.y(), xmin[1]);
-        ASSERT_EQ(range.max_.y(), xmax[1]);
-        ASSERT_EQ(range.min_.z(), xmin[2]);
-        ASSERT_EQ(range.max_.z(), xmax[2]);
+
+        ASSERT_EQ(range.xmin(), xmin[0]);
+        ASSERT_EQ(range.xmax(), xmax[0]);
+        ASSERT_EQ(range.ymin(), xmin[1]);
+        ASSERT_EQ(range.ymax(), xmax[1]);
+        ASSERT_EQ(range.zmin(), xmin[2]);
+        ASSERT_EQ(range.zmax(), xmax[2]);
 }
 
 TEST_F(oquam_tests, moveto_returns_error_when_speed_is_invalid)
@@ -266,12 +267,12 @@ TEST_F(oquam_tests, moveto_returns_error_when_position_is_invalid)
         romi::Session session(linux, session_directory, romiDeviceData, softwareVersion, std::move(locationPrivider));
         session.start(observation_id);
         Oquam oquam(controller, settings, session);
-        ASSERT_EQ(oquam.moveto(range.min_.x() - 0.1, 0.0, 0.0, 0.1), false);
-        ASSERT_EQ(oquam.moveto(range.max_.x() + 0.1, 0.0, 0.0, 0.1), false);
-        ASSERT_EQ(oquam.moveto(0.0, range.min_.y() - 0.1, 0.0, 0.1), false);
-        ASSERT_EQ(oquam.moveto(0.0, range.max_.y() + 0.1, 0.0, 0.1), false);
-        ASSERT_EQ(oquam.moveto(0.0, 0.0, range.min_.z() - 0.1, 0.1), false);
-        ASSERT_EQ(oquam.moveto(0.0, 0.0, range.max_.z() + 0.1, 0.1), false);
+        ASSERT_EQ(oquam.moveto(range.xmin()-0.1, 0.0, 0.0, 0.1), false);
+        ASSERT_EQ(oquam.moveto(range.xmax()+0.1, 0.0, 0.0, 0.1), false);
+        ASSERT_EQ(oquam.moveto(0.0, range.ymin()-0.1, 0.0, 0.1), false);
+        ASSERT_EQ(oquam.moveto(0.0, range.ymax()+0.1, 0.0, 0.1), false);
+        ASSERT_EQ(oquam.moveto(0.0, 0.0, range.zmin()-0.1, 0.1), false);
+        ASSERT_EQ(oquam.moveto(0.0, 0.0, range.zmax()+0.1, 0.1), false);
 }
 
 TEST_F(oquam_tests, returns_false_when_get_position_fails)
@@ -598,16 +599,16 @@ TEST_F(oquam_tests, test_oquam_travel_zigzag)
         v3 p(0.0, 0.0, 0.0);
         
         for (int i = 1; i <= 3; i++) {
-                p.y() += 0.01;
+                p.y(p.y() + 0.01);
                 path.push_back(p);
                 
-                p.x() += 0.1;
+                p.x(p.x() + 0.1);
                 path.push_back(p);
                 
-                p.y() += 0.01;
+                p.y(p.y() + 0.01);
                 path.push_back(p);
 
-                p.x() -= 0.1;
+                p.x(p.x() - 0.1);
                 path.push_back(p);
         }
         

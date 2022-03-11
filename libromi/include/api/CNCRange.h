@@ -33,9 +33,10 @@ namespace romi {
 
         class CNCRange : public IRange
         {
-            public:
+            protected:
                 v3 min_;
                 v3 max_;
+
             public:
                 CNCRange();
                 explicit CNCRange(nlohmann::json &range);
@@ -43,7 +44,11 @@ namespace romi {
                 CNCRange(v3 min, v3 max);
 
                 void init(nlohmann::json &range) override;
+                void init(v3 min, v3 max) override;
 
+
+                v3 min() const override;
+                v3 max() const override;
                 v3 dimensions() const override;
 
                 bool is_inside(double x, double y, double z) override;
@@ -55,6 +60,13 @@ namespace romi {
                 double error(v3 p) override;
 
                 v3 clamp(v3 p) const override;
+                
+                double xmin() const override;
+                double xmax() const override;
+                double ymin() const override;
+                double ymax() const override;
+                double zmin() const override;
+                double zmax() const override;
         };
 }
 

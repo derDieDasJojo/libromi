@@ -47,6 +47,12 @@ namespace romi {
                 
                 bool grab(Image &image) override;
                 rcom::MemBuffer& grab_jpeg();
+
+                // Power device interface
+                bool power_up() override;
+                bool power_down() override;
+                bool stand_by() override;
+                bool wake_up() override;
         };
 }
 

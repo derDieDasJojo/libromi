@@ -10,6 +10,7 @@ namespace JsonFieldNames
     const std::string longitude = "longitude";
     const std::string x_position = "x";
     const std::string y_position = "y";
+    const std::string z_position = "z";
 
     // Identity
     const std::string romi_identity = "romi_identity";

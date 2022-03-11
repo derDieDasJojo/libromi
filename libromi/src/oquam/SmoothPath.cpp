@@ -101,22 +101,44 @@ namespace romi {
 
         void SmoothPath::assert_vmax(const double *vmax)
         {
-                double vn = vnorm(vmax);
-                if (vn == 0 || vn > 10.0) { // 10 m/s = 36 km/h
-                        r_err("Invalid maximum speed: (%f, %f, %f)",
+                double vn = vnorm(vmax);                
+                if (vn == 0) {
+                        r_err("Zero maximum speed: (%f, %f, %f)",
                               vmax[0], vmax[1], vmax[2]);
-                        throw std::runtime_error("Invalid maximum speed");
+                        throw std::runtime_error("Zero maximum speed");
                 }
+                // TODO: the test below assumes that the displacement
+                // is in m/s. However, it may me possible to use a
+                // displacement in other units, for example,
+                // radians/s. The maximum speed should not be
+                // hardcoded like this but derived from the config
+                // file.
+                // if (vn > 10.0) { // 10 m/s = 36 km/h
+                //         r_err("Maximum speed to high: (%f, %f, %f)",
+                //               vmax[0], vmax[1], vmax[2]);
+                //         throw std::runtime_error("Maximum speed to high");
+                // }
         }
 
         void SmoothPath::assert_amax(const double *amax)
         {
                 double an = vnorm(amax);
-                if (an == 0 || an > 10.0) { // 10 m/s² = 0 -> 36 km/h in 1 sec
-                        r_err("Invalid maximum accelerate: (%f, %f, %f)",
+                if (an == 0.0) {
+                        r_err("Maximum acceleration is zero: (%f, %f, %f)",
                               amax[0], amax[1], amax[2]);
-                        throw std::runtime_error("Invalid maximum acceleration");
+                        throw std::runtime_error("Zero maximum acceleration");
                 }
+                // TODO: the test below assumes that the acceleration
+                // is in m/s². However, it may me possible to use an
+                // acceleration in other units, for example,
+                // radians/s². The maximum acceleration should not be
+                // hardcoded like this but derived from the config
+                // file.
+                // if (an > 10.0) { // 10 m/s² = 0 -> 36 km/h in 1 sec
+                //         r_err("Maximum accelerattion to high: (%f, %f, %f)",
+                //               amax[0], amax[1], amax[2]);
+                //         throw std::runtime_error("Maximum acceleration to high");
+                // }
         }
 
         void SmoothPath::assert_deviation(double deviation)

@@ -28,7 +28,8 @@
 namespace romi {
         
         BldcGimbal::BldcGimbal(romiserial::IRomiSerialClient& serial)
-                : serial_(serial)
+                : serial_(serial),
+                  power_(kDefaultPower)
         {
         }
 
@@ -111,24 +112,29 @@ namespace romi {
 
         bool BldcGimbal::pause_activity()
         {
-                return true;
+                r_err("BldcGimbal::pause_activity: Not implemented");
+                throw std::runtime_error("BldcGimbal::pause_activity: Not implemented");
         }
 
         bool BldcGimbal::continue_activity()
         {
-                return true;
+                r_err("BldcGimbal::continue_activity: Not implemented");
+                throw std::runtime_error("BldcGimbal::continue_activity: Not implemented");
         }
 
         bool BldcGimbal::reset_activity()
         {
-                return true;
+                r_err("BldcGimbal::reset_activity: Not implemented");
+                throw std::runtime_error("BldcGimbal::reset_activity: Not implemented");
         }
 
         bool BldcGimbal::power_up()
         {
-                nlohmann::json response;
-                serial_.send("P[40]", response);
-                return (response[0] == 0);
+            char command[64];
+            nlohmann::json response;
+            snprintf(command, sizeof(command), "P[%d]", (int) (power_ * 100.0));
+            serial_.send(command, response);
+            return (response[0] == 0);
         }
 
         bool BldcGimbal::power_down()

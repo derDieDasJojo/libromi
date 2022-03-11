@@ -111,7 +111,23 @@ namespace romi {
                 return true;
         }
 
-    void USBCamera::close() {
-
-    }
+        bool USBCamera::power_up()
+        {
+                return true;
+        }
+        
+        bool USBCamera::power_down()
+        {
+                return true;
+        }
+        
+        bool USBCamera::stand_by()
+        {
+                return true;
+        }
+        
+        bool USBCamera::wake_up()
+        {
+                return true;
+        }
 }

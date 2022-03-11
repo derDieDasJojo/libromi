@@ -618,7 +618,8 @@ namespace romi {
         rcom::MemBuffer plot_to_mem(SmoothPath& script, CNCRange& range,
                               const double *vmax, const double *amax)
         {
-                return plot_to_mem(script, range.min_.values(),
-                                   range.max_.values(), vmax, amax);
+                v3 min = range.min();
+                v3 max = range.max();
+                return plot_to_mem(script, min.values(), max.values(), vmax, amax);
         }
 }

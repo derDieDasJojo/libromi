@@ -52,7 +52,6 @@ namespace romi {
                 Image _image;
                 std::thread _thread;
                 bool open(size_t width, size_t height);
-                void close();
                 void grab_from_camera();
                 void start_capture_thread();
                 void run();
@@ -70,6 +69,12 @@ namespace romi {
                 rcom::MemBuffer& grab_jpeg() override {
                         throw std::runtime_error("USBCamera::grab_jpeg: Not implemented");
                 }
+
+                // Power device interface
+                bool power_up() override;
+                bool power_down() override;
+                bool stand_by() override;
+                bool wake_up() override;
         };
 }
 

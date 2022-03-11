@@ -28,10 +28,12 @@
 #include "cv/Image.h"
 #include "json.hpp"
 #include "MemBuffer.h"
+#include "api/IPowerDevice.h"
 
 namespace romi {
 
-        class ICamera {
+        class ICamera : public IPowerDevice
+        {
         public:
                 virtual ~ICamera() = default;
                 virtual bool grab(Image &image) = 0;

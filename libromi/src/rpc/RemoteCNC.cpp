@@ -47,6 +47,27 @@ namespace romi {
                 return success;
         }
 
+        bool RemoteCNC::get_position(v3& position)
+        {
+                r_debug("RemoteCNC::get_position");
+
+                bool success = false;
+                nlohmann::json result;
+
+                try {
+                        if (execute_with_result(MethodsCNC::get_position, result)) {
+                                position.set(result["x"], result["y"],
+                                             result["z"]);
+                                success = true;
+                        }
+                        
+                } catch (nlohmann::json::exception& je) {
+                        r_err("RemoteCNC::get_position failed: %s", je.what());
+                }
+                
+                return success;
+        }
+
         bool RemoteCNC::moveto(double x, double y, double z, double v)
         {
                 r_debug("RemoteCNC::moveto");
@@ -89,6 +110,30 @@ namespace romi {
                 parameters["speed"] = relative_speed;
 
                 return execute_with_params(MethodsCNC::travel, parameters);
+        }
+
+        bool RemoteCNC::helix(double xc, double yc, double alpha, double z, double speed)
+        {
+                r_debug("RemoteCNC::helix");
+                nlohmann::json params {
+                        {MethodsCNC::kHelixXcParam, xc},
+                        {MethodsCNC::kHelixYcParam, yc},
+                        {MethodsCNC::kHelixAlphaParam, alpha},
+                        {MethodsCNC::kHelixZParam, z},
+                        {MethodsCNC::kSpeedParam, speed}
+                };
+//
+//                        JsonCpp::construct("{\"%s\": %.6f, "
+//                                                    "\"%s\": %.6f, "
+//                                                    "\"%s\": %.9f, "
+//                                                    "\"%s\": %.6f, "
+//                                                    "\"%s\": %.3f}",
+//                                                    MethodsCNC::kHelixXcParam, xc,
+//                                                    MethodsCNC::kHelixYcParam, yc,
+//                                                    MethodsCNC::kHelixAlphaParam, alpha,
+//                                                    MethodsCNC::kHelixZParam, z,
+//                                                    MethodsCNC::kSpeedParam, speed);
+                return execute_with_params(MethodsCNC::helix, params);
         }
 
         bool RemoteCNC::homing()

@@ -31,7 +31,7 @@ namespace romi {
             nlohmann::json coordinate_object = nlohmann::json::object({ {JsonFieldNames::latitude.data(),  latitude_},
                                                                         {JsonFieldNames::longitude.data(), longitude_}});
 
-            return coordinate_object.dump(4);
+            return coordinate_object;
         }
 
         v3 GpsLocationProvider::coordinates()

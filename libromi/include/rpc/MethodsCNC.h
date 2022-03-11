@@ -24,6 +24,7 @@
 #ifndef __ROMI_METHODS_CNC_H
 #define __ROMI_METHODS_CNC_H
 
+
 namespace romi {
         
         class MethodsCNC
@@ -35,7 +36,18 @@ namespace romi {
                 static constexpr const char *spindle = "cnc-spindle";
                 static constexpr const char *travel = "cnc-travel";
                 static constexpr const char *get_range = "cnc-get-range";
+                static constexpr const char *helix = "cnc-helix";
+                static constexpr const char *get_position = "cnc-get-position";
 
+                static constexpr const char *kSpeedParam = "speed";
+                static constexpr const char *kMoveXParam = "x";
+                static constexpr const char *kMoveYParam = "y";
+                static constexpr const char *kMoveZParam = "z";
+                static constexpr const char *kTravelPathParam = "path";
+                static constexpr const char *kHelixXcParam = "xc";
+                static constexpr const char *kHelixYcParam = "yc";
+                static constexpr const char *kHelixAlphaParam = "alpha";
+                static constexpr const char *kHelixZParam = "z";
         };
 }
 

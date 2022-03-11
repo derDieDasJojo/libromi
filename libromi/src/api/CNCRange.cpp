@@ -36,7 +36,7 @@ namespace romi {
         CNCRange::CNCRange(v3 xmin, v3 xmax)
                 : min_(xmin), max_(xmax) {
         }
-        
+
         CNCRange::CNCRange(nlohmann::json& json) : min_(0.0), max_(0.0) {
                 init(json);
         }
@@ -49,6 +49,22 @@ namespace romi {
                 }
         }
 
+        void CNCRange::init(v3 min, v3 max)
+        {
+                min_ = min;
+                max_ = max;
+        }
+        
+        v3 CNCRange::min() const
+        {
+                return min_;
+        }
+        
+        v3 CNCRange::max() const
+        {
+                return max_;
+        }
+        
         v3 CNCRange::dimensions() const
         {
                 return max_ - min_;
@@ -97,4 +113,34 @@ namespace romi {
         {
                 return p.clamp(min_, max_);
         }
+
+        double CNCRange::xmin() const
+        {
+                return min_.x();
+        }
+        
+        double CNCRange::xmax() const
+        {
+                return max_.x();
+        }
+        
+        double CNCRange::ymin() const
+        {
+                return min_.y();
+        }
+        
+        double CNCRange::ymax() const
+        {
+                return max_.y();
+        }
+        
+        double CNCRange::zmin() const
+        {
+                return min_.z();
+        }
+        
+        double CNCRange::zmax() const
+        {
+                return max_.z();
+        }        
 }

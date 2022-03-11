@@ -3,9 +3,10 @@ import serial
 import json
 import math
 
+from i_cnc_controller import ICNCController
 from romi_device import RomiDevice
 
-class OquamController(RomiDevice):
+class OquamController(ICNCController, RomiDevice):
 
     def __init__(self, device): 
         super(OquamController, self).__init__(device)

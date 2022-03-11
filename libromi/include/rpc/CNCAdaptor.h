@@ -36,12 +36,16 @@ namespace romi {
                 
                 void execute_get_range(nlohmann::json& params, nlohmann::json& result,
                                        RPCError &error);
+                void execute_get_position(nlohmann::json& params, nlohmann::json& result,
+                                          RPCError &error);
                 void execute_moveto(nlohmann::json& params, nlohmann::json& result,
                                     RPCError &error);
                 void execute_spindle(nlohmann::json& params, nlohmann::json& result,
                                      RPCError &error);
                 void execute_travel(nlohmann::json& params, nlohmann::json& result,
                                     RPCError &error);
+                void execute_helix(nlohmann::json&, nlohmann::json& result,
+                                   RPCError &error);
                 void execute_homing(RPCError &error);
                 void execute_pause(RPCError &error);
                 void execute_continue(RPCError &error);

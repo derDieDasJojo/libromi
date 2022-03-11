@@ -58,5 +58,25 @@ namespace romi {
             filebuffer_.append(image_data.data(), image_data.size());
             return filebuffer_;
         }
+
+        bool FileCamera::power_up()
+        {
+                return true;
+        }
+        
+        bool FileCamera::power_down()
+        {
+                return true;
+        }
+        
+        bool FileCamera::stand_by()
+        {
+                return true;
+        }
+        
+        bool FileCamera::wake_up()
+        {
+                return true;
+        }
 }
 

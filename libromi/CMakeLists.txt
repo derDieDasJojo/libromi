@@ -62,7 +62,9 @@ if(${PI_BUILD})
       src/picamera/Semaphore.cpp
       src/picamera/StillCamera.cpp
       src/picamera/VideoCamera.cpp
-      src/picamera/VideoEncoder.cpp)
+      src/picamera/VideoEncoder.cpp
+      include/cablebot/Cablebot.h
+      src/cablebot/Cablebot.cpp)
 else()
    set(PICAMERA_SOURCES)
 endif()
@@ -100,6 +102,8 @@ set(SOURCES
         include/battery_monitor/IBatteryMonitor.h
         include/battery_monitor/BatteryMonitor.h
 
+        include/cablebot/CablebotBase.h
+        
         include/camera/FileCamera.h
         include/camera/USBCamera.h
         include/camera/Imager.h
@@ -129,12 +133,15 @@ set(SOURCES
 
         include/hal/BldcGimbal.h
         include/hal/BrushMotorDriver.h
+        include/hal/FakeGimbal.h
+        include/hal/ImagingDevice.h
 
         include/notifications/FluidSoundNotifications.h
 
         include/oquam/ATDC.h
         include/oquam/ICNCController.h
         include/oquam/FakeCNCController.h
+        include/oquam/Helix.h
         include/oquam/is_valid.h
         include/oquam/Oquam.h
         include/oquam/OquamSettings.h
@@ -223,8 +230,12 @@ set(SOURCES
 
         src/battery_monitor/BatteryMonitor.cpp
 
+        src/cablebot/CablebotBase.cpp
+
         src/hal/BldcGimbal.cpp
         src/hal/BrushMotorDriver.cpp
+        src/hal/FakeGimbal.cpp
+        src/hal/ImagingDevice.cpp
 
         src/configuration/ConfigurationProvider.cpp
         src/configuration/GetOpt.cpp
@@ -249,6 +260,7 @@ set(SOURCES
         src/notifications/FluidSoundNotifications.cpp
 
         src/oquam/ATDC.cpp
+        src/oquam/Helix.cpp
         src/oquam/is_valid.cpp
         src/oquam/Oquam.cpp
         src/oquam/OquamSettings.cpp
@@ -309,28 +321,34 @@ set(SOURCES
         )
 
 set(DATA_PROVIDER_SOURCES
-        include/data_provider/JsonFieldNames.h
+        include/data_provider/CNCLocationProvider.h
+        include/data_provider/Gps.h
+        include/data_provider/GpsLocationProvider.h
         include/data_provider/IGPS.h
+        include/data_provider/IIdentityProvider.h
         include/data_provider/ILocationProvider.h
         include/data_provider/IOrientationProvider.h
-        include/data_provider/GpsLocationProvider.h
-        src/data_provider/GpsLocationProvider.cpp
-        include/data_provider/IIdentityProvider.h
-        include/data_provider/RoverIdentityProvider.h
-        src/data_provider/RoverIdentityProvider.cpp
         include/data_provider/ISoftwareVersion.h
-        include/data_provider/SoftwareVersion.h
-        src/data_provider/SoftwareVersion.cpp
+        include/data_provider/JsonFieldNames.h
         include/data_provider/RomiDeviceData.h
-        src/data_provider/RomiDeviceData.cpp
-        src/session/Session.cpp
-        include/session/ISession.h
-        include/session/Session.h
-        include/session/MetaFolder.h
-        include/session/IMetaFolder.h
-        src/session/MetaFolder.cpp
+        include/data_provider/RoverIdentityProvider.h
+        include/data_provider/SoftwareVersion.h
+        
+        src/data_provider/CNCLocationProvider.cpp
         src/data_provider/Gps.cpp
-        include/data_provider/Gps.h
+        src/data_provider/GpsLocationProvider.cpp        
+        src/data_provider/RoverIdentityProvider.cpp
+        src/data_provider/SoftwareVersion.cpp
+        src/data_provider/RomiDeviceData.cpp
+        
+        include/session/IMetaFolder.h
+        include/session/ISession.h
+        include/session/MetaFolder.h
+        include/session/Session.h
+        
+        src/session/MetaFolder.cpp
+        src/session/Session.cpp
+        
         include/debug_tools/debug_data_dumper.h
         src/debug_tools/debug_data_dumper.cpp)
 

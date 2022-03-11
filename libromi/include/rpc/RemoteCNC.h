@@ -41,11 +41,14 @@ namespace romi {
                 ~RemoteCNC() override = default;
 
                 bool get_range(CNCRange &range) override;
+                bool get_position(v3& position) override;
                 bool moveto(double x, double y, double z,
                             double relative_speed) override;
                 bool spindle(double speed) override;
                 bool travel(Path &path, double relative_speed) override;
                 bool homing() override;
+                bool helix(double xc, double yc, double alpha, double z,
+                           double relative_speed) override;
 
                 bool pause_activity() override;
                 bool continue_activity() override;

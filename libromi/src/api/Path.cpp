@@ -106,10 +106,9 @@ namespace romi {
                               "Out of range: (%.3f, %.3f), "
                               "(%.3f, %.3f), (%.3f, %.3f)",
                               at(i).x(), at(i).y(), at(i).z(),
-                              range.min_.x(), range.max_.x(),
-                              range.min_.y(), range.max_.y(),
-                              range.min_.z(), range.max_.z());
-
+                              range.xmin(), range.xmax(),
+                              range.ymin(), range.ymax(),
+                              range.zmin(), range.zmax());
                         ok = false;
                 }
                 return ok;

@@ -4,11 +4,15 @@
 
 namespace romi {
 
-    RoverIdentityProvider::RoverIdentityProvider(IRomiDeviceData &deviceData, ISoftwareVersion &softwareVersion) :
-                    romi_device_type_(), romi_hardware_id_(),
-                    current_software_version_(), alternate_software_version_(),
-                    device_data_(deviceData), software_version_(softwareVersion) {
-
+    RoverIdentityProvider::RoverIdentityProvider(IRomiDeviceData &deviceData,
+                                                 ISoftwareVersion &softwareVersion)
+            : romi_device_type_(),
+              romi_hardware_id_(),
+              current_software_version_(),
+              alternate_software_version_(),
+              device_data_(deviceData),
+              software_version_(softwareVersion)
+    {
             current_software_version_ = software_version_.SoftwareVersionCurrent();
             alternate_software_version_ = software_version_.SoftwareVersionAlternate();
             romi_device_type_ = device_data_.RomiDeviceType();
@@ -16,7 +20,6 @@ namespace romi {
     }
 
     nlohmann::json RoverIdentityProvider::identity() {
-
 
         nlohmann::json identity_data_object{
                 {JsonFieldNames::romi_device_type.data(),  romi_device_type_},
@@ -26,5 +29,4 @@ namespace romi {
 
         return identity_data_object;
     }
-
 }

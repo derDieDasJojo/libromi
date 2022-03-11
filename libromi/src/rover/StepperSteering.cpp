@@ -68,9 +68,9 @@ namespace romi {
                 if (!homing())
                         throw std::runtime_error("StepperSteering: homing failed");
 
-                thread_ = std::make_unique<std::thread>([this]() {
-                                this->run_target_updates();
-                        });
+                // thread_ = std::make_unique<std::thread>([this]() {
+                //                 this->run_target_updates();
+                //         });
         }
 
         StepperSteering::~StepperSteering()
@@ -85,7 +85,10 @@ namespace romi {
                 r_info("StepperSteering::homing()");
                 bool success = false;
                 try {
-                        success = controller_.homing();
+
+                        success = (controller_.set_mode(0) 
+                                   && controller_.homing()
+                                   && controller_.set_mode(1)); 
                         
                 } catch (const std::runtime_error& re) {
                         r_err("StepperSteering: homing failed: %s", re.what());
@@ -112,14 +115,12 @@ namespace romi {
         bool StepperSteering::turn(double speed, double radius)
         {
                 (void) speed;
-                // double left_angle = atan(settings_.wheelbase
-                //                          / (radius - settings_.wheeltrack / 2.0));
-                // double right_angle = atan(settings_.wheelbase
-                //                           / (radius + settings_.wheeltrack / 2.0));
-                // return turn_wheels(left_angle, right_angle);
-                
-                double angle = atan(settings_.wheelbase / (radius / 2.0));
-                return turn_wheels(angle, angle);
+                // Ackerman steering
+                double left_angle = atan(settings_.wheelbase
+                                         / (radius - settings_.wheeltrack / 2.0));
+                double right_angle = atan(settings_.wheelbase
+                                          / (radius + settings_.wheeltrack / 2.0));
+                return turn_wheels(left_angle, right_angle);
         }
         
         bool StepperSteering::turn_wheels(double left_angle, double right_angle)
@@ -132,26 +133,31 @@ namespace romi {
                 std::lock_guard sync(mutex_);
                 left_target_ = left;
                 right_target_ = right;
+
+                int16_t tl = (int16_t) (left * 1024 / M_PI / 2.0); 
+                int16_t tr = (int16_t) (right * 1024 / M_PI / 2.0); 
+                controller_.set_target(tl, tr);
+                
                 log_data(kTargetAngleLeft, left_target_); 
                 log_data(kTargetAngleRight, right_target_);
                 return true;
         }
 
-        void StepperSteering::run_target_updates()
-        {
-                while (!quitting_) {
-                        double now = rpp::ClockAccessor::GetInstance()->time();
-                        if (now - last_update_ >= update_interval_) {
-                                update_angles(now);
-                                last_update_ = now;
+        // void StepperSteering::run_target_updates()
+        // {
+        //         while (!quitting_) {
+        //                 double now = rpp::ClockAccessor::GetInstance()->time();
+        //                 if (now - last_update_ >= update_interval_) {
+        //                         update_angles(now);
+        //                         last_update_ = now;
                                 
-                        } else {
-                                rpp::ClockAccessor::GetInstance()->sleep(last_update_
-                                                                         + update_interval_
-                                                                         - now);
-                        }
-                }
-        }
+        //                 } else {
+        //                         rpp::ClockAccessor::GetInstance()->sleep(last_update_
+        //                                                                  + update_interval_
+        //                                                                  - now);
+        //                 }
+        //         }
+        // }
 
         bool StepperSteering::update_angles(double t)
         {
@@ -251,6 +257,6 @@ namespace romi {
         }
 
         bool StepperSteering::initialise() {
-            return homing();
+                return homing();
         }
 }

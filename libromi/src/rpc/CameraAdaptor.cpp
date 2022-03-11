@@ -24,6 +24,7 @@
 #include <log.h>
 #include "rpc/CameraAdaptor.h"
 #include "rpc/MethodsCamera.h"
+#include "rpc/MethodsPowerDevice.h"
 
 namespace romi {
 
@@ -60,18 +61,29 @@ namespace romi {
                         error.message = e.what();
                 }
         }
-        
+
         
         void CameraAdaptor::execute(const std::string& method, nlohmann::json& params,
                                     nlohmann::json& result, RPCError& error)
         {
                 (void) params;
+                (void) result;
 
                 error.code = 0;
                                 
                 try {
-                        if (method == MethodsCamera::grab_jpeg_json) {
-                                grab_jpeg_json(result, error);
+                        if (method == MethodsPowerDevice::power_up) {
+                                execute_power_up(error);
+                                
+                        } else if (method == MethodsPowerDevice::power_down) {
+                                execute_power_down(error);
+                                
+                        } else if (method == MethodsPowerDevice::stand_by) {
+                                execute_stand_by(error);
+                                
+                        } else if (method == MethodsPowerDevice::wake_up) {
+                                execute_wake_up(error);
+                                
                         } else {
                                 error.code = RPCError::kMethodNotFound;
                                 error.message = "Unknown method";
@@ -82,86 +94,40 @@ namespace romi {
                         error.message = e.what();
                 }
         }
-        
-                static constexpr const char *grab_jpeg_json = "camera-grab-jpeg";
-                        
-        void CameraAdaptor::grab_jpeg_json(nlohmann::json& result, RPCError& error)
-        {
-                rcom::MemBuffer& jpeg = camera_.grab_jpeg();
 
-                if (jpeg.size() > 0) {
-                        encode(jpeg, result);
-                        
-                } else {
-                        error.code = RPCError::kInternalError;
-                        error.message = "Failed to grab the image";                        
+        void CameraAdaptor::execute_power_up(RPCError &error)
+        {
+                r_debug("CameraAdaptor::power_up");
+                if (!camera_.power_up()) {
+                        error.code = 1;
+                        error.message = "power up failed";
                 }
         }
 
-        void CameraAdaptor::encode(rcom::MemBuffer& jpeg, nlohmann::json& result)
+        void CameraAdaptor::execute_power_down(RPCError &error)
         {
-                std::string data = encode_base64(jpeg.data().data(), jpeg.size());
-                result["jpeg"] = data;
+                r_debug("CameraAdaptor::power_down");
+                if (!camera_.power_down()) {
+                        error.code = 1;
+                        error.message = "power down failed";
+                }
         }
         
-        std::string CameraAdaptor::encode_base64(const uint8_t *s, size_t ilen)
+        void CameraAdaptor::execute_stand_by(RPCError &error)
         {
-                static const char table[] = {
-                        'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
-                        'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P',
-                        'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X',
-                        'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f',
-                        'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n',
-                        'o', 'p', 'q', 'r', 's', 't', 'u', 'v',
-                        'w', 'x', 'y', 'z', '0', '1', '2', '3',
-                        '4', '5', '6', '7', '8', '9', '+', '/'
-                };
-
-                size_t olen = 4 * ((ilen + 2) / 3);
-
-                std::string t(olen+1, 0);
-                t[olen] = 0;
-
-                uint8_t a, b, c;
-                uint32_t p;
-        
-                for (size_t i = 0, j = 0; i < ilen;) {
-                        size_t n = ilen - i;
-                        if (n > 3) n = 3;
-
-                        switch (n) {
-                        case 3:
-                                a = (i < ilen)? s[i++] : 0;
-                                b = (i < ilen)? s[i++] : 0;
-                                c = (i < ilen)? s[i++] : 0;
-                                p = (uint32_t) (a << 0x10) + (uint32_t) (b << 0x08) + c;
-                                t[j++] = table[(p >> 18) & 0x3F];
-                                t[j++] = table[(p >> 12) & 0x3F];
-                                t[j++] = table[(p >> 6) & 0x3F];
-                                t[j++] = table[p & 0x3F];
-                                break;
-                        case 2:
-                                a = (i < ilen)? s[i++] : 0;
-                                b = (i < ilen)? s[i++] : 0;
-                                p = (uint32_t)(a << 0x10) + (uint32_t)(b << 0x08);
-                                t[j++] = table[(p >> 18) & 0x3F];
-                                t[j++] = table[(p >> 12) & 0x3F];
-                                t[j++] = table[(p >> 6) & 0x3F];
-                                t[j++] = '=';
-                                break;
-                        case 1:
-                                a = (i < ilen)? s[i++] : 0;
-                                p = (uint32_t)(a << 0x10);
-                                t[j++] = table[(p >> 18) & 0x3F];
-                                t[j++] = table[(p >> 12) & 0x3F];
-                                t[j++] = '=';
-                                t[j++] = '=';
-                                break;
-                        default:
-                                break;
-                        }
+                r_debug("CameraAdaptor::stand_by");
+                if (!camera_.stand_by()) {
+                        error.code = 1;
+                        error.message = "stand_by failed";
                 }
-                
-                return t;
+        }
+        
+        void CameraAdaptor::execute_wake_up(RPCError &error)
+        {
+                r_debug("CameraAdaptor::wake_up");
+                if (!camera_.wake_up()) {
+                        error.code = 1;
+                        error.message = "wake_up failed";
+                }
         }
 }
