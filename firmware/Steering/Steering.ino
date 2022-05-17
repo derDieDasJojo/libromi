@@ -126,25 +126,30 @@ void loop()
         delay(1);
 
         if (print_) {
+                print_perhaps();
+        }
+}
+
+void print_perhaps()
+{
+        unsigned long now = millis();
+        if (now - last_print_time > 1000) {
                 print_status();
-                delay(50);
+                last_print_time = now;
         }
 }
 
 void print_status()
 {
-        Serial.print(arduino_.left_encoder().get_position());
-        if (arduino_.left_encoder().get_index()) {
-                Serial.print("***");
-                arduino_.left_encoder().reset_index();
-        }
-        Serial.print("    ");
-        Serial.print(arduino_.right_encoder().get_position());
-        if (arduino_.right_encoder().get_index()) {
-                Serial.print("***");
-                arduino_.right_encoder().reset_index();
-        }
-        Serial.println();
+        int32_t pos[3];
+        get_stepper_position(pos);
+        
+        snprintf(reply_string, sizeof(reply_string), "[%d,%d,%d,%d,%d,%d]",
+                 arduino_.left_encoder().get_position(),
+                 arduino_.right_encoder().get_position(),
+                 left_target, right_target,
+                 pos[0], pos[1]);
+        romiSerial.log(reply_string);
 }
 
 int moveat(int dx, int dy)
@@ -457,6 +462,7 @@ void handle_target(IRomiSerial *romiSerial, int16_t *args, const char *string_ar
 {
         left_target = args[0];
         right_target = args[1];
+        romiSerial->send_ok();
 }
 
 void send_info(IRomiSerial *romiSerial, int16_t *args, const char *string_arg)
