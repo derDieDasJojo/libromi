@@ -23,6 +23,7 @@
  */
 
 #include <FileUtils.h>
+#include <log.h>
 #include "camera/FileCamera.h"
 
 namespace romi {
@@ -50,7 +51,7 @@ namespace romi {
                 return true;
         }
 
-        rpp::MemBuffer& FileCamera::grab_jpeg() {
+        rcom::MemBuffer& FileCamera::grab_jpeg() {
             std::vector<uint8_t > image_data;
             filebuffer_.clear();
             FileUtils::TryReadFileAsVector(filename_, image_data);

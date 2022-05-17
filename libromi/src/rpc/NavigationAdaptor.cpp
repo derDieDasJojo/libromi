@@ -21,7 +21,7 @@
   <http://www.gnu.org/licenses/>.
 
  */
-#include <r.h>
+#include <log.h>
 #include "rpc/NavigationAdaptor.h"
 #include "rpc/MethodsRover.h"
 
@@ -33,8 +33,8 @@ namespace romi {
         }
 
         void NavigationAdaptor::execute(const std::string& method,
-                                        JsonCpp &params,
-                                        rpp::MemBuffer& result,
+                                        nlohmann::json &params,
+                                        rcom::MemBuffer& result,
                                         RPCError &error)
         {
                 (void) method;
@@ -44,8 +44,8 @@ namespace romi {
                 error.message = "NavigationAdaptor::execute(binary): Unknown method";
         }
         
-        void NavigationAdaptor::execute(const std::string& method, JsonCpp &params,
-                                        JsonCpp &result, RPCError &error)
+        void NavigationAdaptor::execute(const std::string& method, nlohmann::json &params,
+                                        nlohmann::json &result, RPCError &error)
         {
                 r_debug("NavigationAdaptor::execute(text): %s", method.c_str());
                 (void) result;
@@ -84,19 +84,19 @@ namespace romi {
                 }
         }
 
-        void NavigationAdaptor::execute_moveat(JsonCpp &params, RPCError &error)
+        void NavigationAdaptor::execute_moveat(nlohmann::json &params, RPCError &error)
         {
                 r_debug("NavigationAdaptor::execute_moveat");
                 try {
-                        double left = params.array("speed").num(0);
-                        double right = params.array("speed").num(1);
+                        double left = params["speed"][0];
+                        double right = params["speed"][1];
                 
                         if (!navigation_.moveat(left, right)) {
                                 error.code = 1;
                                 error.message = "moveat failed";
                         }
                         
-                } catch (JSONError &je) {
+                } catch (nlohmann::json::exception& je) {
                         r_debug("NavigationAdaptor::execute_moveat: %s",
                                 je.what());
                         error.code = RPCError::kParseError;
@@ -104,20 +104,20 @@ namespace romi {
                 }
         }
 
-        void NavigationAdaptor::execute_move(JsonCpp &params, RPCError &error)
+        void NavigationAdaptor::execute_move(nlohmann::json &params, RPCError &error)
         {
                 r_debug("NavigationAdaptor::execute_move");
                 
                 try {
-                        double distance = params.num("distance");
-                        double speed = params.num("speed");
+                        double distance = params["distance"];
+                        double speed = params["speed"];
                 
                         if (!navigation_.move(distance, speed)) {
                                 error.code = 1;
                                 error.message = "move failed";
                         }
                         
-                } catch (JSONError &je) {
+                } catch (nlohmann::json::exception& je) {
                         r_debug("NavigationAdaptor::execute_move: %s", je.what());
                         error.code = RPCError::kParseError;
                         error.message = "Invalid json";

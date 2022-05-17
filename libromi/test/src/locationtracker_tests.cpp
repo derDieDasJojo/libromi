@@ -39,14 +39,14 @@ TEST_F(locationtracker_tests, set_distance_initializes_correctly)
         // Arrange
         EXPECT_CALL(location_provider, update_location_estimate()).
                 WillOnce(Return(true));
-        EXPECT_CALL(location_provider, get_location()).
+        EXPECT_CALL(location_provider, coordinates()).
                 WillOnce(Return(v3(0.0)));
-        
+
         EXPECT_CALL(orientation_provider, update_orientation_estimate()).
                 WillOnce(Return(true));
         EXPECT_CALL(orientation_provider, get_orientation()).
                 WillOnce(Return(0.0));
-        
+
         LocationTracker tracker(location_provider, orientation_provider);
 
         // Act
@@ -66,16 +66,16 @@ TEST_F(locationtracker_tests, test_update_distance_estimate_1)
         // Arrange
         EXPECT_CALL(location_provider, update_location_estimate())
                 .WillRepeatedly(Return(true));
-        EXPECT_CALL(location_provider, get_location())
+        EXPECT_CALL(location_provider, coordinates())
                 .WillOnce(Return(v3(0.0)))
                 .WillOnce(Return(v3(1.0, 0.0, 0.0)));
-        
+
         EXPECT_CALL(orientation_provider, update_orientation_estimate()).
                 WillRepeatedly(Return(true));
         EXPECT_CALL(orientation_provider, get_orientation())
                 .WillOnce(Return(0.0))
                 .WillOnce(Return(0.0));
-        
+
         LocationTracker tracker(location_provider, orientation_provider);
 
         // Act
@@ -96,16 +96,16 @@ TEST_F(locationtracker_tests, test_update_distance_estimate_2)
         // Arrange
         EXPECT_CALL(location_provider, update_location_estimate())
                 .WillRepeatedly(Return(true));
-        EXPECT_CALL(location_provider, get_location())
+        EXPECT_CALL(location_provider, coordinates())
                 .WillOnce(Return(v3(0.0)))
                 .WillOnce(Return(v3(0.5, 0.1, 0.0)));
-        
+
         EXPECT_CALL(orientation_provider, update_orientation_estimate()).
                 WillRepeatedly(Return(true));
         EXPECT_CALL(orientation_provider, get_orientation())
                 .WillOnce(Return(0.0))
                 .WillOnce(Return(0.0));
-        
+
         LocationTracker tracker(location_provider, orientation_provider);
 
         // Act
@@ -126,16 +126,16 @@ TEST_F(locationtracker_tests, test_update_distance_estimate_3)
         // Arrange
         EXPECT_CALL(location_provider, update_location_estimate())
                 .WillRepeatedly(Return(true));
-        EXPECT_CALL(location_provider, get_location())
+        EXPECT_CALL(location_provider, coordinates())
                 .WillOnce(Return(v3(0.0)))
                 .WillOnce(Return(v3(0.5, -0.1, 0.0)));
-        
+
         EXPECT_CALL(orientation_provider, update_orientation_estimate()).
                 WillRepeatedly(Return(true));
         EXPECT_CALL(orientation_provider, get_orientation())
                 .WillOnce(Return(0.0))
                 .WillOnce(Return(0.0));
-        
+
         LocationTracker tracker(location_provider, orientation_provider);
 
         // Act
@@ -156,16 +156,16 @@ TEST_F(locationtracker_tests, test_update_distance_estimate_4)
         // Arrange
         EXPECT_CALL(location_provider, update_location_estimate())
                 .WillRepeatedly(Return(true));
-        EXPECT_CALL(location_provider, get_location())
+        EXPECT_CALL(location_provider, coordinates())
                 .WillOnce(Return(v3(0.0)))
                 .WillOnce(Return(v3(sqrt(2.0) / 4.0, sqrt(2.0) / 4.0, 0.0)));
-        
+
         EXPECT_CALL(orientation_provider, update_orientation_estimate()).
                 WillRepeatedly(Return(true));
         EXPECT_CALL(orientation_provider, get_orientation())
                 .WillOnce(Return(M_PI / 4.0))
                 .WillOnce(Return(M_PI / 4.0));
-        
+
         LocationTracker tracker(location_provider, orientation_provider);
 
         // Act
@@ -186,16 +186,16 @@ TEST_F(locationtracker_tests, test_update_distance_estimate_5)
         // Arrange
         EXPECT_CALL(location_provider, update_location_estimate())
                 .WillRepeatedly(Return(true));
-        EXPECT_CALL(location_provider, get_location())
+        EXPECT_CALL(location_provider, coordinates())
                 .WillOnce(Return(v3(0.0)))
                 .WillOnce(Return(v3(1.0, 0.0, 0.0)));
-        
+
         EXPECT_CALL(orientation_provider, update_orientation_estimate()).
                 WillRepeatedly(Return(true));
         EXPECT_CALL(orientation_provider, get_orientation())
                 .WillOnce(Return(0.0))
                 .WillOnce(Return(0.0));
-        
+
         LocationTracker tracker(location_provider, orientation_provider);
 
         // Act
@@ -216,16 +216,16 @@ TEST_F(locationtracker_tests, test_update_distance_estimate_6)
         // Arrange
         EXPECT_CALL(location_provider, update_location_estimate())
                 .WillRepeatedly(Return(true));
-        EXPECT_CALL(location_provider, get_location())
+        EXPECT_CALL(location_provider, coordinates())
                 .WillOnce(Return(v3(0.0)))
                 .WillOnce(Return(v3(-1.0, 0.0, 0.0)));
-        
+
         EXPECT_CALL(orientation_provider, update_orientation_estimate()).
                 WillRepeatedly(Return(true));
         EXPECT_CALL(orientation_provider, get_orientation())
                 .WillOnce(Return(0.0))
                 .WillOnce(Return(0.0));
-        
+
         LocationTracker tracker(location_provider, orientation_provider);
 
         // Act
@@ -246,16 +246,16 @@ TEST_F(locationtracker_tests, test_update_distance_estimate_for_5m_travel)
         // Arrange
         EXPECT_CALL(location_provider, update_location_estimate())
                 .WillRepeatedly(Return(true));
-        EXPECT_CALL(location_provider, get_location())
+        EXPECT_CALL(location_provider, coordinates())
                 .WillOnce(Return(v3(0.0)))
                 .WillOnce(Return(v3(1.0, 0.0, 0.0)));
-        
+
         EXPECT_CALL(orientation_provider, update_orientation_estimate()).
                 WillRepeatedly(Return(true));
         EXPECT_CALL(orientation_provider, get_orientation())
                 .WillOnce(Return(0.0))
                 .WillOnce(Return(0.0));
-        
+
         LocationTracker tracker(location_provider, orientation_provider);
 
         // Act
@@ -276,7 +276,7 @@ TEST_F(locationtracker_tests, test_update_distance_estimate_for_5m_backward_trav
         // Arrange
         EXPECT_CALL(location_provider, update_location_estimate())
                 .WillRepeatedly(Return(true));
-        EXPECT_CALL(location_provider, get_location())
+        EXPECT_CALL(location_provider, coordinates())
                 .WillOnce(Return(v3(0.0)))
                 .WillOnce(Return(v3(-1.0, 0.0, 0.0)));
         

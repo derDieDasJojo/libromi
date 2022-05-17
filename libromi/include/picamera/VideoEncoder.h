@@ -39,7 +39,7 @@ namespace romi::arm {
         class VideoEncoder : public EncoderComponent
         {
         protected:
-                rpp::MemBuffer last_frame_;
+                rcom::MemBuffer last_frame_;
                 std::condition_variable condition_;
                 std::mutex mutex_;
                 bool wants_frame_;

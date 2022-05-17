@@ -25,6 +25,8 @@
 #include <stdexcept>
 #include <log.h>
 #include <algorithm>
+#include <fstream>
+#include <iostream>
 #include "ui/ScriptList.h"
 
 namespace romi {
@@ -33,7 +35,7 @@ namespace romi {
         {
                 try {
                         load_scripts(path);
-                } catch (JSONError& je) {
+                } catch (nlohmann::json::exception& je) {
                         r_err("ScriptList: JSON error while "
                               "loading scripts: %s", je.what());
                         throw std::runtime_error("Invalid script");
@@ -45,13 +47,13 @@ namespace romi {
                 }
         }
                 
-        ScriptList::ScriptList(JsonCpp& json) : scripts_(), json_scripts_()
+        ScriptList::ScriptList(nlohmann::json& json) : scripts_(), json_scripts_()
         {
                 try {
                         
                         convert_scripts(json);
                 
-                } catch (JSONError& je) {
+                } catch (nlohmann::json::exception& je) {
                         r_err("ScriptList: JSON error while "
                               "loading scripts: %s", je.what());
                         throw std::runtime_error("Invalid script");
@@ -65,40 +67,42 @@ namespace romi {
         
         void ScriptList::load_scripts(const std::string& path)
         {
-                json_scripts_ = JsonCpp::load(path.c_str());
-                convert_scripts(json_scripts_);
+            // TBD: REFACTOR ADD JSON LOAD UTILITY FUNCTION or USE FILEUTILS
+            std::ifstream jsoninput(path.c_str());
+            jsoninput >> json_scripts_;
+            convert_scripts(json_scripts_);
         }
         
-        void ScriptList::convert_scripts(JsonCpp& scripts)
+        void ScriptList::convert_scripts(nlohmann::json& scripts)
         {
-                for (size_t index = 0; index < scripts.length(); index++) {
-                        JsonCpp script = scripts[index];
+                for (size_t index = 0; index < scripts.size(); index++) {
+                        nlohmann::json script = scripts.at(index);
                         convert_script(script);
                 }                        
         }
         
-        void ScriptList::convert_script(JsonCpp& script)
+        void ScriptList::convert_script(nlohmann::json& script)
         {
-                const char *id = (const char *) script["id"];
-                const char *title = (const char *) script["title"];
+                std::string id = script["id"];
+                std::string title = script["title"];
                 
                 scripts_.emplace_back(id, title);
                 convert_script_actions(scripts_.back(), script);
         }
 
         void ScriptList::convert_script_actions(Script& script,
-                                                JsonCpp& json_script)
+                                                nlohmann::json& json_script)
         {
-                JsonCpp actions = json_script.array("actions");
-                for (size_t i = 0; i < actions.length(); i++) {
-                        JsonCpp action = actions[i];
+                nlohmann::json actions = json_script.at("actions");
+                for (size_t i = 0; i < actions.size(); i++) {
+                        nlohmann::json action = actions.at(i);
                         convert_action(script, action);
                 }
         }
 
-        void ScriptList::convert_action(Script& script, JsonCpp& action)
+        void ScriptList::convert_action(Script& script, nlohmann::json& action)
         {
-                std::string type = (const char *) action["action"];
+                std::string type = action["action"];
                 if (type == Action::kMoveCommand)
                         convert_move(script, action);
                 else if (type == Action::kHoeCommand)
@@ -111,7 +115,7 @@ namespace romi {
                         convert_stop_recording(script);
         }
         
-        void ScriptList::convert_move(Script& script, JsonCpp& action)
+        void ScriptList::convert_move(Script& script, nlohmann::json& action)
         {
                 double distance = (double) action["distance"];
                 double speed = (double) action["speed"];
@@ -155,9 +159,7 @@ namespace romi {
         }
 
         std::string ScriptList::json_scripts() const {
-            std::string scripts;
-            json_scripts_.tostring(scripts , k_json_pretty | k_json_sort_keys);
-            return scripts;
+            return json_scripts_.dump(4);
         }
 
         const Script &ScriptList::operator[](size_t index) const {

@@ -76,9 +76,9 @@ namespace romi {
 
                 int send_command(const char *cmd);
                 int is_idle();                
-                bool response_ok(JsonCpp& response);
+                bool response_ok(nlohmann::json& response);
                 bool send_command_without_interruption(const char *command);
-                bool check_response(const char *command, JsonCpp& response);
+                bool check_response(const char *command, nlohmann::json& response);
         };
 }
 

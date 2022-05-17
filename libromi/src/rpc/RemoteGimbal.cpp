@@ -21,6 +21,8 @@
   <http://www.gnu.org/licenses/>.
 
  */
+
+#include <log.h>
 #include "rpc/RemoteGimbal.h"
 #include "rpc/MethodsGimbal.h"
 #include "rpc/MethodsPowerDevice.h"
@@ -36,18 +38,18 @@ namespace romi {
         bool RemoteGimbal::moveto(double angle)
         {
                 r_debug("RemoteGimbal::moveto");
-                JsonCpp params = JsonCpp::construct("{ \"%s\": %.3f}",
-                                                    MethodsGimbal::angle_param,
-                                                    angle);
+                nlohmann::json params{
+                        {MethodsGimbal::angle_param, angle}
+                };
                 return execute_with_params(MethodsGimbal::moveto, params);
         }
                 
         bool RemoteGimbal::moveat(double rps)
         {
                 r_debug("RemoteGimbal::moveat");
-                JsonCpp params = JsonCpp::construct("{ \"%s\": %.3f}",
-                                                    MethodsGimbal::rps_param,
-                                                    rps);
+                nlohmann::json params{
+                        {MethodsGimbal::rps_param, rps}
+                };
                 return execute_with_params(MethodsGimbal::moveto, params);
         }
         
@@ -55,9 +57,9 @@ namespace romi {
         {
                 r_debug("RemoteGimbal::get_angle");
                 bool success = false;
-                JsonCpp result;
+                nlohmann::json result;
                 if (execute_with_result(MethodsGimbal::get_angle, result)) {
-                        angle = result.num(MethodsGimbal::angle_result);
+                        angle = result[MethodsGimbal::angle_result];
                         success = true;
                 }
                 return success;
@@ -66,9 +68,10 @@ namespace romi {
         bool RemoteGimbal::set_angle(double angle)
         {
                 r_debug("RemoteGimbal::set_angle");
-                JsonCpp params = JsonCpp::construct("{ \"%s\": %.3f}",
-                                                    MethodsGimbal::angle_param,
-                                                    angle);
+                nlohmann::json params
+                        {
+                            {MethodsGimbal::angle_param, angle }
+                        };
                 return execute_with_params(MethodsGimbal::moveto, params);
         }
 

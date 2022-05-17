@@ -21,6 +21,7 @@
   <http://www.gnu.org/licenses/>.
 
  */
+#include <log.h>
 #include "rpc/RemoteNavigation.h"
 #include "rpc/MethodsRover.h"
 
@@ -28,16 +29,18 @@ namespace romi {
 
         bool RemoteNavigation::moveat(double left, double right)
         {
-                JsonCpp params = JsonCpp::construct("{'speed':[%0.3f,%0.3f]}",
-                                              left, right);
+                nlohmann::json params{
+                    "speed", {left, right}
+                };
                 return execute_with_params(MethodsNavigation::moveat, params);
         }
 
         bool RemoteNavigation::move(double distance, double speed)
         {
-                JsonCpp params = JsonCpp::construct("{'distance':%0.3f,"
-                                              "'speed':%0.3f}",
-                                              distance, speed);
+                nlohmann::json params{
+                        {"distance", distance},
+                        {"speed", speed}
+                };
                 return execute_with_params(MethodsNavigation::move, params);
         }
         

@@ -11,14 +11,14 @@ class ScriptHubListener : public rcom::IMessageListener{
         explicit ScriptHubListener(romi::Rover& rover);
 
         ~ScriptHubListener() override = default;
-        void onmessage(rcom::IWebSocket& link, rpp::MemBuffer& message, rcom::MessageType type) override;
+        void onmessage(rcom::IWebSocket& link, rcom::MemBuffer& message, rcom::MessageType type) override;
 
     private:
-        rpp::MemBuffer handle_message(rpp::MemBuffer &message);
-        rpp::MemBuffer handle_list_request();
+        rcom::MemBuffer handle_message(rcom::MemBuffer &message);
+        rcom::MemBuffer handle_list_request();
         std::string handle_execute_remote_state_change(std::string& state);
         std::string handle_execute_remote_script(const romi::ScriptList &scriptlist, long index);
-        rpp::MemBuffer handle_execute_remote_request(JsonCpp &json_msg);
+        rcom::MemBuffer handle_execute_remote_request(nlohmann::json &json_msg);
     private:
         static const std::vector<std::string> commands_;
         romi::Rover& rover_;

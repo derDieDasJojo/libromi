@@ -22,7 +22,7 @@
 
  */
 #include <stdexcept>
-#include <JsonCpp.h> 
+#include <json.hpp>
 #include <RomiSerialErrors.h>
 #include <ClockAccessor.h>
 #include "oquam/StepperController.h"
@@ -42,7 +42,7 @@ namespace romi {
         int StepperController::send_command(const char *command)
         {
                 int r = -1;
-                JsonCpp response;
+                nlohmann::json response;
                 auto clock = rpp::ClockAccessor::GetInstance();
 
                 /* The number of loops is a bit random but it avoids
@@ -57,10 +57,10 @@ namespace romi {
                         
                         _romi_serial->send(command, response);
 
-                        if (response.isarray()
-                            && response.get(0).isnumber()) {
+                        if (response.is_array()
+                            && response[0].is_number()) {
                                 
-                                r = (int) response.num(0);
+                                r = (int) response[0];
                                 
                                         
                                 if (r == 0) {
@@ -74,13 +74,12 @@ namespace romi {
                                                 
                                 } else {
                                         r_err("StepperController::execute: "
-                                              "error: %s", response.str(1));
+                                              "error: %s", response[1].dump().c_str());
                                         break;
                                 }
                                 
                         } else {
-                                std::string s;
-                                response.tostring(s, k_json_compact);
+                                std::string s = response.dump();
                                 r_debug("StepperController::send_command: "
                                         "invalid response: %s", s.c_str());
                         }
@@ -127,16 +126,15 @@ namespace romi {
                 int idle = -1;
                 int state = '?';
                 
-                JsonCpp s;
+                nlohmann::json s;
                 _romi_serial->send("I", s);
 
-                int r = (int) s.num(0);
+                int r = s[0];
                 if (r == 0) {
-                        if (s.length() == 3) {
+                        if (s.size() == 3) {
                                 // This is the answer to "is idle?".
-                                idle = (int) s.num(1);
-
-                                const char *t = s.str(2);
+                                idle = s[1];
+                                std::string t = s[2];
                                 state = t[0];
 
                                 // TODO
@@ -155,7 +153,7 @@ namespace romi {
                         }
                         
                 } else {
-                        r_err("StepperController::is_idle: error: %s", s.str(1));
+                        r_err("StepperController::is_idle: error: %s", s[1].dump().c_str());
                 }
                 
                 return idle;
@@ -165,15 +163,15 @@ namespace romi {
         {
                 bool success = false;
                 
-                JsonCpp s;
-                _romi_serial->send("P", s);
+                nlohmann::json response;
+                _romi_serial->send("P", response);
 
-                int r = (int) s.num(0);
+                int r = response[0];
                 if (r == 0) {
-                        if (s.length() == 4) {
-                                pos[0] = (int32_t) s.num(1);
-                                pos[1] = (int32_t) s.num(2);
-                                pos[2] = (int32_t) s.num(3);
+                        if (response.size() == 4) {
+                                pos[0] = (int32_t) response[1];
+                                pos[1] = (int32_t) response[2];
+                                pos[2] = (int32_t) response[3];
                                 success = true;
                                 r_debug("pos[0]=%d, pos[1]=%d",pos[0],pos[1]);
                         } else {
@@ -182,7 +180,7 @@ namespace romi {
                                 r = -1;
                         }
                 } else {
-                        r_err("StepperController::get_position: error: %s", s.str(1));
+                        r_err("StepperController::get_position: error: %s", response[1].dump().c_str());
                 }
                 
                 return success;
@@ -216,19 +214,19 @@ namespace romi {
                 return success;
         }
 
-        bool StepperController::response_ok(JsonCpp& response)
+        bool StepperController::response_ok(nlohmann::json& response)
         {
 //                std::cout<<"response.isarray() = "<<response.isarray()<<", response.get(0).isnumber() = "<<
 //                                    response.get(0).isnumber()<<", response.num(0) = "<<response.num(0)<<std::endl;
-                return  (response.isarray()
-                         && response.get(0).isnumber()
-                         && response.num(0) == 0);
+                return  (response.is_array()
+                         && response[0].is_number()
+                         && response[0] == 0);
         }
         
         bool StepperController::send_command_without_interruption(const char *command)
         {
                 bool success = false;
-                JsonCpp response;
+                nlohmann::json response;
                 for (int i = 0; i < 10; i++) {
                         _romi_serial->send(command, response);
                         if (response_ok(response)) {
@@ -285,21 +283,21 @@ namespace romi {
 
         bool StepperController::stop()         //???? utiliser la fonction de BrushMotorDriver en la passant en static pour eviter les doublons?
         {
-            JsonCpp response;
+            nlohmann::json response;
             const char *command = "V[0,0,0]"; //Avec X ca ne marche pas
             _romi_serial->send(command, response);
             return check_response(command, response);
         }
 
-        bool StepperController::check_response(const char *command, JsonCpp& response)
+        bool StepperController::check_response(const char *command, nlohmann::json& response)
         {
-            bool success = (response.num(romiserial::kStatusCode) == 0);
+            bool success = (response[romiserial::kStatusCode] == 0);
             if (!success) {
-                const char *message = "No message";
-                if (response.length() > 1)
-                    message = response.str(romiserial::kErrorMessage);
+                std::string message = "No message";
+                if (response.size() > 1)
+                    message = response[romiserial::kErrorMessage];
                 r_warn("StepperMotorDriver: command %s returned error: %s",
-                       command, message);
+                       command, message.c_str());
             }
             return success;
         }

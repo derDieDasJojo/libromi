@@ -1,7 +1,7 @@
 #include "gtest/gtest.h"
 #include "gmock/gmock.h"
 #include "rover/SpeedConverter.h"
-#include "JsonCpp.h"
+#include "json.hpp"
 
 using namespace std;
 using namespace testing;
@@ -22,10 +22,12 @@ protected:
 	}
 };
 
+
+// REFACTOR: ASSERT CONDITIONS.
 TEST_F(speedconverter_tests, constructor_successfully_parses_json)
 {
         try {
-                JsonCpp config = JsonCpp::parse(
+                nlohmann::json config = nlohmann::json::parse(
                         "{"
                         "    \"use-speed-curve\": true,"
                         "    \"speed-curve-exponent\": 2.0,"
@@ -45,7 +47,7 @@ TEST_F(speedconverter_tests, constructor_successfully_parses_json)
                 ASSERT_EQ(converter.speed_multiplier, 1.0);
                 ASSERT_EQ(converter.direction_multiplier, 0.4);
                
-        } catch (JSONError &e) {
+        } catch (nlohmann::json::exception& e) {
                 FAIL() << "Expected successfull parsing: " << e.what();
         } catch (...) {
                 FAIL() << "Expected successfull parsing";
@@ -55,15 +57,15 @@ TEST_F(speedconverter_tests, constructor_successfully_parses_json)
 TEST_F(speedconverter_tests, constructor_throws_error_on_bad_json)
 {
         try {
-                JsonCpp config = JsonCpp::parse("{}");
+                nlohmann::json config = nlohmann::json::parse("{}");
                 SpeedConverter converter;
                 converter.parse(config);
-                FAIL() << "Expected JSONError";
+                FAIL() << "Expected json::parse_error&";
                 
-        } catch (JSONError &e) {
+        } catch (nlohmann::json::exception& e) {
                         // NOP
         } catch (...) {
-                FAIL() << "Expected JSONError";
+                FAIL() << "Expected json::parse_error&";
         }
 }
 

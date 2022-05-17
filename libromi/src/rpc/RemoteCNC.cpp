@@ -21,6 +21,7 @@
   <http://www.gnu.org/licenses/>.
 
  */
+#include <log.h>
 #include "rpc/RemoteCNC.h"
 #include "rpc/MethodsRover.h"
 
@@ -31,7 +32,7 @@ namespace romi {
                 r_debug("RemoteCNC::get_range");
 
                 bool success = false;
-                JsonCpp result;
+                nlohmann::json result;
 
                 try {
                         if (execute_with_result(MethodsCNC::get_range, result)) {
@@ -39,7 +40,7 @@ namespace romi {
                                 success = true;
                         }
                         
-                } catch (JSONError &je) {
+                } catch (nlohmann::json::exception& je) {
                         r_err("RemoteCNC::get_range failed: %s", je.what());
                 }
 
@@ -51,16 +52,16 @@ namespace romi {
                 r_debug("RemoteCNC::get_position");
 
                 bool success = false;
-                JsonCpp result;
+                nlohmann::json result;
 
                 try {
                         if (execute_with_result(MethodsCNC::get_position, result)) {
-                                position.set(result.num("x"), result.num("y"),
-                                             result.num("z"));
+                                position.set(result["x"], result["y"],
+                                             result["z"]);
                                 success = true;
                         }
                         
-                } catch (JSONError &je) {
+                } catch (nlohmann::json::exception& je) {
                         r_err("RemoteCNC::get_position failed: %s", je.what());
                 }
                 
@@ -70,24 +71,18 @@ namespace romi {
         bool RemoteCNC::moveto(double x, double y, double z, double v)
         {
                 r_debug("RemoteCNC::moveto");
-                
-                // TODO: use JSON C++ API
-                json_object_t p = json_object_create();
+                nlohmann::json params;
                 
                 if (x != UNCHANGED)
-                        json_object_setnum(p, "x", x);
+                        params["x"] = x;
 
                 if (y != UNCHANGED)
-                        json_object_setnum(p, "y", y);
+                    params["y"] = y;
                 
                 if (z != UNCHANGED)
-                        json_object_setnum(p, "z", z);
-                
-                json_object_setnum(p, "speed", v);
-                
-                JsonCpp params(p);
-                json_unref(p);
-                
+                    params["z"] = z;
+
+                params["speed"] = v;
 
                 return execute_with_params(MethodsCNC::moveto, params);
         }
@@ -96,12 +91,8 @@ namespace romi {
         {
                 r_debug("RemoteCNC::spindle");
 
-                // TODO: use JSON C++ API
-                json_object_t p = json_object_create();                
-                json_object_setnum(p, "speed", speed);
-                JsonCpp params(p);
-                json_unref(p);
-
+                nlohmann::json params;
+                params["speed"] = speed;
                 return execute_with_params(MethodsCNC::spindle, params);
         }
         
@@ -109,42 +100,39 @@ namespace romi {
         {
                 r_debug("RemoteCNC::travel");
 
-                // TODO: use JSON C++ API
-                json_object_t parameters = json_object_create();
-                json_object_t points = json_array_create();
+                nlohmann::json parameters;
+                nlohmann::json points = nlohmann::json::array();
                 for (size_t i = 0; i < path.size(); i++) {
-                        json_object_t pt = json_array_create();                
-                        json_array_setnum(pt, path[i].x(), 0);
-                        json_array_setnum(pt, path[i].y(), 1);
-                        json_array_setnum(pt, path[i].z(), 2);
-                        json_array_push(points, pt);
-                        json_unref(pt);
+                    points.emplace_back(nlohmann::json{path[i].x(), path[i].y(), path[i].z()} );
                 }
 
-                json_object_set(parameters, "path", points);
-                json_unref(points);
-                
-                json_object_setnum(parameters, "speed", relative_speed);
+                parameters["path"] = points;
+                parameters["speed"] = relative_speed;
 
-                JsonCpp params(parameters);
-                json_unref(parameters);
-
-                return execute_with_params(MethodsCNC::travel, params);
+                return execute_with_params(MethodsCNC::travel, parameters);
         }
 
         bool RemoteCNC::helix(double xc, double yc, double alpha, double z, double speed)
         {
                 r_debug("RemoteCNC::helix");
-                JsonCpp params = JsonCpp::construct("{\"%s\": %.6f, "
-                                                    "\"%s\": %.6f, "
-                                                    "\"%s\": %.9f, "
-                                                    "\"%s\": %.6f, "
-                                                    "\"%s\": %.3f}",
-                                                    MethodsCNC::kHelixXcParam, xc,
-                                                    MethodsCNC::kHelixYcParam, yc,
-                                                    MethodsCNC::kHelixAlphaParam, alpha,
-                                                    MethodsCNC::kHelixZParam, z,
-                                                    MethodsCNC::kSpeedParam, speed);
+                nlohmann::json params {
+                        {MethodsCNC::kHelixXcParam, xc},
+                        {MethodsCNC::kHelixYcParam, yc},
+                        {MethodsCNC::kHelixAlphaParam, alpha},
+                        {MethodsCNC::kHelixZParam, z},
+                        {MethodsCNC::kSpeedParam, speed}
+                };
+//
+//                        JsonCpp::construct("{\"%s\": %.6f, "
+//                                                    "\"%s\": %.6f, "
+//                                                    "\"%s\": %.9f, "
+//                                                    "\"%s\": %.6f, "
+//                                                    "\"%s\": %.3f}",
+//                                                    MethodsCNC::kHelixXcParam, xc,
+//                                                    MethodsCNC::kHelixYcParam, yc,
+//                                                    MethodsCNC::kHelixAlphaParam, alpha,
+//                                                    MethodsCNC::kHelixZParam, z,
+//                                                    MethodsCNC::kSpeedParam, speed);
                 return execute_with_params(MethodsCNC::helix, params);
         }
 

@@ -3,6 +3,7 @@
 
 #include <string>
 #include "v3.h"
+#include "json.hpp"
 
 namespace romi {
 
@@ -11,10 +12,10 @@ namespace romi {
         ILocationProvider() = default;
         virtual ~ILocationProvider() = default;
         
-        virtual std::string get_location_string() = 0;
+        virtual nlohmann::json location() = 0;
         
         virtual bool update_location_estimate() = 0;
-        virtual v3 get_location() = 0;
+        virtual v3 coordinates() = 0;
     };
 
 }

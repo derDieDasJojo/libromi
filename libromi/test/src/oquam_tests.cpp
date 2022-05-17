@@ -239,6 +239,7 @@ TEST_F(oquam_tests, constructor_copies_range)
 
         CNCRange range;
         oquam.get_range(range);
+
         ASSERT_EQ(range.xmin(), xmin[0]);
         ASSERT_EQ(range.xmax(), xmax[0]);
         ASSERT_EQ(range.ymin(), xmin[1]);

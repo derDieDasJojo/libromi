@@ -56,12 +56,12 @@ namespace romi {
                 char command[64];
                 snprintf(command, sizeof(command), "M[%d]", angle_to_arg(angle));
                 
-                JsonCpp response;
+                nlohmann::json response;
                 serial_.send(command, response);
                 
-                bool success = (response.num(0) == 0);
+                bool success = (response[0] == 0);
                 if (!success) {
-                        r_err("BldcGimbal::moveto: %s", response.str(1));
+                        r_err("BldcGimbal::moveto: %s", to_string(response[1]).c_str());
                 }
                 return success;
         }
@@ -71,26 +71,26 @@ namespace romi {
                 char command[64];
                 snprintf(command, sizeof(command), "V[%d]", (int) (rps * 1000.0));
                 
-                JsonCpp response;
+                nlohmann::json response;
                 serial_.send(command, response);
                 
-                bool success = (response.num(0) == 0);
+                bool success = (response[0] == 0);
                 if (!success) {
-                        r_err("BldcGimbal::moveat: %s", response.str(1));
+                        r_err("BldcGimbal::moveat: %s", to_string(response[1]).c_str());
                 }
                 return success;
         }
                         
         bool BldcGimbal::get_angle(double& angle)
         {
-                JsonCpp response;
+                nlohmann::json response;
                 serial_.send("s", response);
                 
-                bool success = (response.num(0) == 0);
+                bool success = (response[0] == 0);
                 if (success) {
-                        angle = arg_to_angle(response.num(1));
+                        angle = arg_to_angle(response[1]);
                 } else {
-                        r_err("BldcGimbal::get_position: %s", response.str(1));
+                        r_err("BldcGimbal::get_position: %s", to_string(response[1]).c_str());
                 }
                 return success;
         }
@@ -100,12 +100,12 @@ namespace romi {
                 char command[64];
                 snprintf(command, sizeof(command), "A[%d]", angle_to_arg(angle));
                 
-                JsonCpp response;
+                nlohmann::json response;
                 serial_.send(command, response);
                 
-                bool success = (response.num(0) == 0);
+                bool success = (response[0] == 0);
                 if (!success) {
-                        r_err("BldcGimbal::set_angle: %s", response.str(1));
+                        r_err("BldcGimbal::set_angle: %s", to_string(response[1]).c_str());
                 }
                 return success;
         }
@@ -130,18 +130,18 @@ namespace romi {
 
         bool BldcGimbal::power_up()
         {
-                char command[64];
-                JsonCpp response;
-                snprintf(command, sizeof(command), "P[%d]", (int) (power_ * 100.0));
-                serial_.send(command, response);
-                return (response.num(0) == 0);
+            char command[64];
+            nlohmann::json response;
+            snprintf(command, sizeof(command), "P[%d]", (int) (power_ * 100.0));
+            serial_.send(command, response);
+            return (response[0] == 0);
         }
 
         bool BldcGimbal::power_down()
         {
-                JsonCpp response;
+                nlohmann::json response;
                 serial_.send("P[0]", response);
-                return (response.num(0) == 0);
+                return (response[0] == 0);
         }
 
         bool BldcGimbal::stand_by()

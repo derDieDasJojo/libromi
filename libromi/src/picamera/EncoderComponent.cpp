@@ -54,7 +54,7 @@ namespace romi::arm {
                 }
         }
 
-        rpp::MemBuffer& EncoderComponent::get_buffer()
+        rcom::MemBuffer& EncoderComponent::get_buffer()
         {
                 return buffer_;
         }

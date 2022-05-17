@@ -22,6 +22,7 @@
 
  */
 #include <algorithm>
+#include <log.h>
 #include "api/Path.h"
 
 namespace romi {
@@ -108,7 +109,6 @@ namespace romi {
                               range.xmin(), range.xmax(),
                               range.ymin(), range.ymax(),
                               range.zmin(), range.zmax());
-
                         ok = false;
                 }
                 return ok;

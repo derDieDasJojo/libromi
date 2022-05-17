@@ -32,16 +32,9 @@ namespace romi {
                 : handler_(handler)
         {
         }
-        
-        static int32_t to_membuffer(void* userdata, const char* s, size_t len)
-        {
-                rpp::MemBuffer *serialised = reinterpret_cast<rpp::MemBuffer*>(userdata);
-                serialised->append((uint8_t *) s, len);
-                return 0;
-        }
-        
+
         void RcomMessageHandler::onmessage(rcom::IWebSocket& websocket,
-                                           rpp::MemBuffer& message,
+                                           rcom::MemBuffer& message,
                                            rcom::MessageType type)
         {
                 if (type == rcom::kTextMessage)
@@ -51,21 +44,19 @@ namespace romi {
         }
         
         void RcomMessageHandler::handle_binary_request(rcom::IWebSocket& websocket,
-                                                       rpp::MemBuffer& message)
+                                                       rcom::MemBuffer& message)
         {
-                (void) message;
-                rpp::MemBuffer result;
+                rcom::MemBuffer result;
                 RPCError error;
-                json_object_t response = json_null();
-                        
-                JsonCpp request = parse_request(message, error);
+                nlohmann::json response;
+                nlohmann::json request = parse_request(message, error);
                 if (error.code == 0) {
                         
-                        const char *method = get_method(request, error);
-                        if (method != nullptr) {
-                                JsonCpp params;
-                                if (request.has("params"))
-                                        params = request.get("params");
+                        std::string method = get_method(request, error);
+                        if (!method.empty()) {
+                                nlohmann::json params;
+                                if (request.contains("params"))
+                                        params = request["params"];
 
                                 handler_.execute(method, params, result, error);
                                 
@@ -80,32 +71,29 @@ namespace romi {
                         websocket.send(result, rcom::kBinaryMessage);
                         
                 } else {
-                        // FIXME! improve JsonCpp and/or MemBuffer
-                        rpp::MemBuffer serialised;
-                        json_serialise(response, k_json_compact, to_membuffer,
-                                       reinterpret_cast<void*>(&serialised));
+                        // FIXME! improve nlohmann::json and/or MemBuffer
+                        rcom::MemBuffer serialised;
+                        serialised.append_string(response.dump().c_str());
                         websocket.send(serialised, rcom::kTextMessage);
                 }
-                
-                json_unref(response);
         }
         
         void RcomMessageHandler::handle_json_request(rcom::IWebSocket& websocket,
-                                                     rpp::MemBuffer& message)
+                                                     rcom::MemBuffer& message)
         {
                 (void) message;
-                JsonCpp result;
+                nlohmann::json result;
                 RPCError error;
-                json_object_t response = json_null();
+                nlohmann::json response;
                 
-                JsonCpp request = parse_request(message, error);
+                nlohmann::json request = parse_request(message, error);
                 if (error.code == 0) {
                         
-                        const char *method = get_method(request, error);
-                        if (method != nullptr) {
-                                JsonCpp params;
-                                if (request.has("params"))
-                                        params = request.get("params");
+                        std::string method = get_method(request, error);
+                        if (!method.empty()) {
+                                nlohmann::json params;
+                                if (request.contains("params"))
+                                        params = request["params"];
 
                                 handler_.execute(method, params, result, error);
                                 response = construct_response(error, result);
@@ -116,22 +104,18 @@ namespace romi {
                 } else {
                         response = construct_response(error);
                 }
- 
-                // FIXME! improve JsonCpp and/or MemBuffer
-                rpp::MemBuffer serialised;
-                json_serialise(response, k_json_compact, to_membuffer,
-                               reinterpret_cast<void*>(&serialised));
-                websocket.send(serialised, rcom::kTextMessage);
 
-                json_unref(response);
+                rcom::MemBuffer serialised;
+                serialised.append_string(response.dump().c_str());
+                websocket.send(serialised, rcom::kTextMessage);
         }
         
-        JsonCpp RcomMessageHandler::parse_request(rpp::MemBuffer& message,
+        nlohmann::json RcomMessageHandler::parse_request(rcom::MemBuffer& message,
                                                   RPCError& error)
         {
-                JsonCpp request;
+                nlohmann::json request;
                 try {
-                        request = JsonCpp::parse(message);
+                        request = nlohmann::json::parse(message.tostring());
                         
                 } catch (std::exception& e) {
                         error.code = RPCError::kParseError;
@@ -140,11 +124,11 @@ namespace romi {
                 return request;
         }
 
-        const char *RcomMessageHandler::get_method(JsonCpp& request, RPCError& error)
+        std::string RcomMessageHandler::get_method(nlohmann::json& request, RPCError& error)
         {
-                const char *value = nullptr;
+                std::string value;
                 try {
-                        value = request.str("method");
+                        value = request["method"];
                 } catch (std::exception& e) {
                         error.code = RPCError::kInvalidRequest;
                         error.message = "Missing method";
@@ -153,46 +137,38 @@ namespace romi {
         }
 
         /* Construct the envelope for a reponse with results, to be
-         * sent back to the client. This is still done "the old way",
-         * for now, using the C JsonCpp API.  */
-        json_object_t RcomMessageHandler::construct_response(RPCError& error,
-                                                             JsonCpp& result)
+         * sent back to the client.  */
+        nlohmann::json RcomMessageHandler::construct_response(RPCError& error,
+                                                             nlohmann::json& result)
         {
-                json_object_t response = construct_response(error);
-                if (!result.isnull()) {
-                        json_object_set(response, "result", result.ptr());
+            nlohmann::json response = construct_response(error);
+                if (!result.is_null()) {
+                        response["result"] = result;
                 }
                 return response;
         }
         
         /* Construct the envelope for a reponse with results, to be
-         * sent back to the client. This is still done "the old way",
-         * for now, using the C JsonCpp API.  */
-        json_object_t RcomMessageHandler::construct_response(RPCError& error)
+         * sent back to the client.  */
+        nlohmann::json RcomMessageHandler::construct_response(RPCError& error)
         {
                 return construct_response(error.code, error.message.c_str());
         }
 
         /* Construct the envelope for an error reponse to be sent back
-         * to the client. This is still done "the old way", for now,
-         * using the C JsonCpp API.  */
-        json_object_t RcomMessageHandler::construct_response(int code, const char *message)
+         * to the client.  */
+        nlohmann::json RcomMessageHandler::construct_response(int code, const char *message)
         {
-                json_object_t response = json_object_create();
+            nlohmann::json response;
                 
                 if (code != 0) {
-                        json_object_t error = json_object_create();
-                        json_object_set(response, "error", error);
-                        json_object_setnum(error, "code", code);
-                        
+                        nlohmann::json error;
+                        error["message"] = "No message was given";
                         if (message != nullptr && strlen(message) > 0) {
-                                json_object_setstr(error, "message", message);
-                        } else {
-                                json_object_setstr(error, "message",
-                                                   "No message was given");
+                            error["message"] = message;
                         }
-                        
-                        json_unref(error); // refcount held by response object
+                        error["code"] = code;
+                        response["error"] = error;
                 }
 
                 return response;

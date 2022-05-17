@@ -186,19 +186,20 @@ TEST_F(metafolder_tests, construct_basic_metadata_file_contain_correct_data)
         // Act
         romi::MetaFolder meta_folder(roverIdentity, mockLocationProvider_, session_path_);
 
-        auto metaDataJson = JsonCpp::load(meta_data_filename.c_str());
+        std::ifstream ifs(meta_data_filename);
+        nlohmann::json metaDataJson = nlohmann::json::parse(ifs);
         auto identityJson = metaDataJson[JsonFieldNames::romi_identity.c_str()];
 
         // Assert
-        ASSERT_TRUE(metaDataJson.has(JsonFieldNames::romi_identity));
-        ASSERT_TRUE(identityJson.has(JsonFieldNames::romi_device_type));
-        ASSERT_EQ(identityJson.get(JsonFieldNames::romi_device_type).str(), devicetype_);
-        ASSERT_TRUE(identityJson.has(JsonFieldNames::romi_hardware_id));
-        ASSERT_EQ(identityJson.get(JsonFieldNames::romi_hardware_id).str(), devicID_);
-        ASSERT_TRUE(identityJson.has(JsonFieldNames::software_version_current));
-        ASSERT_EQ(identityJson.get(JsonFieldNames::software_version_current).str(), versionCurrent_);
-        ASSERT_TRUE(identityJson.has(JsonFieldNames::software_version_alternate));
-        ASSERT_EQ(identityJson.get(JsonFieldNames::software_version_alternate).str(), versionAlternate_);
+        ASSERT_TRUE(metaDataJson.contains(JsonFieldNames::romi_identity));
+        ASSERT_TRUE(identityJson.contains(JsonFieldNames::romi_device_type));
+        ASSERT_EQ(identityJson[JsonFieldNames::romi_device_type], devicetype_);
+        ASSERT_TRUE(identityJson.contains(JsonFieldNames::romi_hardware_id));
+        ASSERT_EQ(identityJson[JsonFieldNames::romi_hardware_id], devicID_);
+        ASSERT_TRUE(identityJson.contains(JsonFieldNames::software_version_current));
+        ASSERT_EQ(identityJson[JsonFieldNames::software_version_current], versionCurrent_);
+        ASSERT_TRUE(identityJson.contains(JsonFieldNames::software_version_alternate));
+        ASSERT_EQ(identityJson[JsonFieldNames::software_version_alternate], versionAlternate_);
 }
 
 TEST_F(metafolder_tests, construct_multiple_times_does_not_leak)
@@ -262,12 +263,14 @@ TEST_F(metafolder_tests, store_jpg_no_extension_creates_extension)
 
         // Act
         meta_folder.try_store_jpg(filename, image, observation);
-        auto metaDataJson = JsonCpp::load(meta_data_filename.c_str());
+
+        std::ifstream ifs(meta_data_filename);
+        nlohmann::json metaDataJson = nlohmann::json::parse(ifs);
         auto fileJson = metaDataJson[filename_jpg.c_str()];
 
         // Assert
-        ASSERT_TRUE(fileJson.has(JsonFieldNames::date_time));
-        ASSERT_EQ(fileJson.get(JsonFieldNames::date_time).str(), expected);
+        ASSERT_TRUE(fileJson.contains(JsonFieldNames::date_time));
+        ASSERT_EQ(fileJson[JsonFieldNames::date_time], expected);
 }
 
 TEST_F(metafolder_tests, store_jpg_wrong_extension_changes_extension)
@@ -285,7 +288,6 @@ TEST_F(metafolder_tests, store_jpg_wrong_extension_changes_extension)
         EXPECT_CALL(*mockClock_, datetime_compact_string)
                         .WillOnce(Return(expected));
 
-
         romi::Image image(romi::Image::RGB, red_test_image, 4, 4);
         std::string filename("file1.xxx");
         std::string filename_jpg("file1.jpg");
@@ -293,12 +295,14 @@ TEST_F(metafolder_tests, store_jpg_wrong_extension_changes_extension)
 
         // Act
         meta_folder.try_store_jpg(filename, image, observation);
-        auto metaDataJson = JsonCpp::load(meta_data_filename.c_str());
+
+        std::ifstream ifs(meta_data_filename);
+        nlohmann::json metaDataJson = nlohmann::json::parse(ifs);
         auto fileJson = metaDataJson[filename_jpg.c_str()];
 
         // Assert
-        ASSERT_TRUE(fileJson.has(JsonFieldNames::date_time));
-        ASSERT_EQ(fileJson.get(JsonFieldNames::date_time).str(), expected);
+        ASSERT_TRUE(fileJson.contains(JsonFieldNames::date_time));
+        ASSERT_EQ(fileJson[JsonFieldNames::date_time], expected);
 }
 
 TEST_F(metafolder_tests, store_jpg_same_file_rewrites_metadata)
@@ -326,12 +330,13 @@ TEST_F(metafolder_tests, store_jpg_same_file_rewrites_metadata)
         // Act
         meta_folder.try_store_jpg(filename, image, observation);
         meta_folder.try_store_jpg(filename, image, observation);
-        auto metaDataJson = JsonCpp::load(meta_data_filename.c_str());
-        auto fileJson = metaDataJson[filename.c_str()];
+        std::ifstream ifs(meta_data_filename);
+        nlohmann::json metaDataJson = nlohmann::json::parse(ifs);
+        auto fileJson = metaDataJson[filename];
 
         // Assert
-        ASSERT_TRUE(fileJson.has(JsonFieldNames::date_time));
-        ASSERT_EQ(fileJson.get(JsonFieldNames::date_time).str(), expected);
+        ASSERT_TRUE(fileJson.contains(JsonFieldNames::date_time));
+        ASSERT_EQ(fileJson[JsonFieldNames::date_time], expected);
 }
 
 TEST_F(metafolder_tests, store_jpg_write_error_does_not_write_metadata)
@@ -354,8 +359,9 @@ TEST_F(metafolder_tests, store_jpg_write_error_does_not_write_metadata)
         ASSERT_THROW(meta_folder.try_store_jpg(filename, image, observation), std::runtime_error);
 
         // Assert
-        auto metaDataJson = JsonCpp::load(meta_data_filename.c_str());
-        ASSERT_THROW(metaDataJson[filename.c_str()], JSONKeyError);
+        std::ifstream ifs(meta_data_filename);
+        nlohmann::json metaDataJson = nlohmann::json::parse(ifs);
+        ASSERT_THROW(metaDataJson.at(filename), nlohmann::json::exception);
 }
 
 TEST_F(metafolder_tests, store_jpg_creates_files_and_correct_meta_data)
@@ -387,12 +393,14 @@ TEST_F(metafolder_tests, store_jpg_creates_files_and_correct_meta_data)
         meta_folder.try_store_jpg(filename2, image, observation);
         meta_folder.try_store_jpg(filename3, image, observation);
 
-        auto metaDataJson = JsonCpp::load(meta_data_filename.c_str());
+        std::ifstream ifs(meta_data_filename);
+        nlohmann::json metaDataJson = nlohmann::json::parse(ifs);
 
         // Assert
-        ASSERT_NO_THROW(auto file1Json = metaDataJson[filename1.c_str()]);
-        ASSERT_NO_THROW(auto file2Json = metaDataJson[filename2.c_str()]);
-        ASSERT_NO_THROW(auto file23Json = metaDataJson[filename2.c_str()]);
+        ASSERT_TRUE(metaDataJson.contains(filename1));
+        ASSERT_TRUE(metaDataJson.contains(filename2));
+        ASSERT_TRUE(metaDataJson.contains(filename3));
+
         ASSERT_TRUE(fs::exists(session_path_ / filename1));
         ASSERT_TRUE(fs::exists(session_path_ / filename2));
         ASSERT_TRUE(fs::exists(session_path_ / filename3));
@@ -462,12 +470,14 @@ TEST_F(metafolder_tests, store_png_no_extension_creates_extension)
 
         // Act
         meta_folder.try_store_png(filename, image, observation);
-        auto metaDataJson = JsonCpp::load(meta_data_filename.c_str());
+
+        std::ifstream ifs(meta_data_filename);
+        nlohmann::json metaDataJson = nlohmann::json::parse(ifs);
         auto fileJson = metaDataJson[filename_png.c_str()];
 
         // Assert
-        ASSERT_TRUE(fileJson.has(JsonFieldNames::date_time));
-        ASSERT_EQ(fileJson.get(JsonFieldNames::date_time).str(), expected);
+        ASSERT_TRUE(fileJson.contains(JsonFieldNames::date_time));
+        ASSERT_EQ(fileJson[JsonFieldNames::date_time], expected);
 }
 
 TEST_F(metafolder_tests, store_png_wrong_extension_changes_extension)
@@ -492,12 +502,14 @@ TEST_F(metafolder_tests, store_png_wrong_extension_changes_extension)
 
         // Act
         meta_folder.try_store_png(filename, image, observation);
-        auto metaDataJson = JsonCpp::load(meta_data_filename.c_str());
+
+        std::ifstream ifs(meta_data_filename);
+        nlohmann::json metaDataJson = nlohmann::json::parse(ifs);
         auto fileJson = metaDataJson[filename_png.c_str()];
 
         // Assert
-        ASSERT_TRUE(fileJson.has(JsonFieldNames::date_time));
-        ASSERT_EQ(fileJson.get(JsonFieldNames::date_time).str(), expected);
+        ASSERT_TRUE(fileJson.contains(JsonFieldNames::date_time));
+        ASSERT_EQ(fileJson[JsonFieldNames::date_time], expected);
 }
 
 
@@ -526,12 +538,13 @@ TEST_F(metafolder_tests, store_png_same_file_rewrites_metadata)
         // Act
         meta_folder.try_store_png(filename, image, observation);
         meta_folder.try_store_png(filename, image, observation);
-        auto metaDataJson = JsonCpp::load(meta_data_filename.c_str());
+        std::ifstream ifs(meta_data_filename);
+        nlohmann::json metaDataJson = nlohmann::json::parse(ifs);
         auto fileJson = metaDataJson[filename.c_str()];
 
         // Assert
-        ASSERT_TRUE(fileJson.has(JsonFieldNames::date_time));
-        ASSERT_EQ(fileJson.get(JsonFieldNames::date_time).str(), expected);
+        ASSERT_TRUE(fileJson.contains(JsonFieldNames::date_time));
+        ASSERT_EQ(fileJson[JsonFieldNames::date_time], expected);
 }
 
 TEST_F(metafolder_tests, store_png_write_error_does_not_write_metadata)
@@ -554,8 +567,9 @@ TEST_F(metafolder_tests, store_png_write_error_does_not_write_metadata)
         ASSERT_THROW(meta_folder.try_store_png(filename, image, observation), std::runtime_error);
 
         // Assert
-        auto metaDataJson = JsonCpp::load(meta_data_filename.c_str());
-        ASSERT_THROW(metaDataJson[filename.c_str()], JSONKeyError);
+        std::ifstream ifs(meta_data_filename);
+        nlohmann::json metaDataJson = nlohmann::json::parse(ifs);
+        ASSERT_THROW(metaDataJson.at(filename.c_str()), nlohmann::json::exception);
 }
 
 TEST_F(metafolder_tests, store_png_creates_files_and_correct_meta_data)
@@ -587,12 +601,13 @@ TEST_F(metafolder_tests, store_png_creates_files_and_correct_meta_data)
         meta_folder.try_store_png(filename2, image, observation);
         meta_folder.try_store_png(filename3, image, observation);
 
-        auto metaDataJson = JsonCpp::load(meta_data_filename.c_str());
+        std::ifstream ifs(meta_data_filename);
+        nlohmann::json metaDataJson = nlohmann::json::parse(ifs);
 
         // Assert
-        ASSERT_NO_THROW(auto file1Json = metaDataJson[filename1.c_str()]);
-        ASSERT_NO_THROW(auto file2Json = metaDataJson[filename2.c_str()]);
-        ASSERT_NO_THROW(auto file23Json = metaDataJson[filename2.c_str()]);
+        ASSERT_TRUE(metaDataJson.contains(filename1));
+        ASSERT_TRUE(metaDataJson.contains(filename2));
+        ASSERT_TRUE(metaDataJson.contains(filename3));
         ASSERT_TRUE(fs::exists(session_path_ / filename1));
         ASSERT_TRUE(fs::exists(session_path_ / filename2));
         ASSERT_TRUE(fs::exists(session_path_ / filename3));
@@ -641,12 +656,13 @@ TEST_F(metafolder_tests, store_svg_no_extension_creates_extension)
 
         // Act
         meta_folder.try_store_svg(filename, svg_body, observation);
-        auto metaDataJson = JsonCpp::load(meta_data_filename.c_str());
+        std::ifstream ifs(meta_data_filename);
+        nlohmann::json metaDataJson = nlohmann::json::parse(ifs);
         auto fileJson = metaDataJson[filename_svg.c_str()];
 
         // Assert
-        ASSERT_TRUE(fileJson.has(JsonFieldNames::date_time));
-        ASSERT_EQ(fileJson.get(JsonFieldNames::date_time).str(), expected);
+        ASSERT_TRUE(fileJson.contains(JsonFieldNames::date_time));
+        ASSERT_EQ(fileJson[JsonFieldNames::date_time], expected);
 }
 
 TEST_F(metafolder_tests, store_svg_wrong_extension_changes_extension)
@@ -671,12 +687,13 @@ TEST_F(metafolder_tests, store_svg_wrong_extension_changes_extension)
 
         // Act
         meta_folder.try_store_svg(filename, svg_body, observation);
-        auto metaDataJson = JsonCpp::load(meta_data_filename.c_str());
+        std::ifstream ifs(meta_data_filename);
+        nlohmann::json metaDataJson = nlohmann::json::parse(ifs);
         auto fileJson = metaDataJson[filename_svg.c_str()];
 
         // Assert
-        ASSERT_TRUE(fileJson.has(JsonFieldNames::date_time));
-        ASSERT_EQ(fileJson.get(JsonFieldNames::date_time).str(), expected);
+        ASSERT_TRUE(fileJson.contains(JsonFieldNames::date_time));
+        ASSERT_EQ(fileJson[JsonFieldNames::date_time], expected);
 }
 
 
@@ -705,12 +722,13 @@ TEST_F(metafolder_tests, store_svg_same_file_rewrites_metadata)
         // Act
         meta_folder.try_store_svg(filename, svg_body, observation);
         meta_folder.try_store_svg(filename, svg_body, observation);
-        auto metaDataJson = JsonCpp::load(meta_data_filename.c_str());
+        std::ifstream ifs(meta_data_filename);
+        nlohmann::json metaDataJson = nlohmann::json::parse(ifs);
         auto fileJson = metaDataJson[filename.c_str()];
 
         // Assert
-        ASSERT_TRUE(fileJson.has(JsonFieldNames::date_time));
-        ASSERT_EQ(fileJson.get(JsonFieldNames::date_time).str(), expected);
+        ASSERT_TRUE(fileJson.contains(JsonFieldNames::date_time));
+        ASSERT_EQ(fileJson[JsonFieldNames::date_time], expected);
 }
 
 TEST_F(metafolder_tests, store_svg_write_error_does_not_write_metadata)
@@ -734,8 +752,9 @@ TEST_F(metafolder_tests, store_svg_write_error_does_not_write_metadata)
         ASSERT_THROW(meta_folder.try_store_svg(filename, svg_body, observation), std::runtime_error);
 
         // Assert
-        auto metaDataJson = JsonCpp::load(meta_data_filename.c_str());
-        ASSERT_THROW(metaDataJson[filename.c_str()], JSONKeyError);
+        std::ifstream ifs(meta_data_filename);
+        nlohmann::json metaDataJson = nlohmann::json::parse(ifs);
+        ASSERT_THROW(metaDataJson.at(filename.c_str()), nlohmann::json::exception);
 }
 
 TEST_F(metafolder_tests, store_svg_creates_files_and_correct_meta_data)
@@ -768,12 +787,13 @@ TEST_F(metafolder_tests, store_svg_creates_files_and_correct_meta_data)
         meta_folder.try_store_svg(filename2, svg_body, observation);
         meta_folder.try_store_svg(filename3, svg_body, observation);
 
-        auto metaDataJson = JsonCpp::load(meta_data_filename.c_str());
+        std::ifstream ifs(meta_data_filename);
+        nlohmann::json metaDataJson = nlohmann::json::parse(ifs);
 
         // Assert
-        ASSERT_NO_THROW(auto file1Json = metaDataJson[filename1.c_str()]);
-        ASSERT_NO_THROW(auto file2Json = metaDataJson[filename2.c_str()]);
-        ASSERT_NO_THROW(auto file23Json = metaDataJson[filename2.c_str()]);
+        ASSERT_TRUE(metaDataJson.contains(filename1));
+        ASSERT_TRUE(metaDataJson.contains(filename2));
+        ASSERT_TRUE(metaDataJson.contains(filename3));
         ASSERT_TRUE(fs::exists(session_path_ / filename1));
         ASSERT_TRUE(fs::exists(session_path_ / filename2));
         ASSERT_TRUE(fs::exists(session_path_ / filename3));
@@ -823,12 +843,13 @@ TEST_F(metafolder_tests, store_txt_no_extension_creates_extension)
 
         // Act
         meta_folder.try_store_txt(filename, txt_body, observation);
-        auto metaDataJson = JsonCpp::load(meta_data_filename.c_str());
+        std::ifstream ifs(meta_data_filename);
+        nlohmann::json metaDataJson = nlohmann::json::parse(ifs);
         auto fileJson = metaDataJson[filename_txt.c_str()];
 
         // Assert
-        ASSERT_TRUE(fileJson.has(JsonFieldNames::date_time));
-        ASSERT_EQ(fileJson.get(JsonFieldNames::date_time).str(), expected);
+        ASSERT_TRUE(fileJson.contains(JsonFieldNames::date_time));
+        ASSERT_EQ(fileJson[JsonFieldNames::date_time], expected);
 }
 
 TEST_F(metafolder_tests, store_txt_wrong_extension_changes_extension)
@@ -853,12 +874,13 @@ TEST_F(metafolder_tests, store_txt_wrong_extension_changes_extension)
 
         // Act
         meta_folder.try_store_txt(filename, txt_body, observation);
-        auto metaDataJson = JsonCpp::load(meta_data_filename.c_str());
+        std::ifstream ifs(meta_data_filename);
+        nlohmann::json metaDataJson = nlohmann::json::parse(ifs);
         auto fileJson = metaDataJson[filename_txt.c_str()];
 
         // Assert
-        ASSERT_TRUE(fileJson.has(JsonFieldNames::date_time));
-        ASSERT_EQ(fileJson.get(JsonFieldNames::date_time).str(), expected);
+        ASSERT_TRUE(fileJson.contains(JsonFieldNames::date_time));
+        ASSERT_EQ(fileJson[JsonFieldNames::date_time], expected);
 }
 
 
@@ -887,12 +909,13 @@ TEST_F(metafolder_tests, store_txt_same_file_rewrites_metadata)
         // Act
         meta_folder.try_store_txt(filename, txt_body, observation);
         meta_folder.try_store_txt(filename, txt_body, observation);
-        auto metaDataJson = JsonCpp::load(meta_data_filename.c_str());
+        std::ifstream ifs(meta_data_filename);
+        nlohmann::json metaDataJson = nlohmann::json::parse(ifs);
         auto fileJson = metaDataJson[filename.c_str()];
 
         // Assert
-        ASSERT_TRUE(fileJson.has(JsonFieldNames::date_time));
-        ASSERT_EQ(fileJson.get(JsonFieldNames::date_time).str(), expected);
+        ASSERT_TRUE(fileJson.contains(JsonFieldNames::date_time));
+        ASSERT_EQ(fileJson[JsonFieldNames::date_time], expected);
 }
 
 TEST_F(metafolder_tests, store_txt_write_error_does_not_write_metadata)
@@ -916,8 +939,9 @@ TEST_F(metafolder_tests, store_txt_write_error_does_not_write_metadata)
         ASSERT_THROW(meta_folder.try_store_txt(filename, txt_body, observation), std::runtime_error);
 
         // Assert
-        auto metaDataJson = JsonCpp::load(meta_data_filename.c_str());
-        ASSERT_THROW(metaDataJson[filename.c_str()], JSONKeyError);
+        std::ifstream ifs(meta_data_filename);
+        nlohmann::json metaDataJson = nlohmann::json::parse(ifs);
+        ASSERT_THROW(metaDataJson.at(filename.c_str()), nlohmann::json::exception);
 }
 
 TEST_F(metafolder_tests, store_txt_creates_files_and_correct_meta_data)
@@ -950,12 +974,13 @@ TEST_F(metafolder_tests, store_txt_creates_files_and_correct_meta_data)
         meta_folder.try_store_txt(filename2, txt_body, observation);
         meta_folder.try_store_txt(filename3, txt_body, observation);
 
-        auto metaDataJson = JsonCpp::load(meta_data_filename.c_str());
+        std::ifstream ifs(meta_data_filename);
+        nlohmann::json metaDataJson = nlohmann::json::parse(ifs);
 
         // Assert
-        ASSERT_NO_THROW(auto file1Json = metaDataJson[filename1.c_str()]);
-        ASSERT_NO_THROW(auto file2Json = metaDataJson[filename2.c_str()]);
-        ASSERT_NO_THROW(auto file23Json = metaDataJson[filename2.c_str()]);
+        ASSERT_TRUE(metaDataJson.contains(filename1));
+        ASSERT_TRUE(metaDataJson.contains(filename2));
+        ASSERT_TRUE(metaDataJson.contains(filename3));
         ASSERT_TRUE(fs::exists(session_path_ / filename1));
         ASSERT_TRUE(fs::exists(session_path_ / filename2));
         ASSERT_TRUE(fs::exists(session_path_ / filename3));
@@ -1018,12 +1043,13 @@ TEST_F(metafolder_tests, store_path_no_extension_creates_extension)
 
         // Act
         meta_folder.try_store_path(filename, testPath, observation);
-        auto metaDataJson = JsonCpp::load(meta_data_filename.c_str());
+        std::ifstream ifs(meta_data_filename);
+        nlohmann::json metaDataJson = nlohmann::json::parse(ifs);
         auto fileJson = metaDataJson[filename_txt.c_str()];
 
         // Assert
-        ASSERT_TRUE(fileJson.has(JsonFieldNames::date_time));
-        ASSERT_EQ(fileJson.get(JsonFieldNames::date_time).str(), expected);
+        ASSERT_TRUE(fileJson.contains(JsonFieldNames::date_time));
+        ASSERT_EQ(fileJson[JsonFieldNames::date_time], expected);
 }
 
 TEST_F(metafolder_tests, store_path_wrong_extension_changes_extension)
@@ -1054,12 +1080,13 @@ TEST_F(metafolder_tests, store_path_wrong_extension_changes_extension)
 
         // Act
         meta_folder.try_store_path(filename, testPath, observation);
-        auto metaDataJson = JsonCpp::load(meta_data_filename.c_str());
+        std::ifstream ifs(meta_data_filename);
+        nlohmann::json metaDataJson = nlohmann::json::parse(ifs);
         auto fileJson = metaDataJson[filename_txt.c_str()];
 
         // Assert
-        ASSERT_TRUE(fileJson.has(JsonFieldNames::date_time));
-        ASSERT_EQ(fileJson.get(JsonFieldNames::date_time).str(), expected);
+        ASSERT_TRUE(fileJson.contains(JsonFieldNames::date_time));
+        ASSERT_EQ(fileJson[JsonFieldNames::date_time], expected);
 }
 
 
@@ -1095,12 +1122,13 @@ TEST_F(metafolder_tests, store_path_same_file_rewrites_metadata)
         // Act
         meta_folder.try_store_path(filename, testPath, observation);
         meta_folder.try_store_path(filename, testPath, observation);
-        auto metaDataJson = JsonCpp::load(meta_data_filename.c_str());
+        std::ifstream ifs(meta_data_filename);
+        nlohmann::json metaDataJson = nlohmann::json::parse(ifs);
         auto fileJson = metaDataJson[filename.c_str()];
 
         // Assert
-        ASSERT_TRUE(fileJson.has(JsonFieldNames::date_time));
-        ASSERT_EQ(fileJson.get(JsonFieldNames::date_time).str(), expected);
+        ASSERT_TRUE(fileJson.contains(JsonFieldNames::date_time));
+        ASSERT_EQ(fileJson.at(JsonFieldNames::date_time), expected);
 }
 
 TEST_F(metafolder_tests, store_path_write_error_does_not_write_metadata)
@@ -1126,8 +1154,9 @@ TEST_F(metafolder_tests, store_path_write_error_does_not_write_metadata)
         ASSERT_THROW(meta_folder.try_store_path(filename, testPath, observation), std::runtime_error);
 
         // Assert
-        auto metaDataJson = JsonCpp::load(meta_data_filename.c_str());
-        ASSERT_THROW(metaDataJson[filename.c_str()], JSONKeyError);
+        std::ifstream ifs(meta_data_filename);
+        nlohmann::json metaDataJson = nlohmann::json::parse(ifs);
+        ASSERT_THROW(metaDataJson.at(filename.c_str()), nlohmann::json::exception);
 }
 
 TEST_F(metafolder_tests, store_path_creates_files_and_correct_meta_data)
@@ -1167,12 +1196,13 @@ TEST_F(metafolder_tests, store_path_creates_files_and_correct_meta_data)
         meta_folder.try_store_path(filename2, testPath, observation);
         meta_folder.try_store_path(filename3, testPath, observation);
 
-        auto metaDataJson = JsonCpp::load(meta_data_filename.c_str());
+        std::ifstream ifs(meta_data_filename);
+        nlohmann::json metaDataJson = nlohmann::json::parse(ifs);
 
         // Assert
-        ASSERT_NO_THROW(auto file1Json = metaDataJson[filename1.c_str()]);
-        ASSERT_NO_THROW(auto file2Json = metaDataJson[filename2.c_str()]);
-        ASSERT_NO_THROW(auto file23Json = metaDataJson[filename2.c_str()]);
+        ASSERT_TRUE(metaDataJson.contains(filename1));
+        ASSERT_TRUE(metaDataJson.contains(filename2));
+        ASSERT_TRUE(metaDataJson.contains(filename3));
         ASSERT_TRUE(fs::exists(session_path_ / filename1));
         ASSERT_TRUE(fs::exists(session_path_ / filename2));
         ASSERT_TRUE(fs::exists(session_path_ / filename3));
@@ -1257,11 +1287,9 @@ TEST_F(metafolder_tests, store_multiple_threads_does_not_corrupt_metafolder)
         jpg_future.join();
         png_future.join();
 
-        JsonCpp metaDataJson;
-
         // Assert
-        ASSERT_NO_THROW(        metaDataJson = JsonCpp::load(meta_data_filename.c_str()));
-
+        std::ifstream ifs(meta_data_filename);
+        nlohmann::json metaDataJson = nlohmann::json::parse(ifs);
         ASSERT_NO_THROW(auto file0Json = metaDataJson["file0.jpg"]);
         ASSERT_NO_THROW(auto file0Json = metaDataJson["file19.jpg"]);
         ASSERT_NO_THROW(auto file0Json = metaDataJson["file0.png"]);

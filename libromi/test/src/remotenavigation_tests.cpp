@@ -13,7 +13,7 @@ class remotenavigation_tests : public ::testing::Test
 protected:
         RPCError return_error;
         std::string sent_method;
-        JsonCpp sent_params;
+        nlohmann::json sent_params;
         
 	remotenavigation_tests()
                 : return_error(),
@@ -32,8 +32,8 @@ protected:
 
 public:
         void set_error(const std::string& method,
-                       JsonCpp& params,
-                       JsonCpp& result,
+                       nlohmann::json& params,
+                       nlohmann::json& result,
                        RPCError& error) {
                 (void) result;
                 r_debug("method=%s", method.c_str());
@@ -48,7 +48,7 @@ TEST_F(remotenavigation_tests, stop_returns_true_when_request_succeeds)
 {
         MockRPCClient *mock_client = new MockRPCClient();
         std::unique_ptr<IRPCClient> rpc_client(mock_client);
-        EXPECT_CALL(*mock_client, execute(_,_,An<JsonCpp&>(),_))
+        EXPECT_CALL(*mock_client, execute(_,_,An<nlohmann::json&>(),_))
                 .WillOnce(Invoke(this, &remotenavigation_tests::set_error));
         return_error.code = 0;
         return_error.message = "";
@@ -64,7 +64,7 @@ TEST_F(remotenavigation_tests, stop_returns_false_when_request_fails)
 {
         MockRPCClient *mock_client = new MockRPCClient();
         std::unique_ptr<IRPCClient> rpc_client(mock_client);
-        EXPECT_CALL(*mock_client, execute(_,_,An<JsonCpp&>(),_))
+        EXPECT_CALL(*mock_client, execute(_,_,An<nlohmann::json&>(),_))
                 .WillOnce(Invoke(this, &remotenavigation_tests::set_error));        
         return_error.code = 1;
         return_error.message = "MESSAGE";
@@ -80,7 +80,7 @@ TEST_F(remotenavigation_tests, moveat_sends_correct_args_and_returns_true)
 {
         MockRPCClient *mock_client = new MockRPCClient();
         std::unique_ptr<IRPCClient> rpc_client(mock_client);
-        EXPECT_CALL(*mock_client, execute(_,_,An<JsonCpp&>(),_))
+        EXPECT_CALL(*mock_client, execute(_,_,An<nlohmann::json&>(),_))
                 .WillOnce(Invoke(this, &remotenavigation_tests::set_error));        
         return_error.code = 0;
         return_error.message = "";
@@ -98,7 +98,7 @@ TEST_F(remotenavigation_tests, moveat_returns_false_when_request_fails)
 {
         MockRPCClient *mock_client = new MockRPCClient();
         std::unique_ptr<IRPCClient> rpc_client(mock_client);
-        EXPECT_CALL(*mock_client, execute(_,_,An<JsonCpp&>(),_))
+        EXPECT_CALL(*mock_client, execute(_,_,An<nlohmann::json&>(),_))
                 .WillOnce(Invoke(this, &remotenavigation_tests::set_error));        
         return_error.code = 1;
         return_error.message = "MESSAGE";
@@ -114,7 +114,7 @@ TEST_F(remotenavigation_tests, move_sends_correct_args_and_returns_true)
 {
         MockRPCClient *mock_client = new MockRPCClient();
         std::unique_ptr<IRPCClient> rpc_client(mock_client);
-        EXPECT_CALL(*mock_client, execute(_,_,An<JsonCpp&>(),_))
+        EXPECT_CALL(*mock_client, execute(_,_,An<nlohmann::json&>(),_))
                 .WillOnce(Invoke(this, &remotenavigation_tests::set_error));        
         return_error.code = 0;
         return_error.message = "";
@@ -132,7 +132,7 @@ TEST_F(remotenavigation_tests, move_returns_false_when_request_fails)
 {
         MockRPCClient *mock_client = new MockRPCClient();
         std::unique_ptr<IRPCClient> rpc_client(mock_client);
-        EXPECT_CALL(*mock_client, execute(_,_,An<JsonCpp&>(),_))
+        EXPECT_CALL(*mock_client, execute(_,_,An<nlohmann::json&>(),_))
                 .WillOnce(Invoke(this, &remotenavigation_tests::set_error));        
         return_error.code = 1;
         return_error.message = "MESSAGE";

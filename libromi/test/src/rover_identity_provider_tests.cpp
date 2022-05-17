@@ -2,7 +2,7 @@
 #include "gmock/gmock.h"
 #include "data_provider/JsonFieldNames.h"
 #include "data_provider/RoverIdentityProvider.h"
-#include "JsonCpp.h"
+#include "json.hpp"
 #include "mock_softwareversion.h"
 #include "mock_romidevicedata.h"
 
@@ -71,16 +71,15 @@ TEST_F(rover_identity_provider_tests, will_create_identity)
                         .WillOnce(Return(expected_sw_alternate));
 
         romi::RoverIdentityProvider identityProvider(romiDeviceData, softwareVersion);
-        std::string identity = identityProvider.identity();
-        JsonCpp identityJson(identity.c_str());
+        nlohmann::json identityJson = identityProvider.identity();
 
-        ASSERT_TRUE(identityJson.has(JsonFieldNames::romi_device_type));
-        ASSERT_EQ(identityJson.get(JsonFieldNames::romi_device_type).str(), expected_device_type);
-        ASSERT_TRUE(identityJson.has(JsonFieldNames::romi_hardware_id));
-        ASSERT_EQ(identityJson.get(JsonFieldNames::romi_hardware_id).str(), expected_hardware_id);
-        ASSERT_TRUE(identityJson.has(JsonFieldNames::software_version_current));
-        ASSERT_EQ(identityJson.get(JsonFieldNames::software_version_current).str(), expected_sw_current);
-        ASSERT_TRUE(identityJson.has(JsonFieldNames::software_version_alternate));
-        ASSERT_EQ(identityJson.get(JsonFieldNames::software_version_alternate).str(), expected_sw_alternate);
+        ASSERT_TRUE(identityJson.contains(JsonFieldNames::romi_device_type));
+        ASSERT_EQ(identityJson[JsonFieldNames::romi_device_type], expected_device_type);
+        ASSERT_TRUE(identityJson.contains(JsonFieldNames::romi_hardware_id));
+        ASSERT_EQ(identityJson[JsonFieldNames::romi_hardware_id], expected_hardware_id);
+        ASSERT_TRUE(identityJson.contains(JsonFieldNames::software_version_current));
+        ASSERT_EQ(identityJson[JsonFieldNames::software_version_current], expected_sw_current);
+        ASSERT_TRUE(identityJson.contains(JsonFieldNames::software_version_alternate));
+        ASSERT_EQ(identityJson[JsonFieldNames::software_version_alternate], expected_sw_alternate);
 
 }

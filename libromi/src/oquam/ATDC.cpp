@@ -21,10 +21,11 @@
   <http://www.gnu.org/licenses/>.
 
  */
-#include <float.h>
+#include <cfloat>
 #include <stdexcept>
 #include <algorithm>
 #include <r.h>
+#include <cmath>
 
 #include "v3.h"
 

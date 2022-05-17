@@ -21,13 +21,14 @@
   <http://www.gnu.org/licenses/>.
 
  */
+#include <log.h>
 #include "rpc/RemoteStub.h"
 
 namespace romi {
 
         bool RemoteStub::execute(const std::string& method,
-                                 JsonCpp& params,
-                                 JsonCpp& result)
+                                 nlohmann::json& params,
+                                 nlohmann::json& result)
         {
                 RPCError error;
                 
@@ -49,22 +50,22 @@ namespace romi {
                 return (error.code == 0);
         }
 
-        bool RemoteStub::execute_with_result(const std::string& method, JsonCpp& result)
+        bool RemoteStub::execute_with_result(const std::string& method, nlohmann::json& result)
         {
-                JsonCpp params;
+                nlohmann::json params;
                 return execute(method, params, result);
         }
 
-        bool RemoteStub::execute_with_params(const std::string& method, JsonCpp& params)
+        bool RemoteStub::execute_with_params(const std::string& method, nlohmann::json& params)
         {
-                JsonCpp result;
+                nlohmann::json result;
                 return execute(method, params, result);
         }
 
         bool RemoteStub::execute_simple_request(const std::string& method)
         {
-                JsonCpp params;
-                JsonCpp result;
+                nlohmann::json params;
+                nlohmann::json result;
                 return execute(method, params, result);
         }
 }

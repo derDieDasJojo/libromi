@@ -8,6 +8,7 @@
 #include "ILocationProvider.h"
 #include "JsonFieldNames.h"
 #include "IGPS.h"
+#include "json.hpp"
 
 namespace romi {
 
@@ -17,9 +18,9 @@ namespace romi {
 
                 ~GpsLocationProvider() override = default;
 
-                std::string get_location_string() override;
+                nlohmann::json location() override;
                 bool update_location_estimate() override;
-                v3 get_location() override;
+                v3 coordinates() override;
 
         private:
                 double startup_latitude_;

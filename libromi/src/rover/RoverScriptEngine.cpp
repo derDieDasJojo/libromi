@@ -22,8 +22,7 @@
 
  */
 #include <thread>
-#include <stdexcept>
-#include <r.h>
+#include <log.h>
 #include "api/IActivity.h"
 #include "camera/Imager.h"
 #include "rover/RoverScriptEngine.h"

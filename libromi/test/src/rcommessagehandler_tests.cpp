@@ -2,7 +2,7 @@
 #include "gmock/gmock.h"
 #include "rpc/RcomMessageHandler.h"
 #include "WebSocket.mock.h"
-#include "../mock/mock_rpchandler.h"
+#include "mock_rpchandler.h"
 
 using namespace std;
 using namespace testing;
@@ -16,8 +16,8 @@ protected:
         std::string output_;
         RPCError return_error_;
         std::string sent_method_;
-        JsonCpp sent_params_;
-        JsonCpp result_;
+        nlohmann::json sent_params_;
+        nlohmann::json result_;
         
 	rcommessagehandler_tests()
                 : handler_(),
@@ -36,29 +36,29 @@ protected:
                 return_error_.code = 0;
                 return_error_.message = "";
                 sent_method_ = "";
-                sent_params_ = json_null();
-                result_ = json_null();
+//                sent_params_;
+//                result_;
         }
 
 	void TearDown() override {}
 
 public:
         
-        bool send(rpp::MemBuffer& message, rcom::MessageType type) {
+        bool send(rcom::MemBuffer& message, rcom::MessageType type) {
                 (void) type;
                 output_ = message.tostring();
-                r_err("send: %s", output_.c_str());
+//                r_err("send: %s", output_.c_str());
                 return true;
         }
 
         int error_code() {
-                JsonCpp reply = JsonCpp::parse(output_.c_str());
-                return (int) reply.get("error").num("code");
+                nlohmann::json reply = nlohmann::json::parse(output_.c_str());
+                return (int) reply["error"]["code"];
         }
 
-        JsonCpp get_result() {
-                JsonCpp reply = JsonCpp::parse(output_.c_str());
-                return reply.get("result");
+        nlohmann::json get_result() {
+                nlohmann::json reply = nlohmann::json::parse(output_.c_str());
+                return reply["result"];
         }
 
         void arrange_error(int16_t code, const char *message) {
@@ -67,11 +67,11 @@ public:
         }
 
         void set_error(const std::string& method,
-                       JsonCpp& params,
-                       JsonCpp& result,
+                       nlohmann::json& params,
+                       nlohmann::json& result,
                        RPCError& error) {
                 (void) result;
-                r_debug("method=%s", method.c_str());
+//                r_debug("method=%s", method.c_str());
                 sent_method_ = method;
                 sent_params_ = params;
                 error.code = return_error_.code;
@@ -79,10 +79,10 @@ public:
         }
         
         void set_result(const std::string& method,
-                        JsonCpp& params,
-                        JsonCpp& result,
+                        nlohmann::json& params,
+                        nlohmann::json& result,
                         RPCError& error) {
-                r_debug("method=%s", method.c_str());
+//                r_debug("method=%s", method.c_str());
                 sent_method_ = method;
                 sent_params_ = params;
                 error.code = 0;
@@ -94,7 +94,7 @@ TEST_F(rcommessagehandler_tests, request_with_invalid_json_returns_appropriate_e
 {
         // Arrange
         RcomMessageHandler message_handler(handler_);
-        rpp::MemBuffer message;
+        rcom::MemBuffer message;
         message.printf("this is invalid json");
 
         EXPECT_CALL(websocket_, send(_,_))
@@ -112,7 +112,7 @@ TEST_F(rcommessagehandler_tests, request_with_missing_method_returns_appropriate
 {
         // Arrange
         RcomMessageHandler message_handler(handler_);
-        rpp::MemBuffer message;
+        rcom::MemBuffer message;
         message.printf("{}");
 
         EXPECT_CALL(websocket_, send(_,_))
@@ -130,11 +130,11 @@ TEST_F(rcommessagehandler_tests, request_with_unknown_method_returns_appropriate
 {
         // Arrange
         RcomMessageHandler message_handler(handler_);
-        rpp::MemBuffer message;
+        rcom::MemBuffer message;
         message.printf("{\"method\": \"toto\"}");
         arrange_error(RPCError::kMethodNotFound, "MESSAGE");
 
-        EXPECT_CALL(handler_, execute(_,_,An<JsonCpp&>(),_))
+        EXPECT_CALL(handler_, execute(_,_,An<nlohmann::json&>(),_))
                 .WillOnce(Invoke(this, &rcommessagehandler_tests::set_error));
         
         EXPECT_CALL(websocket_, send(_,_))
@@ -152,11 +152,11 @@ TEST_F(rcommessagehandler_tests, response_contains_expected_result)
 {
         // Arrange
         RcomMessageHandler message_handler(handler_);
-        rpp::MemBuffer message;
+        rcom::MemBuffer message;
         message.printf("{\"method\": \"toto\"}");
-        result_ = JsonCpp::parse("{\"key\": \"test value\"}");
+        result_ = nlohmann::json::parse("{\"key\": \"test value\"}");
 
-        EXPECT_CALL(handler_, execute(_,_,An<JsonCpp&>(),_))
+        EXPECT_CALL(handler_, execute(_,_,An<nlohmann::json&>(),_))
                 .WillOnce(Invoke(this, &rcommessagehandler_tests::set_result));
         
         EXPECT_CALL(websocket_, send(_,_))
@@ -167,7 +167,7 @@ TEST_F(rcommessagehandler_tests, response_contains_expected_result)
         message_handler.onmessage(websocket_, message, rcom::kTextMessage);
 
         // Assert
-        JsonCpp received_result = get_result();
-        ASSERT_STREQ(received_result.str("key"), "test value");
+        nlohmann::json received_result = get_result();
+        ASSERT_EQ(received_result["key"], "test value");
 }
 

@@ -10,7 +10,7 @@ namespace romi {
         std::string title;
         std::vector<Action> actions;
 
-        Script(const char *id_, const char *title_) : id(id_), title(title_), actions() {
+        Script(const std::string& id_, const std::string& title_) : id(id_), title(title_), actions() {
         }
 
         void append(Action action) {

@@ -60,7 +60,7 @@ namespace romi {
                 bool success = update_estimates();
 
                 if (success) {
-                        p1_ = location_provider_.get_location();
+                        p1_ = location_provider_.coordinates();
                         p0_ = p1_;
 
                         theta0_ = orientation_provider_.get_orientation();
@@ -107,7 +107,7 @@ namespace romi {
         {
                 bool success = update_estimates();
                 if (success) {
-                        p0_ = location_provider_.get_location();
+                        p0_ = location_provider_.coordinates();
                         theta_ = orientation_provider_.get_orientation();
 
                         v3 q = p0_ - p1_;

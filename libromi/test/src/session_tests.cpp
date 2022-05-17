@@ -1,5 +1,6 @@
 #include <ClockAccessor.h>
 #include <data_provider/GpsLocationProvider.h>
+#include <log.h>
 #include "Linux.h"
 #include "FileUtils.h"
 #include "gtest/gtest.h"

@@ -89,7 +89,7 @@ namespace romi {
                 return retval;
         }
 
-        bool Session::store_jpg(const std::string &name, rpp::MemBuffer& jpeg)
+        bool Session::store_jpg(const std::string &name, rcom::MemBuffer& jpeg)
         {
                 bool retval = false;
                 try {

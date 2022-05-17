@@ -7,7 +7,7 @@ class MockCamera : public romi::ICamera
 {
 public:
         MOCK_METHOD(bool, grab, (romi::Image &image), (override));
-        MOCK_METHOD(rpp::MemBuffer&, grab_jpeg, (), (override));
+        MOCK_METHOD(rcom::MemBuffer&, grab_jpeg, (), (override));
         MOCK_METHOD(bool, power_up, (), (override));
         MOCK_METHOD(bool, power_down, (), (override));
         MOCK_METHOD(bool, stand_by, (), (override));

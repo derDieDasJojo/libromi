@@ -44,7 +44,7 @@ namespace romi {
         void start(const std::string& observation_id) override;
         void stop() override;
         bool store_jpg(const std::string& name, Image& image)  override;
-        bool store_jpg(const std::string& name, rpp::MemBuffer& jpeg) override;
+        bool store_jpg(const std::string& name, rcom::MemBuffer& jpeg) override;
         bool store_png(const std::string& name, Image& image)  override;
         bool store_svg(const std::string& name, const std::string& body) override;
         bool store_txt(const std::string& name, const std::string& body) override;

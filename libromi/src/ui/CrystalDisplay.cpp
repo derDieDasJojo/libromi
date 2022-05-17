@@ -41,13 +41,13 @@ namespace romi {
                 bool success = false;
                 if (line < count_lines() && display_string.length() <= screen_width) {
                         char buffer[64];
-                        JsonCpp response;
+                        nlohmann::json response;
                         
                         rprintf(buffer, 64, "S[%d,\"%s\"]", line, display_string.c_str());
                         
                         _serial->send(buffer, response);
 
-                        return response.num(0) == 0;
+                        return response[0] == 0;
                         
                 } else {
                         r_warn("CrystalDisplay::show: Invalid line number or string "
@@ -61,13 +61,13 @@ namespace romi {
                 bool success = false;
                 if (line < count_lines()) {
                         char buffer[64];
-                        JsonCpp response;
+                        nlohmann::json response;
                         
                         rprintf(buffer, 64, "C[%d]", line);
                         
                         _serial->send(buffer, response);
 
-                        return response.num(0) == 0;
+                        return response[0] == 0;
                         
                 } else {
                         r_warn("CrystalDisplay::show: Invalid line number "

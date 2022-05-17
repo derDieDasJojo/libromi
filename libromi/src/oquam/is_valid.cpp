@@ -30,7 +30,7 @@ namespace romi {
         static bool is_nan(const char *name, const char *param, double *value, int index)
         {
                 bool nan = false;
-                if (::isnan(value[index])) {
+                if (std::isnan(value[index])) {
                         r_warn("is_valid: section (%s): %s[%d] is NaN", name, param, index);
                         nan = true;
                 }
@@ -256,9 +256,8 @@ namespace romi {
         bool is_valid(SmoothPath& script, CNCRange& range, 
                       const double *vmax, const double *amax)
         {
-                v3 min = range.min();
-                v3 max = range.max();
-                return is_valid(script, min.values(), max.values(), vmax, amax);
+                return is_valid(script, range.min().values(),
+                                range.max().values(), vmax, amax);
         }
         
 

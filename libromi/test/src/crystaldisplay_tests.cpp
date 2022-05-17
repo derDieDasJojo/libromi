@@ -30,9 +30,9 @@ protected:
         }
         
 public:
-        void set_output(const char *s, JsonCpp& response) {
+        void set_output(const char *s, nlohmann::json& response) {
                 observed_output = s;
-                response = JsonCpp::parse(firmware_reply.c_str());
+                response = nlohmann::json::parse(firmware_reply.c_str());
         }
 };
 

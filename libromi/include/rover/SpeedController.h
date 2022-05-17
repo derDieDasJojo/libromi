@@ -25,7 +25,7 @@
 #define __ROMI_DEFAULT_SPEEDCONTROLLER_H
 
 #include <math.h>
-#include <JsonCpp.h>
+#include <json.hpp>
 
 #include "api/INavigation.h"
 #include "rover/ISpeedController.h"
@@ -44,7 +44,7 @@ namespace romi {
                 
         public:
                 
-                SpeedController(INavigation &navigation, JsonCpp& config);
+                SpeedController(INavigation &navigation, nlohmann::json& config);
                 SpeedController(INavigation &navigation,
                                 SpeedConverter &fast,
                                 SpeedConverter &accurate);

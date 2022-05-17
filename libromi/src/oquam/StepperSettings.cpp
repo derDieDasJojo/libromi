@@ -22,13 +22,15 @@
 
  */
 
-#include <float.h>
+#include <cfloat>
 #include <stdexcept>
+#include <log.h>
 #include "oquam/StepperSettings.h"
 
+// TBD: REFACTOR - remove raw pointers and arrays. Replace with vectors.
 namespace romi {
         
-        StepperSettings::StepperSettings(JsonCpp& json)
+        StepperSettings::StepperSettings(nlohmann::json& json)
         {
                 try {
                         parse_steps_per_revolution(json);
@@ -40,52 +42,52 @@ namespace romi {
                         compute_maximum_speed();
                         compute_steps_per_meter();
                         
-                } catch (JSONError& je) {
+                } catch (nlohmann::json::exception& je) {
                         r_err("StepperSettings: Failed to parse the JSON settings");
                         throw std::runtime_error("Invalid settings");;
                 }
         }
         
-        void StepperSettings::parse_steps_per_revolution(JsonCpp& json)
+        void StepperSettings::parse_steps_per_revolution(nlohmann::json& json)
         {
-                JsonCpp array = json.array("steps-per-revolution");
+                nlohmann::json array = json["steps-per-revolution"];
                 parse_array(array, steps_per_revolution);
         }
         
-        void StepperSettings::parse_microsteps(JsonCpp& json)
+        void StepperSettings::parse_microsteps(nlohmann::json& json)
         {
-                JsonCpp array = json.array("microsteps");
+                nlohmann::json array = json["microsteps"];
                 parse_array(array, microsteps);
         }
         
-        void StepperSettings::parse_gears_ratio(JsonCpp& json)
+        void StepperSettings::parse_gears_ratio(nlohmann::json& json)
         {
-                JsonCpp array = json.array("gears-ratio");
+                nlohmann::json array = json["gears-ratio"];
                 parse_array(array, gears_ratio);
         }
         
-        void StepperSettings::parse_maximum_rpm(JsonCpp& json)
+        void StepperSettings::parse_maximum_rpm(nlohmann::json& json)
         {
-                JsonCpp array = json.array("maximum-rpm");
+                nlohmann::json array = json["maximum-rpm"];
                 parse_array(array, maximum_rpm);
         }
         
-        void StepperSettings::parse_displacement_per_revolution(JsonCpp& json)
+        void StepperSettings::parse_displacement_per_revolution(nlohmann::json& json)
         {
-                JsonCpp array = json.array("displacement-per-revolution");
+                nlohmann::json array = json["displacement-per-revolution"];
                 parse_array(array, displacement_per_revolution);
         }
         
-        void StepperSettings::parse_maximum_acceleration(JsonCpp& json)
+        void StepperSettings::parse_maximum_acceleration(nlohmann::json& json)
         {
-                JsonCpp array = json.array("maximum-acceleration");
+                nlohmann::json array = json["maximum-acceleration"];
                 parse_array(array, maximum_acceleration);
         }
         
-        void StepperSettings::parse_array(JsonCpp& array, double *values)
+        void StepperSettings::parse_array(nlohmann::json& array, double *values)
         {
                 for (size_t i = 0; i < 3; i++) {
-                        values[i] = array.num(i);
+                        values[i] = array[i];
                 }
         }
 

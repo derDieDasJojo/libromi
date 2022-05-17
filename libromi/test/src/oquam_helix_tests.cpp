@@ -523,7 +523,7 @@ TEST_F(oquam_helix_tests, test_travel_semi_circle_and_one_up)
 TEST_F(oquam_helix_tests, test_helix_full_circle)
 {
         // Arrange
-        JsonCpp config = JsonCpp::parse(
+        nlohmann::json config = nlohmann::json::parse(
                 "{"
                 "    \"oquam\": {"
                 "        \"cnc-range\": [[0, 0.750000], [0, 0.750000], [-100000, 100000]], "
@@ -541,10 +541,10 @@ TEST_F(oquam_helix_tests, test_helix_full_circle)
                 "    }"
                 "}");
         romi::AxisIndex homing[3] = { romi::kAxisX, romi::kAxisY, romi::kNoAxis };
-        JsonCpp range_data = config["oquam"]["cnc-range"];
+        nlohmann::json range_data = config.at("oquam").at("cnc-range");
         romi::CNCRange range(range_data);
 
-        JsonCpp stepper_data = config["oquam"]["stepper-settings"];
+        nlohmann::json stepper_data = config.at("oquam").at("stepper-settings");
         romi::StepperSettings stepper_settings(stepper_data);
         
         double slice_duration = (double) config["oquam"]["path-slice-duration"];
