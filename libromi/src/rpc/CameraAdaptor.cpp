@@ -21,7 +21,7 @@
   <http://www.gnu.org/licenses/>.
 
  */
-#include <r.h>
+#include <log.h>
 #include "rpc/CameraAdaptor.h"
 #include "rpc/MethodsCamera.h"
 #include "rpc/MethodsPowerDevice.h"
@@ -34,8 +34,8 @@ namespace romi {
         }
 
         void CameraAdaptor::execute(const std::string& method,
-                                    JsonCpp &params,
-                                    rpp::MemBuffer& result,
+                                    nlohmann::json &params,
+                                    rcom::MemBuffer& result,
                                     RPCError &error)
         {
                 (void) params;
@@ -46,7 +46,7 @@ namespace romi {
                 try {
                         if (method == MethodsCamera::grab_jpeg_binary) {
                                 
-                                rpp::MemBuffer& jpeg = camera_.grab_jpeg();
+                                rcom::MemBuffer& jpeg = camera_.grab_jpeg();
                                 result.append(jpeg); // TODO: can we avoid a copy?
                                 
                         } else {
@@ -61,9 +61,10 @@ namespace romi {
                         error.message = e.what();
                 }
         }
+
         
-        void CameraAdaptor::execute(const std::string& method, JsonCpp& params,
-                                    JsonCpp& result, RPCError& error)
+        void CameraAdaptor::execute(const std::string& method, nlohmann::json& params,
+                                    nlohmann::json& result, RPCError& error)
         {
                 (void) params;
                 (void) result;
@@ -102,7 +103,7 @@ namespace romi {
                         error.message = "power up failed";
                 }
         }
-        
+
         void CameraAdaptor::execute_power_down(RPCError &error)
         {
                 r_debug("CameraAdaptor::power_down");

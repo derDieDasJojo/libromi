@@ -34,7 +34,7 @@ protected:
         MockImager imager;
         MockRemoteStateInputDevice remote_input_device;
 
-        JsonCpp json;
+        nlohmann::json json;
 
         
 	roverscriptengine_tests()
@@ -49,10 +49,10 @@ protected:
                   imager(),
                   remote_input_device(),
                   json() {
-                json = JsonCpp::parse("[{ 'id': 'foo', 'title': 'Foo', "
-                                      "  'actions': [{'action':'move', 'distance': 1, 'speed': 0.5}]},"
-                                      "{ 'id': 'bar', 'title': 'Bar', "
-                                      "  'actions': [{'action':'hoe'}]}]");
+                json = nlohmann::json::parse("[{ \"id\": \"foo\", \"title\": \"Foo\", "
+                                      "  \"actions\": [{\"action\":\"move\", \"distance\": 1, \"speed\": 0.5}]},"
+                                      "{ \"id\": \"bar\", \"title\": \"Bar\", "
+                                      "  \"actions\": [{\"action\":\"hoe\"}]}]");
 	}
         
 	~roverscriptengine_tests() override = default;

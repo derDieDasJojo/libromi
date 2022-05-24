@@ -36,35 +36,21 @@ namespace romi {
         void MetaFolder::try_create()
         {
                 std::filesystem::create_directories(folderPath_);
-                std::string identity = identityProvider_->identity();
-                JsonCpp identityObjet(identity.c_str());
-                meta_data_ = std::make_unique<JsonCpp>();
-                json_object_set(meta_data_->ptr(),
-                                JsonFieldNames::romi_identity.c_str(),
-                                identityObjet.ptr());
-                meta_data_->save((folderPath_ / meta_data_filename_).string(),
-                                 k_json_pretty);
+
+                meta_data_ = std::make_unique<nlohmann::json>();
+                (*meta_data_)[JsonFieldNames::romi_identity] = identityProvider_->identity();
+                SaveMetaData();
         }
 
         void MetaFolder::add_file_metadata(const std::string &filename,
-                                           const std::string &ovservationId)
+                                           const std::string &observationId)
         {
-                std::string location = locationProvider_->get_location_string();
-                JsonCpp locationJson(location.c_str());
-                
-                JsonCpp newFile;
-                json_object_setstr(newFile.ptr(),
-                                   JsonFieldNames::observation_id.c_str(),
-                                   ovservationId.c_str());
-                json_object_set(newFile.ptr(),
-                                JsonFieldNames::location.c_str(),
-                                locationJson.ptr());
-                json_object_setstr(newFile.ptr(),
-                                   JsonFieldNames::date_time.c_str(),
-                                   rpp::ClockAccessor::GetInstance()->datetime_compact_string().c_str());
-                json_object_set(meta_data_->ptr(), filename.c_str(), newFile.ptr());
-                meta_data_->save((folderPath_ / meta_data_filename_).string(),
-                                 k_json_pretty | k_json_sort_keys);
+                nlohmann::json newFile;
+                newFile[JsonFieldNames::observation_id] = observationId;
+                newFile[JsonFieldNames::location] = locationProvider_->location();
+                newFile[JsonFieldNames::date_time] = rpp::ClockAccessor::GetInstance()->datetime_compact_string();
+                (*meta_data_)[filename] = newFile;
+                SaveMetaData();
         }
 
         void MetaFolder::CheckInput(Image& image) const
@@ -85,7 +71,7 @@ namespace romi {
                         throw std::runtime_error("String data empty");
         }
 
-        void MetaFolder::CheckInput(rpp::MemBuffer& jpeg) const
+        void MetaFolder::CheckInput(rcom::MemBuffer& jpeg) const
         {
                 if (meta_data_ == nullptr)
                         throw std::runtime_error("Session not created");
@@ -107,7 +93,7 @@ namespace romi {
         }
 
         void MetaFolder::try_store_jpg(const std::string &filename,
-                                       rpp::MemBuffer& jpeg,
+                                       rcom::MemBuffer& jpeg,
                                        const std::string &observationId)
         {
                 std::scoped_lock<std::recursive_mutex> scopedLock(metadata_file_mutex_);
@@ -168,6 +154,10 @@ namespace romi {
                 auto filename_extension = build_filename_with_extension(filename, "path");
                 FileUtils::TryWriteStringAsFile((folderPath_ / filename_extension), path_data);
                 add_file_metadata(filename_extension, observationId);
+        }
+
+        void MetaFolder::SaveMetaData() const {
+            FileUtils::TryWriteStringAsFile((folderPath_ / meta_data_filename_), (*meta_data_).dump(4));
         }
 
 

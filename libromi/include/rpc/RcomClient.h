@@ -34,17 +34,17 @@ namespace romi {
         {
         protected:
                 std::unique_ptr<rcom::IMessageLink> link_;
-                rpp::MemBuffer buffer_;
+                rcom::MemBuffer buffer_;
                 double timeout_;
                 
-                void try_execute(const std::string& method, JsonCpp &params,
-                                 JsonCpp &result, RPCError &error);
-                void try_execute(const std::string& method, JsonCpp &params,
-                                 rpp::MemBuffer& result, RPCError &error);
-                void make_request(const std::string& method, JsonCpp &params);
+                void try_execute(const std::string& method, nlohmann::json &params,
+                                 nlohmann::json &result, RPCError &error);
+                void try_execute(const std::string& method, nlohmann::json &params,
+                                 rcom::MemBuffer& result, RPCError &error);
+                void make_request(const std::string& method, nlohmann::json &params);
                 bool send_request(rcom::MessageType type, RPCError &error);
-                bool receive_response(rpp::MemBuffer& buffer, RPCError &error);
-                void parse_response(JsonCpp &result, RPCError &error);
+                bool receive_response(rcom::MemBuffer& buffer, RPCError &error);
+                void parse_response(nlohmann::json &result, RPCError &error);
                 void set_error(RPCError &error);
                         
         public:
@@ -59,13 +59,13 @@ namespace romi {
                 /** execute() does not throw exceptions. All errors
                  * are returned through the RPCError structure. */
                 void execute(const std::string& method,
-                             JsonCpp &params,
-                             JsonCpp &result,
+                             nlohmann::json &params,
+                             nlohmann::json &result,
                              RPCError &error) override;
                 
                 void execute(const std::string& method,
-                             JsonCpp &params,
-                             rpp::MemBuffer& result,
+                             nlohmann::json &params,
+                             rcom::MemBuffer& result,
                              RPCError &status) override;
                 
                 bool is_connected() override;

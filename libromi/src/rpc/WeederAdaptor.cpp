@@ -22,7 +22,7 @@
 
  */
 
-#include <r.h>
+#include <log.h>
 #include "rpc/WeederAdaptor.h"
 #include "rpc/MethodsRover.h"
 
@@ -34,8 +34,8 @@ namespace romi {
         }
 
         void WeederAdaptor::execute(const std::string& method,
-                                    JsonCpp &params,
-                                    rpp::MemBuffer& result,
+                                    nlohmann::json &params,
+                                    rcom::MemBuffer& result,
                                     RPCError &error)
         {
                 (void) method;
@@ -46,8 +46,8 @@ namespace romi {
         }
         
         void WeederAdaptor::execute(const std::string& method,
-                                    JsonCpp& params,
-                                    JsonCpp& result,
+                                    nlohmann::json& params,
+                                    nlohmann::json& result,
                                     RPCError &error)
         {
                 (void) params;

@@ -26,181 +26,177 @@
 
 namespace romi {
 
-        void indent_text(membuf_t *text, int size)
+        void indent_text(rcom::MemBuffer& text, int size)
         {
                 for (int i = 0; i < size; i++)
-                        membuf_put(text, ' ');
+                        text.put(' ');
         }
-        
-        void print(Section& section, membuf_t *text, int indent)
+
+        // REFACTOR. Shouldn't be making ad-hoc JSON. Use json Object.
+        void print(Section& section, rcom::MemBuffer& text, int indent)
         {
                 indent_text(text, indent);
-                membuf_printf(text, "{\n");
+                text.printf("{\n");
                 
                 indent_text(text, indent+2);
-                membuf_printf(text, "\"start-time\": %0.6f,\n",
+                text.printf("\"start-time\": %0.6f,\n",
                               section.start_time);
                 
                 indent_text(text, indent+2);
-                membuf_printf(text, "\"duration\": %0.6f,\n",
+                text.printf("\"duration\": %0.6f,\n",
                               section.duration);
                 
                 indent_text(text, indent+2);
-                membuf_printf(text, "\"p0\": [%0.4f, %0.4f, %0.4f],\n",
+                text.printf("\"p0\": [%0.4f, %0.4f, %0.4f],\n",
                               section.p0[0], section.p0[1], section.p0[2]);
                 
                 indent_text(text, indent+2);
-                membuf_printf(text, "\"p1\": [%0.4f, %0.4f, %0.4f],\n",
+                text.printf("\"p1\": [%0.4f, %0.4f, %0.4f],\n",
                               section.p1[0], section.p1[1], section.p1[2]);
                 
                 indent_text(text, indent+2);
-                membuf_printf(text, "\"v0\": [%0.3f, %0.3f, %0.3f],\n",
+                text.printf("\"v0\": [%0.3f, %0.3f, %0.3f],\n",
                               section.v0[0], section.v0[1], section.v0[2]);
                 
                 indent_text(text, indent+2);
-                membuf_printf(text, "\"v1\": [%0.3f, %0.3f, %0.3f],\n",
+                text.printf("\"v1\": [%0.3f, %0.3f, %0.3f],\n",
                               section.v1[0], section.v1[1], section.v1[2]);
                 
                 indent_text(text, indent+2);
-                membuf_printf(text, "\"a\": [%0.3f, %0.3f, %0.3f]\n",
+                text.printf("\"a\": [%0.3f, %0.3f, %0.3f]\n",
                               section.a[0], section.a[1], section.a[2]);
                 
                 indent_text(text, indent);
-                membuf_printf(text, "}");
+                text.printf( "}");
         }
         
         void print(Section& section)
         {
-                membuf_t *text = new_membuf();
+                rcom::MemBuffer text;
                 print(section, text);
-                membuf_append_zero(text);
-                printf("%s\n", membuf_data(text));
-                delete_membuf(text);
+                printf("%s\n", text.tostring().c_str());
         }
 
-        void print(ATDC& atdc, membuf_t *text, int indent)
+        void print(ATDC& atdc, rcom::MemBuffer& text, int indent)
         {
-                indent_text(text, indent);
-                membuf_printf(text, "{\n");
-                
-                indent_text(text, indent+2);
-                membuf_printf(text, "\"accelerate\":\n");
-                print(atdc.accelerate, text, indent+2);
-                membuf_printf(text, ",\n");
-                
-                indent_text(text, indent+2);
-                membuf_printf(text, "\"travel\":\n");
-                print(atdc.travel, text, indent+2);
-                membuf_printf(text, ",\n");
-                
-                indent_text(text, indent+2);
-                membuf_printf(text, "\"decelerate\":\n");
-                print(atdc.decelerate, text, indent+2);
-                membuf_printf(text, ",\n");
-                
-                indent_text(text, indent+2);
-                membuf_printf(text, "\"curve\":\n");
-                print(atdc.curve, text, indent+2);
-                membuf_printf(text, "\n");
-                
-                indent_text(text, indent);
-                membuf_printf(text, "}");
+            indent_text(text, indent);
+            text.printf("{\n");
+
+            indent_text(text, indent+2);
+            text.printf("\"accelerate\":\n");
+            print(atdc.accelerate, text, indent+2);
+            text.printf(",\n");
+
+            indent_text(text, indent+2);
+            text.printf("\"travel\":\n");
+            print(atdc.travel, text, indent+2);
+            text.printf(",\n");
+
+            indent_text(text, indent+2);
+            text.printf("\"decelerate\":\n");
+            print(atdc.decelerate, text, indent+2);
+            text.printf(",\n");
+
+            indent_text(text, indent+2);
+            text.printf("\"curve\":\n");
+            print(atdc.curve, text, indent+2);
+            text.printf("\n");
+
+            indent_text(text, indent);
+            text.printf("}");
         }
 
         void print(ATDC& atdc)
         {
-                membuf_t *buf = new_membuf();
+                rcom::MemBuffer buf;
                 print(atdc, buf);
-                membuf_append_zero(buf);
-                printf("%s\n", membuf_data(buf));
-                delete_membuf(buf);
+                printf("%s\n", buf.tostring().c_str());
         }
 
-        void print(Move& move, membuf_t *text)
+        void print(Move& move, rcom::MemBuffer& text)
         {
-                membuf_printf(text,
-                              "{\"x\": %.5f, \"y\": %.5f, \"z\": %.5f, \"v\": %.5f}",
+            text.printf(R"({"x": %.5f, "y": %.5f, "z": %.5f, "v": %.5f})",
                               move.p.x(), move.p.y(), move.p.z(), move.v);
         }
         
-        void print_moves(SmoothPath& script, membuf_t *text)
+        void print_moves(SmoothPath& script, rcom::MemBuffer& text)
         {
-                membuf_printf(text, "  \"moves\": [\n");
+                text.printf("  \"moves\": [\n");
                 for (size_t i = 0; i < script.count_moves(); i++) {
                         indent_text(text, 4);
                         print(script.get_move(i), text);
                         if (i == script.count_moves() - 1) 
-                                membuf_printf(text, "\n");
+                                text.printf("\n");
                         else 
-                                membuf_printf(text, ",\n");
+                                text.printf(",\n");
                 }
-                membuf_printf(text, "  ],\n");
+                text.printf("  ],\n");
         }
 
-        void print(Segment& segment, membuf_t *text, int indent)
+        void print(Segment& segment, rcom::MemBuffer& text, int indent)
         {
                 indent_text(text, indent);
-                membuf_printf(text, "{\n");
+                text.printf("{\n");
                 
                 indent_text(text, indent+2);
-                membuf_printf(text, "\"p0\": [%0.4f, %0.4f, %0.4f],\n",
+                text.printf("\"p0\": [%0.4f, %0.4f, %0.4f],\n",
                               segment.p0[0], segment.p0[1], segment.p0[2]);
                 
                 indent_text(text, indent+2);
-                membuf_printf(text, "\"p1\": [%0.4f, %0.4f, %0.4f],\n",
+                text.printf("\"p1\": [%0.4f, %0.4f, %0.4f],\n",
                               segment.p1[0], segment.p1[1], segment.p1[2]);
                 
                 indent_text(text, indent+2);
-                membuf_printf(text, "\"v\": [%0.3f, %0.3f, %0.3f]\n",
+                text.printf("\"v\": [%0.3f, %0.3f, %0.3f]\n",
                               segment.v[0], segment.v[1], segment.v[2]);
                 
                 indent_text(text, indent);
-                membuf_printf(text, "}");
+                text.printf("}");
         }
 
-        void print_segments(SmoothPath& script, membuf_t *text)
+        void print_segments(SmoothPath& script, rcom::MemBuffer& text)
         {
-                membuf_printf(text, "  \"segments\": [\n");
+                text.printf("  \"segments\": [\n");
                 for (size_t i = 0; i < script.count_segments(); i++) {
                         Segment& segment = script.get_segment(i);
                         print(segment, text, 4);
                         if (i < script.count_segments() - 1) 
-                                membuf_printf(text, ",\n");
+                                text.printf(",\n");
                         else 
-                                membuf_printf(text, "\n");
+                                text.printf("\n");
                 }
-                membuf_printf(text, "  ],\n");
+                text.printf("  ],\n");
         }
         
-        void print_atdc(SmoothPath& script, membuf_t *text)
+        void print_atdc(SmoothPath& script, rcom::MemBuffer& text)
         {
-                membuf_printf(text, "  \"atdc\": [\n");
+                text.printf("  \"atdc\": [\n");
                 for (size_t i = 0; i < script.count_atdc(); i++) {
                         print(script.get_atdc(i), text, 4);
                         if (i < script.count_atdc() - 1) 
-                                membuf_printf(text, ",\n");
+                                text.printf(",\n");
                         else 
-                                membuf_printf(text, "\n");
+                                text.printf("\n");
                 }
-                membuf_printf(text, "  ]");
+                text.printf("  ]");
         }
         
-        void print_slices(SmoothPath& script, membuf_t *text)
+        void print_slices(SmoothPath& script, rcom::MemBuffer& text)
         {
-                membuf_printf(text, "  \"slices\": [\n");
+                text.printf("  \"slices\": [\n");
                 for (size_t k = 0; k < script.count_slices(); k++) {
                         print(script.get_slice(k), text, 4);
                         if (k == script.count_slices() - 1) 
-                                membuf_printf(text, "\n");
+                                text.printf("\n");
                         else 
-                                membuf_printf(text, ",\n");
+                                text.printf(",\n");
                 }
-                membuf_printf(text, "  ]\n");
+                text.printf("  ]\n");
         }
 
-        void print(SmoothPath& script, membuf_t *text, bool include_slices)
+        void print(SmoothPath& script, rcom::MemBuffer& text, bool include_slices)
         {
-                membuf_printf(text, "{\n");
+                text.printf("{\n");
                 
                 print_moves(script, text);
                 
@@ -209,21 +205,19 @@ namespace romi {
                 print_atdc(script, text);
                 
                 if (include_slices) {
-                        membuf_printf(text, ",\n");
+                        text.printf(",\n");
                         print_slices(script, text);
                 } else {
-                        membuf_printf(text, "\n");
+                        text.printf("\n");
                 }
-                membuf_printf(text, "}\n");
+                text.printf("}\n");
         }
 
         void print(SmoothPath& script, bool include_slices)
         {
-                membuf_t *buf = new_membuf();
+                rcom::MemBuffer buf;
                 print(script, buf, include_slices);
-                membuf_append_zero(buf);
-                printf("%s\n", membuf_data(buf));
-                delete_membuf(buf);
+                printf("%s\n", buf.tostring().c_str());
         }
 }
 

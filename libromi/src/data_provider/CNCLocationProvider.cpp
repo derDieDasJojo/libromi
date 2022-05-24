@@ -24,7 +24,8 @@
 #include <stdexcept>
 #include "data_provider/JsonFieldNames.h"
 #include "data_provider/CNCLocationProvider.h"
-#include "JsonCpp.h"
+#include <json.hpp>
+#include <log.h>
 
 namespace romi {
 
@@ -38,34 +39,40 @@ namespace romi {
         {
                 return cnc_->get_position(position_); 
         }
-        
-        std::string CNCLocationProvider::get_location_string()
+
+        nlohmann::json CNCLocationProvider::location()
         {
                 if (!update_location_estimate()) {
                         r_warn("CNCLocationProvider: update failed. "
                                "Returning old estimates");
                 }
 
-                json_object_t coordinate_object = json_object_create();
-                json_object_setnum(coordinate_object,
-                                   JsonFieldNames::x_position.data(),
-                                   position_.x());
-                json_object_setnum(coordinate_object,
-                                   JsonFieldNames::y_position.data(),
-                                   position_.y());
-                json_object_setnum(coordinate_object,
-                                   JsonFieldNames::z_position.data(),
-                                   position_.z());
-                
-                std::string locationString;
-                JsonCpp locationData(coordinate_object);
-                locationData.tostring(locationString, k_json_pretty | k_json_sort_keys);
+            nlohmann::json coordinate_object = nlohmann::json::object({ {JsonFieldNames::x_position.data(), position_.x()},
+                                                                        {JsonFieldNames::y_position.data(), position_.y()},
+                                                                        {JsonFieldNames::z_position.data(), position_.z()}
 
-                json_unref(coordinate_object);
-                return locationString;
+            });
+
+//                json_object_t coordinate_object = json_object_create();
+//                json_object_setnum(coordinate_object,
+//                                   JsonFieldNames::x_position.data(),
+//                                   position_.x());
+//                json_object_setnum(coordinate_object,
+//                                   JsonFieldNames::y_position.data(),
+//                                   position_.y());
+//                json_object_setnum(coordinate_object,
+//                                   JsonFieldNames::z_position.data(),
+//                                   position_.z());
+//
+//                std::string locationString;
+//                JsonCpp locationData(coordinate_object);
+//                locationData.tostring(locationString, k_json_pretty | k_json_sort_keys);
+//
+//                json_unref(coordinate_object);
+                return coordinate_object;
         }
 
-        v3 CNCLocationProvider::get_location()
+        v3 CNCLocationProvider::coordinates()
         {
                 if (!update_location_estimate()) {
                         r_warn("CNCLocationProvider: update failed. "

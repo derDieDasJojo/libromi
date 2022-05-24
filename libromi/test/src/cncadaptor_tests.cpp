@@ -29,8 +29,8 @@ protected:
 
 TEST_F(cncadaptor_tests, retuns_error_on_unknown_method)
 {
-        JsonCpp params;
-        JsonCpp result;
+        nlohmann::json params;
+        nlohmann::json result;
         RPCError error;
 
         CNCAdaptor adaptor(cnc);
@@ -42,8 +42,8 @@ TEST_F(cncadaptor_tests, retuns_error_on_unknown_method)
 
 TEST_F(cncadaptor_tests, get_range_retuns_no_error_on_success)
 {
-        JsonCpp params;
-        JsonCpp result;
+        nlohmann::json params;
+        nlohmann::json result;
         RPCError error;
         
         EXPECT_CALL(cnc, get_range(_))
@@ -58,8 +58,8 @@ TEST_F(cncadaptor_tests, get_range_retuns_no_error_on_success)
 
 TEST_F(cncadaptor_tests, get_range_sets_error_on_failure)
 {
-        JsonCpp params;
-        JsonCpp result;
+        nlohmann::json params;
+        nlohmann::json result;
         RPCError error;
         
         EXPECT_CALL(cnc, get_range(_))
@@ -74,8 +74,8 @@ TEST_F(cncadaptor_tests, get_range_sets_error_on_failure)
 
 TEST_F(cncadaptor_tests, homing_retuns_no_error_on_success)
 {
-        JsonCpp params;
-        JsonCpp result;
+        nlohmann::json params;
+        nlohmann::json result;
         RPCError error;
         
         EXPECT_CALL(cnc, homing())
@@ -90,8 +90,8 @@ TEST_F(cncadaptor_tests, homing_retuns_no_error_on_success)
 
 TEST_F(cncadaptor_tests, homing_sets_error_on_failure)
 {
-        JsonCpp params;
-        JsonCpp result;
+        nlohmann::json params;
+        nlohmann::json result;
         RPCError error;
         
         EXPECT_CALL(cnc, homing())
@@ -106,8 +106,8 @@ TEST_F(cncadaptor_tests, homing_sets_error_on_failure)
 
 TEST_F(cncadaptor_tests, stop_retuns_no_error_on_success)
 {
-        JsonCpp params;
-        JsonCpp result;
+        nlohmann::json params;
+        nlohmann::json result;
         RPCError error;
         
         EXPECT_CALL(cnc, pause_activity())
@@ -122,8 +122,8 @@ TEST_F(cncadaptor_tests, stop_retuns_no_error_on_success)
 
 TEST_F(cncadaptor_tests, stop_sets_error_on_failure)
 {
-        JsonCpp params;
-        JsonCpp result;
+        nlohmann::json params;
+        nlohmann::json result;
         RPCError error;
         
         EXPECT_CALL(cnc, pause_activity())
@@ -138,8 +138,8 @@ TEST_F(cncadaptor_tests, stop_sets_error_on_failure)
 
 TEST_F(cncadaptor_tests, continue_retuns_no_error_on_success)
 {
-        JsonCpp params;
-        JsonCpp result;
+        nlohmann::json params;
+        nlohmann::json result;
         RPCError error;
         
         EXPECT_CALL(cnc, continue_activity())
@@ -154,8 +154,8 @@ TEST_F(cncadaptor_tests, continue_retuns_no_error_on_success)
 
 TEST_F(cncadaptor_tests, continue_sets_error_on_failure)
 {
-        JsonCpp params;
-        JsonCpp result;
+        nlohmann::json params;
+        nlohmann::json result;
         RPCError error;
         
         EXPECT_CALL(cnc, continue_activity())
@@ -170,8 +170,8 @@ TEST_F(cncadaptor_tests, continue_sets_error_on_failure)
 
 TEST_F(cncadaptor_tests, reset_retuns_no_error_on_success)
 {
-        JsonCpp params;
-        JsonCpp result;
+        nlohmann::json params;
+        nlohmann::json result;
         RPCError error;
         
         EXPECT_CALL(cnc, reset_activity())
@@ -186,8 +186,8 @@ TEST_F(cncadaptor_tests, reset_retuns_no_error_on_success)
 
 TEST_F(cncadaptor_tests, reset_sets_error_on_failure)
 {
-        JsonCpp params;
-        JsonCpp result;
+        nlohmann::json params;
+        nlohmann::json result;
         RPCError error;
         
         EXPECT_CALL(cnc, reset_activity())
@@ -202,8 +202,11 @@ TEST_F(cncadaptor_tests, reset_sets_error_on_failure)
 
 TEST_F(cncadaptor_tests, spindle_retuns_no_error_on_success)
 {
-        JsonCpp params = JsonCpp::parse("{'speed': 0}");
-        JsonCpp result;
+        nlohmann::json params{
+                {"speed", 0}
+        };
+
+        nlohmann::json result;
         RPCError error;
         
         EXPECT_CALL(cnc, spindle(0))
@@ -218,8 +221,10 @@ TEST_F(cncadaptor_tests, spindle_retuns_no_error_on_success)
 
 TEST_F(cncadaptor_tests, spindle_sets_error_on_failure)
 {
-        JsonCpp params = JsonCpp::parse("{'speed': 0}");
-        JsonCpp result;
+    nlohmann::json params{
+            {"speed", 0}
+    };
+        nlohmann::json result;
         RPCError error;
         
         EXPECT_CALL(cnc, spindle(0))
@@ -234,8 +239,8 @@ TEST_F(cncadaptor_tests, spindle_sets_error_on_failure)
 
 TEST_F(cncadaptor_tests, spindle_sets_error_on_missing_param)
 {
-        JsonCpp params = JsonCpp::parse("{}");
-        JsonCpp result;
+        nlohmann::json params{{}};
+        nlohmann::json result;
         RPCError error;
 
         CNCAdaptor adaptor(cnc);
@@ -247,8 +252,11 @@ TEST_F(cncadaptor_tests, spindle_sets_error_on_missing_param)
 
 TEST_F(cncadaptor_tests, moveto_retuns_no_error_on_success)
 {
-        JsonCpp params = JsonCpp::parse("{'x': 1, 'y': 2, 'z': 3, 'speed': 4}");
-        JsonCpp result;
+        nlohmann::json params{
+                {"x",1}, {"y", 2}, {"z", 3}, {"speed", 4}
+        };
+
+        nlohmann::json result;
         RPCError error;
         
         EXPECT_CALL(cnc, moveto(1,2,3,4))
@@ -263,8 +271,10 @@ TEST_F(cncadaptor_tests, moveto_retuns_no_error_on_success)
 
 TEST_F(cncadaptor_tests, moveto_sets_error_on_failure)
 {
-        JsonCpp params = JsonCpp::parse("{'x': 1, 'y': 2, 'z': 3, 'speed': 4}");
-        JsonCpp result;
+        nlohmann::json params{
+                {"x",1}, {"y", 2}, {"z", 3}, {"speed", 4}
+        };
+        nlohmann::json result;
         RPCError error;
         
         EXPECT_CALL(cnc, moveto(1,2,3,4))
@@ -279,8 +289,8 @@ TEST_F(cncadaptor_tests, moveto_sets_error_on_failure)
 
 TEST_F(cncadaptor_tests, moveto_sets_error_on_missing_params)
 {
-        JsonCpp params = JsonCpp::parse("{}");
-        JsonCpp result;
+        nlohmann::json params; // = nlohmann::json::parse("{}");
+        nlohmann::json result;
         RPCError error;
 
         CNCAdaptor adaptor(cnc);
@@ -292,8 +302,8 @@ TEST_F(cncadaptor_tests, moveto_sets_error_on_missing_params)
 
 TEST_F(cncadaptor_tests, travel_retuns_no_error_on_success)
 {
-        JsonCpp params = JsonCpp::parse("{'path': [[1,2,3]]}");
-        JsonCpp result;
+        nlohmann::json params = nlohmann::json::parse(R"({"path": [[1,2,3]]})");
+        nlohmann::json result;
         RPCError error;
         
         EXPECT_CALL(cnc, travel(_,_))
@@ -308,8 +318,8 @@ TEST_F(cncadaptor_tests, travel_retuns_no_error_on_success)
 
 TEST_F(cncadaptor_tests, travel_sets_error_on_failure)
 {
-        JsonCpp params = JsonCpp::parse("{'path': []}");
-        JsonCpp result;
+        nlohmann::json params = nlohmann::json::parse(R"({"path": []})");
+        nlohmann::json result;
         RPCError error;
         
         EXPECT_CALL(cnc, travel(_,_))
@@ -324,8 +334,8 @@ TEST_F(cncadaptor_tests, travel_sets_error_on_failure)
 
 TEST_F(cncadaptor_tests, travel_sets_error_on_missing_params_1)
 {
-        JsonCpp params = JsonCpp::parse("{}");
-        JsonCpp result;
+        nlohmann::json params;
+        nlohmann::json result;
         RPCError error;
 
         CNCAdaptor adaptor(cnc);
@@ -337,8 +347,8 @@ TEST_F(cncadaptor_tests, travel_sets_error_on_missing_params_1)
 
 TEST_F(cncadaptor_tests, travel_sets_error_on_missing_params_2)
 {
-        JsonCpp params = JsonCpp::parse("{'path': [[0,1]]}");
-        JsonCpp result;
+        nlohmann::json params = nlohmann::json::parse(R"({"path": [[0,1]]})");
+        nlohmann::json result;
         RPCError error;
 
         CNCAdaptor adaptor(cnc);

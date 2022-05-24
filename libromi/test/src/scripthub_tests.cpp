@@ -16,6 +16,8 @@
 #include "mock_weeder.h"
 #include "mock_imager.h"
 #include "mock_remotestateinputdevice.h"
+#include "WebSocketServer.mock.h"
+#include "WebSocketServerFactory.mock.h"
 
 using namespace std;
 using namespace testing;
@@ -28,8 +30,7 @@ class scripthub_tests : public ::testing::Test
 {
 protected:
         
-	scripthub_tests() {
-	}
+	scripthub_tests() = default;
 
 	~scripthub_tests() override = default;
 
@@ -53,13 +54,21 @@ TEST_F(scripthub_tests, can_construct_scripthub)
     MockWeeder mockWeeder;
     MockImager mockImager;
     MockRemoteStateInputDevice mockRemoteStateInputDevice;
+    auto mockWebServerSocketFactory = std::make_shared<MockWebSocketServerFactory>();
+    auto webSocketServer = std::make_unique<MockWebSocketServer>();
+
+    EXPECT_CALL(*mockWebServerSocketFactory, new_web_socket_server(_,_))
+            .WillOnce(Return(ByMove(std::move(webSocketServer))));
 
     romi::Rover rover(mockInputDevice, mockDisplay, mockSpeedController, mockNavigation, mockEventTimer,
                       mockMenu, mockScriptEngine, mockNotifications, mockWeeder, mockImager, mockRemoteStateInputDevice);
 
         MockScriptList mockScriptList;
         auto scriptHubListener = std::make_shared<ScriptHubListener>(rover);
-        ScriptHub scriptHub(scriptHubListener, 20000);
+        ScriptHub scriptHub(scriptHubListener, mockWebServerSocketFactory, 20000);
+
+
+
 }
 
 TEST_F(scripthub_tests, successfully_load_simple_scriplist)

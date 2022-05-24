@@ -22,6 +22,7 @@
 
  */
 
+#include <log.h>
 #include "data_provider/JsonFieldNames.h"
 #include "rover/WheelOdometry.h"
 
@@ -91,27 +92,20 @@ namespace romi {
                 return true;
         }
         
-        v3 WheelOdometry::get_location()
+        v3 WheelOdometry::coordinates()
         {
                 SynchronizedCodeBlock sync(mutex_);
                 return v3(displacement_[0], displacement_[1], 0.0);
         }
         
-        std::string WheelOdometry::get_location_string()
+        nlohmann::json WheelOdometry::location()
         {
                 update_estimate();
                 
-                json_object_t coordinate_object = json_object_create();
-                json_object_setnum(coordinate_object, JsonFieldNames::x_position.data(),
-                                   displacement_[0]);
-                json_object_setnum(coordinate_object, JsonFieldNames::y_position.data(),
-                                   displacement_[1]);
-                std::string locationString;
-                JsonCpp locationData(coordinate_object);
-                locationData.tostring(locationString, k_json_pretty);
-
-                json_unref(coordinate_object);
-                return locationString;
+                nlohmann::json coordinate_object;
+                coordinate_object[JsonFieldNames::x_position.data()] = displacement_[0];
+                coordinate_object[JsonFieldNames::y_position.data()] = displacement_[1];
+                return coordinate_object.dump(4);
         }
 
         v3 WheelOdometry::get_speed()

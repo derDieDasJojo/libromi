@@ -44,7 +44,7 @@ TEST_F(pythontrackfollower_tests, constructor_with_good_values_succeeds)
         PythonTrackFollower follower(camera_, rpc, "toto", 1.0, session_);
 }
 
-static rpp::MemBuffer buffer;
+static rcom::MemBuffer buffer;
 
 ACTION(throw_grab_jpeg_exception)
 {

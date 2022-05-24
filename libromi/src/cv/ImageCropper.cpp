@@ -23,17 +23,18 @@
  */
 
 #include <stdexcept>
+#include <log.h>
 #include "cv/ImageCropper.h"
 
 namespace romi {
 
-        ImageCropper::ImageCropper(CNCRange& range, JsonCpp& properties)
+        ImageCropper::ImageCropper(CNCRange& range, nlohmann::json& properties)
                 : range_(range), x0_(0), y0_(0), width_(0), height_(0)
         {
                 try {
                         set_workspace(properties["workspace"]);
                         
-                } catch (JSONError& je) {
+                } catch (nlohmann::json::exception& je) {
                         r_err("ImageCropper: Failed to parse the workspace dimensions: %s",
                               je.what());
                         throw std::runtime_error("ImageCropper: bad config");
@@ -53,12 +54,12 @@ namespace romi {
                 }
         }
         
-        void ImageCropper::set_workspace(JsonCpp w)
+        void ImageCropper::set_workspace(nlohmann::json w)
         {
-                x0_ = (size_t)w.num(0);
-                y0_ = (size_t)w.num(1);
-                width_ = (size_t)w.num(2);
-                height_ = (size_t)w.num(3);
+                x0_ = (size_t)w[0];
+                y0_ = (size_t)w[1];
+                width_ = (size_t)w[2];
+                height_ = (size_t)w[3];
                 assert_workspace_dimensions();
 
                 r_debug("workspace: x0 %d, y0 %d, width %d px, height %d px", 

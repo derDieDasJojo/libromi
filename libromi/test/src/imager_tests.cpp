@@ -9,7 +9,7 @@ using namespace testing;
 
 class imager_tests : public ::testing::Test {
 protected:
-        rpp::MemBuffer buffer_;
+        rcom::MemBuffer buffer_;
         
         imager_tests() : buffer_() {}
         
@@ -43,7 +43,7 @@ TEST_F(imager_tests, record_one_image)
         EXPECT_CALL(session, start("foo"));
         EXPECT_CALL(camera, grab_jpeg())
                 .WillOnce(ReturnRef(buffer_));
-        EXPECT_CALL(session, store_jpg(_, An<rpp::MemBuffer&>()))
+        EXPECT_CALL(session, store_jpg(_, An<rcom::MemBuffer&>()))
                 .WillOnce(Return(true));
         EXPECT_CALL(session, stop());
         

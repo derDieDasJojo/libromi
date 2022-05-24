@@ -36,7 +36,7 @@ namespace romi::arm {
                 MMAL_PORT_T *input_; 
                 MMAL_PORT_T *output_;
                 MMAL_POOL_T *pool_;
-                rpp::MemBuffer buffer_;
+                rcom::MemBuffer buffer_;
 
                 void assert_input_and_output();
 
@@ -44,7 +44,7 @@ namespace romi::arm {
                 EncoderComponent(const char* name);
                 ~EncoderComponent() override;
                 
-                rpp::MemBuffer& get_buffer();
+                rcom::MemBuffer& get_buffer();
                 MMAL_PORT_T *get_input_port();
                 
         private:

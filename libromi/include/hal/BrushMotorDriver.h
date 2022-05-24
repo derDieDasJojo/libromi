@@ -53,15 +53,15 @@ namespace romi {
                 static constexpr const char *kLeftKey = "left"; 
                 static constexpr const char *kRightKey = "right"; 
 
-                void parse(JsonCpp &params) {
-                        encoder_steps = (int32_t) params.num(kEncoderSteps);
-                        dir_left = (int8_t) params.get(kEncoderDirectionsKey).num(kLeftKey);
-                        dir_right = (int8_t) params.get(kEncoderDirectionsKey).num(kRightKey);
-                        kp_numerator = (int32_t) params.get(kPidKey).get(kKpKey).num(0);
-                        kp_denominator = (int32_t) params.get(kPidKey).get(kKpKey).num(1);
-                        ki_numerator = (int32_t) params.get(kPidKey).get(kKiKey).num(0);
-                        ki_denominator = (int32_t) params.get(kPidKey).get(kKiKey).num(1);
-                        max_signal = (int32_t) params.num(kMaxSignalAmpKey);
+                void parse(nlohmann::json &params) {
+                        encoder_steps = (int32_t) params[kEncoderSteps];
+                        dir_left = (int8_t) params[kEncoderDirectionsKey][kLeftKey];
+                        dir_right = (int8_t) params[kEncoderDirectionsKey][kRightKey];
+                        kp_numerator = (int32_t) params[kPidKey][kKpKey][0];
+                        kp_denominator = (int32_t) params[kPidKey][kKpKey][1];
+                        ki_numerator = (int32_t) params[kPidKey][kKiKey][0];
+                        ki_denominator = (int32_t) params[kPidKey][kKiKey][1];
+                        max_signal = (int32_t) params[kMaxSignalAmpKey];
                 }
         };
 
@@ -115,7 +115,7 @@ namespace romi {
                 BrushMotorDriverSettings settings_;
                 double max_angular_speed_;
                 
-                bool configure_controller(JsonCpp &config, 
+                bool configure_controller(nlohmann::json &config,
                                           double max_angular_speed, 
                                           double max_angular_acceleration);
                         
@@ -123,7 +123,7 @@ namespace romi {
                 bool enable_controller();
 
                 bool check_response(const char *command,
-                                    JsonCpp& response);
+                                    nlohmann::json& response);
 
 
                 std::atomic<bool> recording_speeds_;
@@ -134,7 +134,7 @@ namespace romi {
         public:
 
                 BrushMotorDriver(std::unique_ptr<romiserial::IRomiSerialClient>& serial,
-                                 JsonCpp &config,
+                                 nlohmann::json &config,
                                  double max_angular_speed,
                                  double max_angular_acceleration);
                 

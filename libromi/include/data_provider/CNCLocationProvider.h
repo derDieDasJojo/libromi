@@ -42,9 +42,9 @@ namespace romi {
                 explicit CNCLocationProvider(std::shared_ptr<ICNC>& cnc);
                 ~CNCLocationProvider() override = default;
 
-                std::string get_location_string() override;
+                nlohmann::json location() override;
                 bool update_location_estimate() override;
-                v3 get_location() override;
+                v3 coordinates() override;
         };
 }
 

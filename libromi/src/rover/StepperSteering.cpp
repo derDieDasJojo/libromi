@@ -26,6 +26,7 @@
 #include <ClockAccessor.h>
 #include "rover/StepperSteering.h"
 #include "api/DataLogAccessor.h"
+#include <log.h>
 
 namespace romi {
 

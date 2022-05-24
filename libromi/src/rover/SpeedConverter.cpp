@@ -27,13 +27,13 @@
 
 namespace romi {
         
-        void SpeedConverter::parse(JsonCpp& config) {
-                use_speed_curve = config.boolean("use-speed-curve");
-                speed_curve_exponent = config.num("speed-curve-exponent");
-                use_direction_curve = config.boolean("use-direction-curve");
-                direction_curve_exponent = config.num("direction-curve-exponent");
-                speed_multiplier = config.num("speed-multiplier");
-                direction_multiplier = config.num("direction-multiplier");
+        void SpeedConverter::parse(nlohmann::json& config) {
+                use_speed_curve = config.at("use-speed-curve");
+                speed_curve_exponent = config.at("speed-curve-exponent");
+                use_direction_curve = config.at("use-direction-curve");
+                direction_curve_exponent = config.at("direction-curve-exponent");
+                speed_multiplier = config.at("speed-multiplier");
+                direction_multiplier = config.at("direction-multiplier");
         }
 
         bool SpeedConverter::is_valid()

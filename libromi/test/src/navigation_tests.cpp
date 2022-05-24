@@ -1,6 +1,6 @@
 #include "gtest/gtest.h"
 #include "gmock/gmock.h"
-#include "JsonCpp.h"
+#include "json.hpp"
 #include "rover/Navigation.h"
 #include "mock_motordriver.h"
 #include "mock_trackfollower.h"
@@ -15,7 +15,7 @@ using namespace romi;
 class navigation_tests : public ::testing::Test
 {
 protected:
-        JsonCpp config;
+        nlohmann::json config;
         MockMotorDriver driver;
         MockDistanceMeasure distance_measure;
         MockTrackFollower track_follower;
@@ -36,7 +36,7 @@ protected:
                         "'encoder-steps': 1000.0,"
                         "'maximum-speed': 3.0, "
                         "'maximum-acceleration': 0.1 }";
-                config = JsonCpp::parse(config_string);
+                config = nlohmann::json::parse(config_string);
 	}
 
 	~navigation_tests() override = default;

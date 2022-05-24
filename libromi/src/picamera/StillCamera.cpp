@@ -46,7 +46,7 @@ namespace romi {
                 return false;
         }
 
-        rpp::MemBuffer& StillCamera::grab_jpeg()
+        rcom::MemBuffer& StillCamera::grab_jpeg()
         {
                 encoder_.prepare_capture();
                 camera_.set_shutter_speed();

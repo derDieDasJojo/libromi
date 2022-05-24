@@ -25,7 +25,7 @@
 #ifndef __IRANGE_H
 #define __IRANGE_H
 
-#include "JsonCpp.h"
+#include "json.hpp"
 #include "v3.h"
 
 namespace romi {
@@ -34,7 +34,7 @@ namespace romi {
         {
         public:
                 virtual ~IRange() = default;
-                virtual void init(JsonCpp &range) = 0;
+                virtual void init(nlohmann::json &range)=0;
                 virtual void init(v3 min, v3 max) = 0;
                 
                 virtual v3 min() const = 0;

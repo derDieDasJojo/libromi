@@ -25,17 +25,18 @@
 #ifndef _OQUAM_PRINT_H_
 #define _OQUAM_PRINT_H_
 
+#include "MemBuffer.h"
 #include "oquam/SmoothPath.h"
 
 namespace romi {
 
-        void print(Section& section, membuf_t *text, int indent = 0);
+        void print(Section& section, rcom::MemBuffer& text, int indent = 0);
         void print(Section& section);
 
-        void print(ATDC& atdc, membuf_t *text, int indent = 0);
+        void print(ATDC& atdc, rcom::MemBuffer& text, int indent = 0);
         void print(ATDC& atdc);
         
-        void print(SmoothPath& script, membuf_t *text, bool include_slices = true);
+        void print(SmoothPath& script, rcom::MemBuffer& text, bool include_slices = true);
         void print(SmoothPath& script, bool include_slices = true);
 }
 

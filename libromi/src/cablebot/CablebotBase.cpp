@@ -25,9 +25,10 @@
 #include <math.h>
 #include <limits.h>
 #include <stdexcept>
-#include <r.h>
+#include <log.h>
 #include <ClockAccessor.h>
 #include "cablebot/CablebotBase.h"
+#include <json.hpp>
 
 namespace romi {
         
@@ -70,13 +71,15 @@ namespace romi {
         
         bool CablebotBase::send_command(const char *command)
         {
-                JsonCpp response;
+                nlohmann::json response;
                 serial_->send(command, response);
                 
-                bool success = (response.num(0) == 0);
-                if (!success)
-                        r_err("CablebotBase::send_command: %s: %s",
-                              command, response.str(1));
+                bool success = (response[romiserial::kStatusCode] == 0);
+                if (!success) {
+                    std::string message = response[romiserial::kErrorMessage];
+                    r_err("CablebotBase::send_command: %s: %s",
+                          command, message.c_str());
+                }
                 
                 return success;
         }
@@ -154,15 +157,16 @@ namespace romi {
         
         bool CablebotBase::is_on_target()
         {
-                JsonCpp response;
-                serial_->send("p", response);
-                
-                bool success = (response.num(0) == 0.0);
-                if (!success) {
-                        r_err("CablebotBase::is_on_target: %s", response.str(1));
-                        throw std::runtime_error("CablebotBase::is_on_target");
-                }
-                return response.num(1) != 0.0;
+            nlohmann::json response;
+            serial_->send("p", response);
+
+            bool success = (response[0] == 0.0);
+            if (!success) {
+                std::string message = response[1];
+                r_err("CablebotBase::is_on_target: %s", message.c_str());
+                throw std::runtime_error("CablebotBase::is_on_target");
+            }
+            return response[1] != 0.0;
         }
                        
         bool CablebotBase::moveat(int16_t speed_x, int16_t speed_y, int16_t speed_z)
@@ -182,17 +186,17 @@ namespace romi {
         
         bool CablebotBase::get_position(v3& position)
         {
-                JsonCpp response;
-                serial_->send("P", response);
-                
-                bool success = (response.num(0) == 0);
-                if (success) {
-                        double steps = response.num(1);
-                        position.x(steps_to_position(steps));
-                        position.y(0.0);
-                        position.z(0.0);
-                }
-                return success;
+            nlohmann::json response;
+            serial_->send("P", response);
+
+            bool success = (response[romiserial::kStatusCode] == 0);
+            if (success) {
+                    double steps = response[1];
+                    position.x(steps_to_position(steps));
+                    position.y(0.0);
+                    position.z(0.0);
+            }
+            return success;
         }
         
         bool CablebotBase::spindle(double speed)

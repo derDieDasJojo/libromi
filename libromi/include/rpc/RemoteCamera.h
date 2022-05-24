@@ -36,14 +36,15 @@ namespace romi {
                 static constexpr const char *ClassName = "remote-camera";
 
         protected:
-                rpp::MemBuffer output_;
+
+                rcom::MemBuffer output_;
 
         public:
                 RemoteCamera(std::unique_ptr<IRPCClient>& client);
                 ~RemoteCamera() override = default;
 
                 bool grab(Image &image) override;
-                rpp::MemBuffer& grab_jpeg() override;
+                rcom::MemBuffer& grab_jpeg() override;
 
                 // Power device interface
                 bool power_up() override;

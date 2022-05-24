@@ -49,7 +49,7 @@ TEST_F(cncrange_tests, test_constructor_with_values)
 
 TEST_F(cncrange_tests, test_constructor_using_json)
 {
-        JsonCpp json = JsonCpp::parse("[[1,4],[2,5],[3,6]]");
+        nlohmann::json json = nlohmann::json::parse("[[1,4],[2,5],[3,6]]");
         CNCRange range(json);
 
         EXPECT_EQ(range.xmin(), 1.0);
@@ -62,12 +62,12 @@ TEST_F(cncrange_tests, test_constructor_using_json)
 
 TEST_F(cncrange_tests, constructor_throw_error_when_json_invalid)
 {
-        JsonCpp json = JsonCpp::parse("[[1,4],[2,5]]");
+        nlohmann::json json = nlohmann::json::parse("[[1,4],[2,5]]");
 
         try {
                 CNCRange range(json);
                 FAIL() << "Expected an exception";
-        } catch (JSONError& e) {
+        } catch (nlohmann::json::exception& e) {
                 // OK
         }
 }

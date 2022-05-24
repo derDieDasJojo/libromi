@@ -22,10 +22,9 @@
 
  */
 #include <stdexcept>
-#include <Linux.h>
 #include <MessageLink.h>
-#include <ServerSocket.h>
 #include <WebSocketServer.h>
+#include <log.h>
 #include "rpc/RcomClient.h"
 
 namespace romi {
@@ -46,15 +45,8 @@ namespace romi {
         {
         }
 
-        static int32_t to_membuffer(void* userdata, const char* s, size_t len)
-        {
-                rpp::MemBuffer *serialised = reinterpret_cast<rpp::MemBuffer*>(userdata);
-                serialised->append((uint8_t *) s, len);
-                return 0;
-        }
-
-        void RcomClient::execute(const std::string& method, JsonCpp &params,
-                                JsonCpp &result, RPCError &error)
+        void RcomClient::execute(const std::string& method, nlohmann::json &params,
+                                nlohmann::json &result, RPCError &error)
         {
                 //r_debug("RcomClient::execute");
 
@@ -68,8 +60,8 @@ namespace romi {
                 }
         }
         
-        void RcomClient::try_execute(const std::string& method, JsonCpp &params,
-                                    JsonCpp &result, RPCError &error)
+        void RcomClient::try_execute(const std::string& method, nlohmann::json &params,
+                                    nlohmann::json &result, RPCError &error)
         { 
                 //r_debug("RcomClient::try_execute");
                 make_request(method, params);
@@ -79,20 +71,15 @@ namespace romi {
                 }
         }
 
-        void RcomClient::make_request(const std::string& method, JsonCpp &params)
+        void RcomClient::make_request(const std::string& method, nlohmann::json &params)
         {
                 //r_debug("RcomClient::make_request");
-                JsonCpp request = JsonCpp::construct("{\"method\": \"%s\"}",
-                                                     method.c_str());
-                
-                // FIXME: use C++ API?
-                json_object_set(request.ptr(), "params", params.ptr());
-                
-                // FIXME! improve JsonCpp and/or MemBuffer
-                // Yet another copy
+                nlohmann::json request;
+                request["method"] = method;
+                request["params"] = params;
+
                 buffer_.clear();
-                json_serialise(request.ptr(), k_json_compact, to_membuffer,
-                               reinterpret_cast<void*>(&buffer_));
+                buffer_.append_string(request.dump().c_str());
         }
 
         bool RcomClient::send_request(rcom::MessageType type, RPCError &error)
@@ -108,7 +95,7 @@ namespace romi {
                 return success;
         }
 
-        bool RcomClient::receive_response(rpp::MemBuffer& buffer, RPCError &error)
+        bool RcomClient::receive_response(rcom::MemBuffer& buffer, RPCError &error)
         {
                 //r_debug("RcomClient::receive_response");
                 bool success = false;
@@ -130,11 +117,11 @@ namespace romi {
                 return success;
         }
 
-        void RcomClient::parse_response(JsonCpp &result, RPCError &error)
+        void RcomClient::parse_response(nlohmann::json &result, RPCError &error)
         {
                 //r_debug("RcomClient::parse_response");
                 try {
-                        result = JsonCpp::parse(buffer_);
+                        result = nlohmann::json::parse(buffer_.tostring());
                                 
                 } catch (std::exception& e) {
                         error.code = RPCError::kParseError;
@@ -167,8 +154,8 @@ namespace romi {
         }
 
         void RcomClient::execute(const std::string& method,
-                                 JsonCpp &params,
-                                 rpp::MemBuffer& result,
+                                 nlohmann::json &params,
+                                 rcom::MemBuffer& result,
                                  RPCError &error)
         {
                 //r_debug("RcomClient::execute");
@@ -184,8 +171,8 @@ namespace romi {
         }
         
         void RcomClient::try_execute(const std::string& method,
-                                     JsonCpp &params,
-                                     rpp::MemBuffer& result,
+                                     nlohmann::json &params,
+                                     rcom::MemBuffer& result,
                                      RPCError &error)
         { 
                 make_request(method, params);

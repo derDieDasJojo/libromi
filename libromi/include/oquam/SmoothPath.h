@@ -26,7 +26,6 @@
 #define _OQUAM_SMOOTH_PATH_H_
 
 #include <vector>
-#include <r.h>
 
 #include "v3.h"
 

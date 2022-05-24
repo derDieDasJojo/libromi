@@ -24,7 +24,7 @@
 #ifndef __ROMI_SPEED_CONVERTER_H
 #define __ROMI_SPEED_CONVERTER_H
 
-#include "JsonCpp.h"
+#include "json.hpp"
 
 namespace romi {
         
@@ -50,7 +50,7 @@ namespace romi {
                 direction_curve_exponent(0.001), speed_multiplier(0.1), direction_multiplier(0.1){
                 }
                 
-                void parse(JsonCpp& config);
+                void parse(nlohmann::json& config);
                 bool is_valid();
                 double map_exponential(double x, double alpha);
                 double apply_speed_curve(double speed);

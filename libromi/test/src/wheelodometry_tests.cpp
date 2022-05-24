@@ -10,7 +10,7 @@ using namespace romi;
 class wheelodometry_tests : public ::testing::Test
 {
 protected:
-        JsonCpp config;
+        nlohmann::json config;
         double epsilon;
         MockMotorDriver driver_;
         double left_;
@@ -18,20 +18,24 @@ protected:
         double timestamp_;
         
 	wheelodometry_tests()
-                : config(),
+                :
+                config{
+                        { "wheel-diameter" , 1.0},
+                        { "wheeltrack" , 1.0},
+                        { "wheelbase" , 1.2},
+                        { "maximum-speed" , 3.0},
+                        { "maximum-acceleration" , 0.1}
+                    },
                   epsilon(0.000001),
                   driver_(),
                   left_(0.0),
                   right_(0.0),
-                  timestamp_(0.0) {
-                const char * config_string = "{"
-                        "'wheel-diameter': 1.0,"
-                        "'wheeltrack': 1.0,"
-                        "'wheelbase': 1.2,"
-                        "'maximum-speed': 3.0, "
-                        "'maximum-acceleration': 0.1 }";
-                config = JsonCpp::parse(config_string);
-	}
+                  timestamp_(0.0)
+    {
+
+    }
+
+
 
 	~wheelodometry_tests() override = default;
 
@@ -66,7 +70,7 @@ TEST_F(wheelodometry_tests, test_initialisation)
         WheelOdometry odometry(rover, driver_);
         
         // Assert
-        v3 pos = odometry.get_location();
+        v3 pos = odometry.coordinates();
         double orientation = odometry.get_orientation();
                 
         ASSERT_NEAR(pos.x(), 0.0, epsilon);
@@ -86,7 +90,7 @@ TEST_F(wheelodometry_tests, test_update_encoders_displacement)
         odometry.set_encoders(2000.0, 2000.0, 1.0);
         
         // Assert
-        v3 pos = odometry.get_location();
+        v3 pos = odometry.coordinates();
         v3 speed = odometry.get_speed();
         double orientation = odometry.get_orientation();
                 
@@ -111,7 +115,7 @@ TEST_F(wheelodometry_tests, test_update_encoders_orientation_360degrees)
         odometry.set_encoders(1000.0, -1000.0, 1.0);
         
         // Assert
-        v3 pos = odometry.get_location();
+        v3 pos = odometry.coordinates();
         double orientation = odometry.get_orientation();
                 
         ASSERT_NEAR(pos.x(), 0, epsilon);
@@ -131,7 +135,7 @@ TEST_F(wheelodometry_tests, test_update_encoders_orientation_90degrees)
         odometry.set_encoders(-250.0, 250.0, 1.0);
         
         //Assert
-        v3 pos = odometry.get_location();
+        v3 pos = odometry.coordinates();
         double orientation = odometry.get_orientation();
                 
         ASSERT_NEAR(pos.x(), 0, epsilon);
@@ -149,7 +153,7 @@ TEST_F(wheelodometry_tests, test_update_encoders_move_and_turn_90degrees)
         odometry.set_encoders(1000.0 - 250.0, 1000.0 + 250.0, 1.0);
         
         //Assert
-        v3 pos = odometry.get_location();
+        v3 pos = odometry.coordinates();
         double orientation = odometry.get_orientation();
                 
         ASSERT_NEAR(pos.x(), M_PI, epsilon);
@@ -173,7 +177,7 @@ TEST_F(wheelodometry_tests, test_update_encoders_2x90degrees)
                               1.0);
         
         // Assert
-        v3 pos = odometry.get_location();
+        v3 pos = odometry.coordinates();
         double orientation = odometry.get_orientation();
         
         ASSERT_NEAR(pos.x(), wheel_base/2.0, epsilon);
@@ -187,7 +191,7 @@ TEST_F(wheelodometry_tests, test_update_encoders_2x90degrees)
                               2.0);
         
         // Assert
-        pos = odometry.get_location();
+        pos = odometry.coordinates();
         orientation = odometry.get_orientation();
         
         ASSERT_NEAR(pos.x(), wheel_base, epsilon);

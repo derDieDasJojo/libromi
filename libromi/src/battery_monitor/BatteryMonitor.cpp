@@ -38,15 +38,15 @@ namespace romi
         return true;
     }
 
-    bool BatteryMonitor::check_response(const char *command, JsonCpp& response)
+    bool BatteryMonitor::check_response(const char *command, nlohmann::json& response)
     {
-        bool success = (response.num(romiserial::kStatusCode) == 0);
+        bool success = (response[romiserial::kStatusCode] == 0);
         if (!success) {
-            const char *message = "";
-            if (response.length() > 1)
-                message = response.str(romiserial::kErrorMessage);
+            std::string message;
+            if (response.size() > 1)
+                message = response[romiserial::kErrorMessage];
             r_warn("BatteryMonitor: command %s returned error: %s",
-                   command, message);
+                   command, message.c_str());
         }
         return success;
     }
@@ -56,19 +56,18 @@ namespace romi
             using namespace std::chrono_literals;
             while((!application_quit_) && (enabled_))
             {
-                JsonCpp response;
+                nlohmann::json response;
                 std::string command("B");
                 romi_serial_->send(command.c_str(), response);
                 if (check_response(command.c_str(), response))
                 {
                     // Index 0 of the response is the success/ failure of the send function. Loop from 1;
-                    for (size_t data_index = 1; data_index < response.length(); data_index++)
+                    for (size_t data_index = 1; data_index < response.size(); data_index++)
                     {
-                        auto element = response.get(data_index);
-                        if (element.isnumber())
+                        auto element = response[data_index];
+                        if (element.is_number())
                         {
-                            double value = response.num(data_index);
-                            datalog_->store(data_names[data_index-1], value);
+                            datalog_->store(data_names[data_index-1], response[data_index]);
                         }
                     }
                 }

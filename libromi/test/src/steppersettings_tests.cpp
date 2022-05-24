@@ -21,13 +21,13 @@ protected:
 
 TEST_F(steppersettings_tests, test_constructor)
 {
-        JsonCpp json = JsonCpp::parse("{"
-                                      "'steps-per-revolution': [1, 2, 3],"
-                                      "'microsteps': [4, 5, 6],"
-                                      "'gears-ratio': [7, 8, 9 ],"
-                                      "'maximum-rpm': [10, 11, 12],"
-                                      "'displacement-per-revolution': [13, 14, 15],"
-                                      "'maximum-acceleration': [16, 17, 18]"
+        nlohmann::json json = nlohmann::json::parse("{"
+                                      "\"steps-per-revolution\": [1, 2, 3],"
+                                      "\"microsteps\": [4, 5, 6],"
+                                      "\"gears-ratio\": [7, 8, 9 ],"
+                                      "\"maximum-rpm\": [10, 11, 12],"
+                                      "\"displacement-per-revolution\": [13, 14, 15],"
+                                      "\"maximum-acceleration\": [16, 17, 18]"
                                       "}");
         StepperSettings settings(json);
 
@@ -56,92 +56,87 @@ TEST_F(steppersettings_tests, test_constructor)
         ASSERT_EQ(settings.maximum_acceleration[2], 18);
 }
 
-TEST_F(steppersettings_tests, throws_exception_on_missing_values_1)
+TEST_F(steppersettings_tests, throws_exception_on_missing_steps_per_revolution)
 {
-        JsonCpp json = JsonCpp::parse("{"
-                                      "'microsteps': [4, 5, 6],"
-                                      "'gears-ratio': [7, 8, 9 ],"
-                                      "'maximum-rpm': [10, 11, 12],"
-                                      "'displacement-per-revolution': [13, 14, 15],"
-                                      "'maximum-acceleration': [16, 17, 18]"
+        nlohmann::json json = nlohmann::json::parse("{"
+                                      "\"microsteps\": [4, 5, 6],"
+                                      "\"gears-ratio\": [7, 8, 9 ],"
+                                      "\"maximum-rpm\": [10, 11, 12],"
+                                      "\"displacement-per-revolution\": [13, 14, 15],"
+                                      "\"maximum-acceleration\": [16, 17, 18]"
                                       "}");
-        try {
-                StepperSettings settings(json);
-                FAIL() << "Expected a runtime_error";
-        } catch (std::runtime_error& e) { }
+        ASSERT_THROW(StepperSettings settings(json), std::runtime_error);
 }
 
-TEST_F(steppersettings_tests, throws_exception_on_missing_values_2)
+TEST_F(steppersettings_tests, throws_exception_on_missing_micorsteps)
 {
-        JsonCpp json = JsonCpp::parse("{"
-                                      "'steps-per-revolution': [1, 2, 3],"
-                                      "'gears-ratio': [7, 8, 9 ],"
-                                      "'maximum-rpm': [10, 11, 12],"
-                                      "'displacement-per-revolution': [13, 14, 15],"
-                                      "'maximum-acceleration': [16, 17, 18]"
+        nlohmann::json json = nlohmann::json::parse("{"
+                                      "\"steps-per-revolution\": [1, 2, 3],"
+                                      "\"gears-ratio\": [7, 8, 9 ],"
+                                      "\"maximum-rpm\": [10, 11, 12],"
+                                      "\"displacement-per-revolution\": [13, 14, 15],"
+                                      "\"maximum-acceleration\": [16, 17, 18]"
                                       "}");
-        try {
-                StepperSettings settings(json);
-                FAIL() << "Expected a runtime_error";
-        } catch (std::runtime_error& e) { }
+        ASSERT_THROW(StepperSettings settings(json), std::runtime_error);
 }
 
-TEST_F(steppersettings_tests, throws_exception_on_missing_values_3)
+TEST_F(steppersettings_tests, throws_exception_on_missing_gears_ratio)
 {
-        JsonCpp json = JsonCpp::parse("{"
-                                      "'steps-per-revolution': [1, 2, 3],"
-                                      "'microsteps': [4, 5, 6],"
-                                      "'maximum-rpm': [10, 11, 12],"
-                                      "'displacement-per-revolution': [13, 14, 15],"
-                                      "'maximum-acceleration': [16, 17, 18]"
+        nlohmann::json json = nlohmann::json::parse("{"
+                                      "\"steps-per-revolution\": [1, 2, 3],"
+                                      "\"microsteps\": [4, 5, 6],"
+                                      "\"maximum-rpm\": [10, 11, 12],"
+                                      "\"displacement-per-revolution\": [13, 14, 15],"
+                                      "\"maximum-acceleration\": [16, 17, 18]"
                                       "}");
-        try {
-                StepperSettings settings(json);
-                FAIL() << "Expected a runtime_error";
-        } catch (std::runtime_error& e) { }
+        ASSERT_THROW(StepperSettings settings(json), std::runtime_error);
 }
 
-TEST_F(steppersettings_tests, throws_exception_on_missing_values_4)
+TEST_F(steppersettings_tests, throws_exception_on_missing_maximum_rpm)
 {
-        JsonCpp json = JsonCpp::parse("{"
-                                      "'steps-per-revolution': [1, 2, 3],"
-                                      "'microsteps': [4, 5, 6],"
-                                      "'gears-ratio': [7, 8, 9 ],"
-                                      "'displacement-per-revolution': [13, 14, 15],"
-                                      "'maximum-acceleration': [16, 17, 18]"
+        nlohmann::json json = nlohmann::json::parse("{"
+                                      "\"steps-per-revolution\": [1, 2, 3],"
+                                      "\"microsteps\": [4, 5, 6],"
+                                      "\"gears-ratio\": [7, 8, 9 ],"
+                                      "\"displacement-per-revolution\": [13, 14, 15],"
+                                      "\"maximum-acceleration\": [16, 17, 18]"
                                       "}");
-        try {
-                StepperSettings settings(json);
-                FAIL() << "Expected a runtime_error";
-        } catch (std::runtime_error& e) { }
+        ASSERT_THROW(StepperSettings settings(json), std::runtime_error);
 }
 
-TEST_F(steppersettings_tests, throws_exception_on_missing_values_5)
+TEST_F(steppersettings_tests, throws_exception_on_missing_displacement_per_revolution)
 {
-        JsonCpp json = JsonCpp::parse("{"
-                                      "'steps-per-revolution': [1, 2, 3],"
-                                      "'microsteps': [4, 5, 6],"
-                                      "'gears-ratio': [7, 8, 9 ],"
-                                      "'maximum-rpm': [10, 11, 12],"
-                                      "'maximum-acceleration': [16, 17, 18]"
+        nlohmann::json json = nlohmann::json::parse("{"
+                                      "\"steps-per-revolution\": [1, 2, 3],"
+                                      "\"microsteps\": [4, 5, 6],"
+                                      "\"gears-ratio\": [7, 8, 9 ],"
+                                      "\"maximum-rpm\": [10, 11, 12],"
+                                      "\"maximum-acceleration\": [16, 17, 18]"
                                       "}");
-        try {
-                StepperSettings settings(json);
-                FAIL() << "Expected a runtime_error";
-        } catch (std::runtime_error& e) { }
+        ASSERT_THROW(StepperSettings settings(json), std::runtime_error);
 }
 
-TEST_F(steppersettings_tests, throws_exception_on_missing_values_6)
+TEST_F(steppersettings_tests, throws_exception_on_missing_maximum_acceleration)
 {
-        JsonCpp json = JsonCpp::parse("{"
-                                      "'steps-per-revolution': [1, 2, 3],"
-                                      "'microsteps': [4, 5, 6],"
-                                      "'gears-ratio': [7, 8, 9 ],"
-                                      "'maximum-rpm': [10, 11, 12],"
-                                      "'displacement-per-revolution': [13, 14, 15]"
+        nlohmann::json json = nlohmann::json::parse("{"
+                                      "\"steps-per-revolution\": [1, 2, 3],"
+                                      "\"microsteps\": [4, 5, 6],"
+                                      "\"gears-ratio\": [7, 8, 9 ],"
+                                      "\"maximum-rpm\": [10, 11, 12],"
+                                      "\"displacement-per-revolution\": [13, 14, 15]"
                                       "}");
-        try {
-                StepperSettings settings(json);
-                FAIL() << "Expected a runtime_error";
-        } catch (std::runtime_error& e) { }
+    ASSERT_THROW(StepperSettings settings(json), std::runtime_error);
+}
+
+TEST_F(steppersettings_tests, throws_exception_on_2_values_instead_3)
+{
+    nlohmann::json json = nlohmann::json::parse("{"
+                                                "\"steps-per-revolution\": [1, 2],"
+                                                "\"microsteps\": [4, 5, 6],"
+                                                "\"gears-ratio\": [7, 8, 9 ],"
+                                                "\"maximum-rpm\": [10, 11, 12],"
+                                                "\"displacement-per-revolution\": [13, 14, 15],"
+                                                "\"maximum-acceleration\": [16, 17, 18]"
+                                                "}");
+    ASSERT_THROW(StepperSettings settings(json), std::runtime_error);
 }

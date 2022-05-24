@@ -30,46 +30,46 @@ protected:
 
 TEST_F(romiserial_arduino_tests, test_success_of_simple_command)
 {
-        JsonCpp response;
+        nlohmann::json response;
         romiserial.send("a", response);
-        int code = (int) response.num(0);
+        int code = response[0];
         
         ASSERT_EQ(0, code);        
 }
 
 TEST_F(romiserial_arduino_tests, test_failure_bad_number_of_arguments)
 {
-        JsonCpp response;
+        nlohmann::json response;
         romiserial.send("b", response);
-        int code = (int) response.num(0);
+        int code = response[0];
         
         ASSERT_EQ(kBadNumberOfArguments, code);
 }
 
 TEST_F(romiserial_arduino_tests, test_success_two_arguments)
 {
-        JsonCpp response;
+        nlohmann::json response;
         romiserial.send("b[1,2]", response);
-        int code = (int) response.num(0);
+        int code = response[0];
         
         ASSERT_EQ(0, code);
 }
 
 TEST_F(romiserial_arduino_tests, test_success_string_argument)
 {
-        JsonCpp response;
+        nlohmann::json response;
         romiserial.send("c[1,\"Dinner's ready\"]", response);
-        int code = (int) response.num(0);
+        int code = response[0];
         
         ASSERT_EQ(0, code);
 }
 
 TEST_F(romiserial_arduino_tests, test_success_two_arguments_returning_value)
 {
-        JsonCpp response;
+        nlohmann::json response;
         romiserial.send("d[1,1]", response);
-        int code = (int) response.num(0);
-        int result = (int) response.num(1);
+        int code = response[0];
+        int result = response[1];
         
         ASSERT_EQ(0, code);
         ASSERT_EQ(2, result);
@@ -77,12 +77,12 @@ TEST_F(romiserial_arduino_tests, test_success_two_arguments_returning_value)
 
 TEST_F(romiserial_arduino_tests, test_success_string_argument_returning_string)
 {
-        JsonCpp response;
+        nlohmann::json response;
         romiserial.send("e[\"he's resting\"]", response);
-        int code = (int) response.num(0);
-        const char *result = response.str(1);
+        int code = response[0];
+        std::string result = response[1];
         
         ASSERT_EQ(0, code);
-        ASSERT_STREQ("he's resting", result);
+        ASSERT_EQ("he's resting", result);
 }
 

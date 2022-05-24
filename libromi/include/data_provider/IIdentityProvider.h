@@ -2,6 +2,8 @@
 #define ROMI_ROVER_BUILD_AND_TEST_IIDENTITYPROVIDER_H
 
 #include <string>
+#include "json.hpp"
+
 namespace romi {
 
         class IIdentityProvider
@@ -9,7 +11,7 @@ namespace romi {
                 public:
                         IIdentityProvider() = default;
                         virtual ~IIdentityProvider() = default;
-                        virtual std::string identity() = 0;
+                        virtual nlohmann::json identity() = 0;
         };
 
 }

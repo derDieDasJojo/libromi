@@ -25,7 +25,7 @@
 #ifndef _ROMI_FLUID_SOUND_NOTIFICATION_H
 #define _ROMI_FLUID_SOUND_NOTIFICATION_H
 
-#include <JsonCpp.h>
+#include <json.hpp>
 #include <fluidsynth.h>
 #include <map>
 
@@ -52,23 +52,21 @@ namespace romi {
                 int _sfont_id;
                 std::map<std::string, Sound> _sounds;
 
-                static int32_t add_sound(const char* key,
-                                         json_object_t value,
-                                         void *data);
+                int32_t add_sound(const std::string& notification, nlohmann::json& sound);
 
                 void init_settings();
                 void start_synth();
                 void load_sound_font(const char *soundfont);
                 void clean_up();
-                void add_sound(const char *name, int preset, int volume);
-                void add_sounds(JsonCpp& config);
-                void try_add_sounds(JsonCpp& config);
+                void add_sound(const std::string& name, int preset, int volume);
+                void add_sounds(nlohmann::json& config);
+                void try_add_sounds(nlohmann::json& config);
                 Sound& get_sound(const char *name);
 
                 void play(const char *name);
 
         public:
-                FluidSoundNotifications(const std::string& soundfont, JsonCpp& sounds);
+                FluidSoundNotifications(const std::string& soundfont, nlohmann::json& sounds);
                 FluidSoundNotifications(const FluidSoundNotifications&) = delete;
                 FluidSoundNotifications& operator=(const FluidSoundNotifications&) = delete;
                 ~FluidSoundNotifications() override;

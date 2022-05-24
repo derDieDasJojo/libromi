@@ -8,7 +8,7 @@
 using namespace romi;
 using namespace std;
 
-void store_jpeg(rpp::MemBuffer& jpeg, const char *name_prefix, int index)
+void store_jpeg(rcom::MemBuffer& jpeg, const char *name_prefix, int index)
 {
         char filename[512];
         snprintf(filename, sizeof(filename), "%s_%04d.jpg", name_prefix, index);
@@ -27,7 +27,7 @@ void store_jpeg(rpp::MemBuffer& jpeg, const char *name_prefix, int index)
 void grab_series(PiCamera& camera, const char *name_prefix, int number)
 {
         for (int i = 0; i < number; i++) {
-                rpp::MemBuffer& jpeg = camera.grab_jpeg();
+                rcom::MemBuffer& jpeg = camera.grab_jpeg();
                 store_jpeg(jpeg, name_prefix, i);
         }
 }

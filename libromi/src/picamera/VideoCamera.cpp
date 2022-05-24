@@ -50,7 +50,7 @@ namespace romi {
                 return false;
         }
 
-        rpp::MemBuffer& VideoCamera::grab_jpeg()
+        rcom::MemBuffer& VideoCamera::grab_jpeg()
         {
                 encoder_.wait_capture();
                 return encoder_.get_buffer();

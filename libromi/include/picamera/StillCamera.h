@@ -46,7 +46,7 @@ namespace romi {
                 ~StillCamera() override;
                 
                 bool grab(Image &image) override;
-                rpp::MemBuffer& grab_jpeg();
+                rcom::MemBuffer& grab_jpeg();
 
                 // Power device interface
                 bool power_up() override;

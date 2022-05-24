@@ -36,16 +36,16 @@ namespace romi {
         CNCRange::CNCRange(v3 xmin, v3 xmax)
                 : min_(xmin), max_(xmax) {
         }
-        
-        CNCRange::CNCRange(JsonCpp& json) : min_(0.0), max_(0.0) {
+
+        CNCRange::CNCRange(nlohmann::json& json) : min_(0.0), max_(0.0) {
                 init(json);
         }
         
-        void CNCRange::init(JsonCpp& range)
+        void CNCRange::init(nlohmann::json& range)
         {
                 for (size_t i = 0; i < 3; i++) {
-                        min_.set(i, range.array(i).num(0));
-                        max_.set(i, range.array(i).num(1));
+                        min_.set(i, range[i][0]);
+                        max_.set(i, range[i][1]);
                 }
         }
 

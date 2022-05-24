@@ -36,6 +36,7 @@
 #include "RSerial.h"
 #include <stdlib.h>
 #include <time.h>
+#include <iostream>
 
 using namespace std;
 
@@ -76,9 +77,7 @@ namespace romiserial {
         }
 
         RomiSerialClient::~RomiSerialClient()
-        {
-
-        }
+        = default;
 
         std::string RomiSerialClient::substitute_metachars(const std::string &command)
         {
@@ -124,9 +123,9 @@ namespace romiserial {
                 return err;
         }
 
-        JsonCpp RomiSerialClient::try_sending_request(std::string &request)
+        nlohmann::json RomiSerialClient::try_sending_request(std::string &request)
         {
-                JsonCpp response(default_response_);
+                nlohmann::json response(default_response_);
 
                 if (_debug) {
                         r_debug("RomiSerialClient<%s>::try_sending_request: %s", client_name_.c_str(), request.c_str());
@@ -143,7 +142,7 @@ namespace romiserial {
                                  * intercepted by the firmware, in which case
                                  * the kDuplicate error code is
                                  * returned.  */
-                                int code = (int) response.num(0);
+                                int code = (int) response[0];
                         
                                 if (code == kEnvelopeCrcMismatch
                                     || code == kEnvelopeInvalidId
@@ -180,15 +179,15 @@ namespace romiserial {
                 return success;
         }
 
-        JsonCpp RomiSerialClient::make_error(int code)
+        nlohmann::json RomiSerialClient::make_error(int code)
         {
-                const char *message = get_error_message(code);
+                auto message = get_error_message(code);
 
                 if (_debug) {
                         r_debug("RomiSerialClient<%s>::make_error: %d, %s", client_name_.c_str(), code, message);
                 }
 
-                return JsonCpp::construct("[%d,'%s']", code, message);
+                return nlohmann::json::array({code, message});
         }
 
         bool RomiSerialClient::parse_char(int c)
@@ -196,9 +195,9 @@ namespace romiserial {
                 return _parser.process((char) c);
         }
 
-        JsonCpp RomiSerialClient::check_error_response(JsonCpp &data)
+        nlohmann::json RomiSerialClient::check_error_response(nlohmann::json &data)
         {
-                int code = (int) data.num(0);
+                int code = (int) data[0];
         
                 if (_debug) {
                         r_debug("RomiSerialClient<%s>::check_error_response: "
@@ -206,16 +205,15 @@ namespace romiserial {
                                 code, get_error_message(code));
                 }
 
-                if (data.length() == 1) {
-                        const char *message = get_error_message(code);
-                        data.setstr(message, 1);
-                
-                } else if (data.length() == 2) {
-                        if (data.get(1).isstring()) {
+                if (data.size() == 1) {
+                       auto message = get_error_message(code);
+                       data[1] = message;
+                } else if (data.size() == 2) {
+                        if (data[1].is_string()) {
                                 if (_debug) {
                                         r_debug("RomiSerialClient<%s>::check_error_response: "
                                                 "Firmware returned error message: '%s'", client_name_.c_str(),
-                                                data.str(1));
+                                                to_string(data[1]).c_str());
                                 }
                         } else {
                                 r_warn("RomiSerialClient<%s>::check_error_response: "
@@ -234,24 +232,24 @@ namespace romiserial {
                 return data;
         }
 
-        JsonCpp RomiSerialClient::parse_response()
+        nlohmann::json RomiSerialClient::parse_response()
         {
-                JsonCpp data;
+                nlohmann::json data;
         
                 if (_parser.length() > 1) {
                 
-                        data = JsonCpp::parse(_parser.message() + 1);
+                        data = nlohmann::json::parse(_parser.message_content());
 
                         // Check that the data is valid. If not, return an error.
-                        if (data.isarray()
-                            && data.length() > 0
-                            && data.get(0).isnumber()) {
+                        if (data.is_array()
+                            && data.size() > 0
+                            && data[0].is_number()) {
                         
                                 // If the response is an error message, make
                                 // sure it is valid, too: it should be an
                                 // array of length 2, with a string as second
                                 // element.
-                                int code = (int) data.num(0);
+                                int code = data[0];
                                 if (code != 0) 
                                         data  = check_error_response(data);
                         
@@ -312,21 +310,17 @@ namespace romiserial {
                 return has_message;
         }
 
-        JsonCpp RomiSerialClient::make_default_response()
+        nlohmann::json RomiSerialClient::make_default_response()
         {
                 int default_code = kConnectionTimeout;
-                const char *default_message = get_error_message(default_code);
-                json_object_t array = json_array_create();
-                json_array_setnum(array, default_code, 0); 
-                json_array_setstr(array, default_message, 1);
-                JsonCpp response(array);
-                json_unref(array);
-                return response;
+                std::string default_message = get_error_message(default_code);
+                return  nlohmann::json::array({default_code, default_message});;
         }
 
-        JsonCpp RomiSerialClient::read_response()
+        // REFACTOR
+        nlohmann::json RomiSerialClient::read_response()
         {
-                JsonCpp response(default_response_);
+                nlohmann::json response(default_response_);
                 double start_time;
                 bool has_response = false;
 
@@ -363,7 +357,7 @@ namespace romiserial {
                                         if (_parser.id() == _id) {
                                                 has_response = true;
                                         
-                                        } else if (response.num(0) != 0) {
+                                        } else if (response[0] != 0) {
                                                 /* It's OK if the ID in the
                                                  * response is not equal to
                                                  * the ID in the request when
@@ -411,7 +405,7 @@ namespace romiserial {
                 return response;
         }
 
-        void RomiSerialClient::send(const char *command, JsonCpp& response)
+        void RomiSerialClient::send(const char *command, nlohmann::json& response)
         {
                 std::string request;
 

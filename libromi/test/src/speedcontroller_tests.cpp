@@ -43,8 +43,7 @@ protected:
 
 TEST_F(speedcontroller_tests, constructor_successfully_parses_json)
 {
-        try {
-                JsonCpp config = JsonCpp::parse(
+                nlohmann::json config = nlohmann::json::parse(
                         "{"
                         "    \"user-interface\": {"
                         "        \"speed-controller\": {"
@@ -67,67 +66,46 @@ TEST_F(speedcontroller_tests, constructor_successfully_parses_json)
                         "        }"
                         "    }"
                         "}");
-                SpeedController controller(navigation, config);
+            ASSERT_NO_THROW(SpeedController controller(navigation, config));
 
-        } catch (JSONError &e) {
-                FAIL() << "Expected successfull parsing: " << e.what();
-        } catch (...) {
-                FAIL() << "Expected successfull parsing";
-        }
 }
 
-TEST_F(speedcontroller_tests, constructor_throws_error_on_bad_json_1)
+TEST_F(speedcontroller_tests, constructor_throws_error_on_missing_fast_keys)
 {
 
-        try {
-                JsonCpp config = JsonCpp::parse(
+                nlohmann::json config = nlohmann::json::parse(
                         "{"
                         "    \"user-interface\": {"
                         "        \"speed-controller\": {"
                         "        }"
                         "    }"
                         "}");
-                SpeedController controller(navigation, config);
-                FAIL() << "Expected JSONError";
-                
-        } catch (JSONError &e) {
-                        // NOP
-        } catch (...) {
-                FAIL() << "Expected JSONError";
-        }
+                ASSERT_THROW(SpeedController controller(navigation, config), nlohmann::json::exception);
 }
 
-TEST_F(speedcontroller_tests, constructor_throws_error_on_bad_json_2)
+TEST_F(speedcontroller_tests, constructor_throws_error_missing_accurate_key)
 {
 
-        try {
-                JsonCpp config = JsonCpp::parse(
-                        "{"
-                        "    \"user-interface\": {"
-                        "        \"speed-controller\": {"
-                        "            \"fast\": {"
-                        "                \"use-speed-curve\": true,"
-                        "                \"speed-curve-exponent\": 2.0,"
-                        "                \"use-direction-curve\": true,"
-                        "                \"direction-curve-exponent\": 2.0,"
-                        "                \"speed-multiplier\": 1.0,"
-                        "                \"direction-multiplier\": 0.4"
-                        "            },"
-                        "            \"accurate\": {}"
-                        "        }"
-                        "    }"
-                        "}");
-                SpeedController controller(navigation, config);
-                FAIL() << "Expected JSONError";
-                
-        } catch (JSONError &e) {
-                        // NOP
-        } catch (...) {
-                FAIL() << "Expected JSONError";
-        }
+        nlohmann::json config = nlohmann::json::parse(
+                "{"
+                "    \"user-interface\": {"
+                "        \"speed-controller\": {"
+                "            \"fast\": {"
+                "                \"use-speed-curve\": true,"
+                "                \"speed-curve-exponent\": 2.0,"
+                "                \"use-direction-curve\": true,"
+                "                \"direction-curve-exponent\": 2.0,"
+                "                \"speed-multiplier\": 1.0,"
+                "                \"direction-multiplier\": 0.4"
+                "            },"
+                "            \"accurate\": {}"
+                "        }"
+                "    }"
+                "}");
+    ASSERT_THROW(SpeedController controller(navigation, config), nlohmann::json::exception);
 }
 
-TEST_F(speedcontroller_tests, constructor_throws_range_error_on_bad_settings_1)
+TEST_F(speedcontroller_tests, constructor_throws_range_error_on_fast_speed_curve_exponent)
 {
         fast.speed_curve_exponent = 0.0;
 
@@ -142,25 +120,16 @@ TEST_F(speedcontroller_tests, constructor_throws_range_error_on_bad_settings_1)
         }
 }
 
-TEST_F(speedcontroller_tests, constructor_throws_range_error_on_bad_settings_2)
+TEST_F(speedcontroller_tests, constructor_throws_range_error_on_accurate_speed_curve_exponent)
 {
         accurate.speed_curve_exponent = 0.0;
 
-        try {
-                SpeedController controller(navigation, fast, accurate);
-                FAIL() << "Expected std::range_error";
-                
-        } catch (std::range_error const &e) {
-                        // NOP
-        } catch (...) {
-                FAIL() << "Expected std::runtime_error";
-        }
+                ASSERT_THROW(SpeedController controller(navigation, fast, accurate), std::range_error);
 }
 
-TEST_F(speedcontroller_tests, constructor_throws_range_error_on_bad_settings_3)
+TEST_F(speedcontroller_tests, constructor_throws_range_error_on_config_fast_speed_curve_exponent)
 {
-        try {
-                JsonCpp config = JsonCpp::parse(
+                nlohmann::json config = nlohmann::json::parse(
                         "{"
                         "    \"user-interface\": {"
                         "        \"speed-controller\": {"
@@ -183,20 +152,12 @@ TEST_F(speedcontroller_tests, constructor_throws_range_error_on_bad_settings_3)
                         "        }"
                         "    }"
                         "}");
-                SpeedController controller(navigation, config);
-                FAIL() << "Expected std::range_error";
-                
-        } catch (std::range_error const &e) {
-                        // NOP
-        } catch (...) {
-                FAIL() << "Expected std::runtime_error";
-        }
+                ASSERT_THROW(SpeedController controller(navigation, config), std::range_error);
 }
 
-TEST_F(speedcontroller_tests, constructor_throws_range_error_on_bad_settings_4)
+TEST_F(speedcontroller_tests, constructor_throws_range_error_on_config_accurate_speed_multiplier)
 {
-        try {
-                JsonCpp config = JsonCpp::parse(
+                nlohmann::json config = nlohmann::json::parse(
                         "{"
                         "    \"user-interface\": {"
                         "        \"speed-controller\": {"
@@ -219,14 +180,7 @@ TEST_F(speedcontroller_tests, constructor_throws_range_error_on_bad_settings_4)
                         "        }"
                         "    }"
                         "}");
-                SpeedController controller(navigation, config);
-                FAIL() << "Expected std::range_error";
-                
-        } catch (std::range_error const &e) {
-                        // NOP
-        } catch (...) {
-                FAIL() << "Expected std::runtime_error";
-        }
+            ASSERT_THROW(SpeedController controller(navigation, config), std::range_error);
 }
 
 TEST_F(speedcontroller_tests, stop_calls_navigation_stop)

@@ -39,7 +39,7 @@ static const std::string kDriverRightMeasuredSpeedName = "driver-right-measured-
         
         
         BrushMotorDriver::BrushMotorDriver(std::unique_ptr<romiserial::IRomiSerialClient>& serial,
-                                           JsonCpp &config,
+                                           nlohmann::json &config,
                                            double max_angular_speed,
                                            double max_angular_acceleration)
                 : serial_(),
@@ -74,7 +74,7 @@ static const std::string kDriverRightMeasuredSpeedName = "driver-right-measured-
                 return settings_.encoder_steps;
         }
         
-        bool BrushMotorDriver::configure_controller(JsonCpp &config,
+        bool BrushMotorDriver::configure_controller(nlohmann::json &config,
                                                     double max_angular_speed,
                                                     double max_angular_acceleration)
         {
@@ -93,28 +93,28 @@ static const std::string kDriverRightMeasuredSpeedName = "driver-right-measured-
                         settings_.ki_denominator,
                         settings_.max_signal);
                         
-                JsonCpp response;
+                nlohmann::json response;
                 serial_->send(command, response);
                 return check_response(command, response);
         }
         
         bool BrushMotorDriver::check_response(const char *command,
-                                              JsonCpp& response)
+                                              nlohmann::json& response)
         {
-                bool success = (response.num(romiserial::kStatusCode) == 0);
+                bool success = (response[romiserial::kStatusCode] == 0);
                 if (!success) {
-                        const char *message = "No message";
-                        if (response.length() > 1)
-                                message = response.str(romiserial::kErrorMessage);
+                        std::string message = "No message";
+                        if (response.size() > 1)
+                                message = response[romiserial::kErrorMessage];
                         r_warn("BrushMotorDriver: command %s returned error: %s",
-                               command, message);
+                               command, message.c_str());
                 }
                 return success;
         }
 
         bool BrushMotorDriver::enable_controller()
         {
-                JsonCpp response;
+                nlohmann::json response;
                 const char *command = "E[1]";
                 serial_->send(command, response);
                 return check_response(command, response);
@@ -122,7 +122,7 @@ static const std::string kDriverRightMeasuredSpeedName = "driver-right-measured-
 
         bool BrushMotorDriver::disable_controller()
         {
-                JsonCpp response;
+                nlohmann::json response;
                 const char *command = "E[0]";
                 serial_->send(command, response);
                 return check_response(command, response);
@@ -130,7 +130,7 @@ static const std::string kDriverRightMeasuredSpeedName = "driver-right-measured-
 
         bool BrushMotorDriver::stop()
         {
-                JsonCpp response;
+                nlohmann::json response;
                 const char *command = "X";
                 serial_->send(command, response);
                 return check_response(command, response);
@@ -151,7 +151,7 @@ static const std::string kDriverRightMeasuredSpeedName = "driver-right-measured-
                         char command[64];
                         rprintf(command, 64, "V[%d,%d]", ileft, iright);
                                 
-                        JsonCpp response;
+                        nlohmann::json response;
                         serial_->send(command, response);
                         success = check_response(command, response);
                         
@@ -167,14 +167,14 @@ static const std::string kDriverRightMeasuredSpeedName = "driver-right-measured-
                                                   double& right,
                                                   double& timestamp)
         {
-                JsonCpp response;
+                nlohmann::json response;
                 const char *command = "e";
                 serial_->send(command, response);
                 bool success = check_response(command, response);
                 if (success) {
-                        left = response.num(1);
-                        right = response.num(2);
-                        timestamp = response.num(3) / 1000.0;
+                        left = response[1];
+                        right = response[2];
+                        timestamp = response[3].get<double>() / 1000.0;
                 }
                 return success;
         }
@@ -241,19 +241,19 @@ static const std::string kDriverRightMeasuredSpeedName = "driver-right-measured-
                                           double& left_current, double& right_current,
                                           double& left_measured, double& right_measured)
         {
-                JsonCpp response;
+                nlohmann::json response;
                 char command[16];
                 snprintf(command, sizeof(command), "v");
 
                 serial_->send(command, response);
                 bool success = check_response(command, response);
                 if (success) {
-                        left_target = response.num(1) / 1000.0;
-                        right_target = response.num(2) / 1000.0;
-                        left_current = response.num(3) / 1000.0;
-                        right_current = response.num(4) / 1000.0;
-                        left_measured = response.num(5) / 1000.0;
-                        right_measured = response.num(6) / 1000.0;
+                        left_target = response[1].get<double>() / 1000.0;
+                        right_target = response[2].get<double>() / 1000.0;
+                        left_current = response[3].get<double>() / 1000.0;
+                        right_current = response[4].get<double>() / 1000.0;
+                        left_measured = response[5].get<double>() / 1000.0;
+                        right_measured = response[6].get<double>() / 1000.0;
                 }
                 return success;
         }

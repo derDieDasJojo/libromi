@@ -29,8 +29,8 @@ TEST_F(rpcnavigation_tests, test_execute_unknown_command_returns_error)
 {
         NavigationAdaptor adaptor(navigation);
 
-        JsonCpp params;
-        JsonCpp result;
+        nlohmann::json params;
+        nlohmann::json result;
         RPCError error;
 
         adaptor.execute("dummy", params, result, error);
@@ -43,8 +43,8 @@ TEST_F(rpcnavigation_tests, test_move_command_returns_ok)
 {
         NavigationAdaptor adaptor(navigation);
 
-        JsonCpp params = JsonCpp::parse("{'distance':1,'speed':0.1}");
-        JsonCpp result;
+        nlohmann::json params = nlohmann::json::parse("{'distance':1,'speed':0.1}");
+        nlohmann::json result;
         RPCError error;
 
         EXPECT_CALL(navigation, move(1.0, 0.1))
@@ -59,8 +59,8 @@ TEST_F(rpcnavigation_tests, test_move_command_returns_error_on_missing_parameter
 {
         NavigationAdaptor adaptor(navigation);
 
-        JsonCpp params;
-        JsonCpp result;
+        nlohmann::json params;
+        nlohmann::json result;
         RPCError error;
 
         adaptor.execute(MethodsNavigation::move, params, result, error);
@@ -73,8 +73,8 @@ TEST_F(rpcnavigation_tests, test_move_command_returns_error_on_missing_parameter
 {
         NavigationAdaptor adaptor(navigation);
 
-        JsonCpp params = JsonCpp::parse("{'distance':0}");
-        JsonCpp result;
+        nlohmann::json params = nlohmann::json::parse("{'distance':0}");
+        nlohmann::json result;
         RPCError error;
 
         adaptor.execute(MethodsNavigation::move, params, result, error);
@@ -87,8 +87,8 @@ TEST_F(rpcnavigation_tests, test_move_command_returns_error_on_invalid_parameter
 {
         NavigationAdaptor adaptor(navigation);
 
-        JsonCpp params = JsonCpp::parse("{'distance':'foo'}");
-        JsonCpp result;
+        nlohmann::json params = nlohmann::json::parse("{'distance':'foo'}");
+        nlohmann::json result;
         RPCError error;
 
         adaptor.execute(MethodsNavigation::move, params, result, error);
@@ -101,8 +101,8 @@ TEST_F(rpcnavigation_tests, test_move_command_returns_error_on_invalid_parameter
 {
         NavigationAdaptor adaptor(navigation);
 
-        JsonCpp params = JsonCpp::parse("{'distance':10,'speed':'foo'}");
-        JsonCpp result;
+        nlohmann::json params = nlohmann::json::parse("{'distance':10,'speed':'foo'}");
+        nlohmann::json result;
         RPCError error;
 
         adaptor.execute(MethodsNavigation::move, params, result, error);
@@ -115,8 +115,8 @@ TEST_F(rpcnavigation_tests, test_move_returns_error_when_move_fails)
 {
         NavigationAdaptor adaptor(navigation);
 
-        JsonCpp params = JsonCpp::parse("{'distance':1,'speed':0.1}");
-        JsonCpp result;
+        nlohmann::json params = nlohmann::json::parse("{'distance':1,'speed':0.1}");
+        nlohmann::json result;
         RPCError error;
 
         EXPECT_CALL(navigation, move(1.0, 0.1))
@@ -136,8 +136,8 @@ TEST_F(rpcnavigation_tests, test_moveat_returns_ok)
 {
         NavigationAdaptor adaptor(navigation);
 
-        JsonCpp params = JsonCpp::parse("{'speed':[0.1,0.2]}");
-        JsonCpp result;
+        nlohmann::json params = nlohmann::json::parse("{'speed':[0.1,0.2]}");
+        nlohmann::json result;
         RPCError error;
 
         EXPECT_CALL(navigation, moveat(0.1, 0.2))
@@ -152,8 +152,8 @@ TEST_F(rpcnavigation_tests, test_moveat_returns_error_on_missing_parameters_1)
 {
         NavigationAdaptor adaptor(navigation);
 
-        JsonCpp params = JsonCpp::parse("{'command':'moveat'}");
-        JsonCpp result;
+        nlohmann::json params = nlohmann::json::parse("{'command':'moveat'}");
+        nlohmann::json result;
         RPCError error;
 
         adaptor.execute(MethodsNavigation::moveat, params, result, error);
@@ -166,8 +166,8 @@ TEST_F(rpcnavigation_tests, test_moveat_returns_error_on_invalid_parameters_1)
 {
         NavigationAdaptor adaptor(navigation);
 
-        JsonCpp params = JsonCpp::parse("{'speed':'foo'}");
-        JsonCpp result;
+        nlohmann::json params = nlohmann::json::parse("{'speed':'foo'}");
+        nlohmann::json result;
         RPCError error;
 
         adaptor.execute(MethodsNavigation::moveat, params, result, error);
@@ -180,8 +180,8 @@ TEST_F(rpcnavigation_tests, test_moveat_returns_error_on_invalid_parameters_2)
 {
         NavigationAdaptor adaptor(navigation);
 
-        JsonCpp params = JsonCpp::parse("{'speed':['foo','bar']}");
-        JsonCpp result;
+        nlohmann::json params = nlohmann::json::parse("{'speed':['foo','bar']}");
+        nlohmann::json result;
         RPCError error;
 
         adaptor.execute(MethodsNavigation::moveat, params, result, error);
@@ -194,8 +194,8 @@ TEST_F(rpcnavigation_tests, test_moveat_returns_error_on_invalid_parameters_3)
 {
         NavigationAdaptor adaptor(navigation);
 
-        JsonCpp params = JsonCpp::parse("{'speed':[0.1,'bar']}");
-        JsonCpp result;
+        nlohmann::json params = nlohmann::json::parse("{'speed':[0.1,'bar']}");
+        nlohmann::json result;
         RPCError error;
 
         adaptor.execute(MethodsNavigation::moveat, params, result, error);
@@ -208,8 +208,8 @@ TEST_F(rpcnavigation_tests, test_moveat_returns_error_on_invalid_parameters_4)
 {
         NavigationAdaptor adaptor(navigation);
 
-        JsonCpp params = JsonCpp::parse("{'speed':['foo',0.2]}");
-        JsonCpp result;
+        nlohmann::json params = nlohmann::json::parse("{'speed':['foo',0.2]}");
+        nlohmann::json result;
         RPCError error;
 
         adaptor.execute(MethodsNavigation::moveat, params, result, error);
@@ -222,8 +222,8 @@ TEST_F(rpcnavigation_tests, test_moveat_returns_error_when_moveat_fails)
 {
         NavigationAdaptor adaptor(navigation);
 
-        JsonCpp params = JsonCpp::parse("{'speed':[0.1,0.2]}");
-        JsonCpp result;
+        nlohmann::json params = nlohmann::json::parse("{'speed':[0.1,0.2]}");
+        nlohmann::json result;
         RPCError error;
 
         EXPECT_CALL(navigation, moveat(0.1, 0.2))
@@ -241,8 +241,8 @@ TEST_F(rpcnavigation_tests, test_stop_returns_ok)
 {
         NavigationAdaptor adaptor(navigation);
 
-        JsonCpp params;
-        JsonCpp result;
+        nlohmann::json params;
+        nlohmann::json result;
         RPCError error;
 
         EXPECT_CALL(navigation, stop())
@@ -257,8 +257,8 @@ TEST_F(rpcnavigation_tests, test_stop_returns_error_when_stop_fails)
 {
         NavigationAdaptor adaptor(navigation);
 
-        JsonCpp params;
-        JsonCpp result;
+        nlohmann::json params;
+        nlohmann::json result;
         RPCError error;
 
         EXPECT_CALL(navigation, stop())

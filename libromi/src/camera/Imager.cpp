@@ -24,6 +24,7 @@
 
 #include <functional>
 #include <ClockAccessor.h>
+#include <log.h>
 #include "camera/Imager.h"
 
 namespace romi {
@@ -129,7 +130,7 @@ namespace romi {
         bool Imager::grab()
         {
                 bool success = false;
-                rpp::MemBuffer& jpeg = camera_.grab_jpeg();
+                rcom::MemBuffer& jpeg = camera_.grab_jpeg();
                 if (jpeg.size() > 0) {
                         std::string filename = make_image_name();
                         success = session_.store_jpg(filename, jpeg);

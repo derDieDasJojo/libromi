@@ -38,11 +38,11 @@ namespace romi {
                 size_t width_;
                 size_t height_;
 
-                void set_workspace(JsonCpp value);
+                void set_workspace(nlohmann::json value);
                 void assert_workspace_dimensions();
 
         public:
-                ImageCropper(CNCRange& range, JsonCpp& properties);
+                ImageCropper(CNCRange& range, nlohmann::json& properties);
                 ~ImageCropper() override = default;
                 
                 bool crop(ISession &session,

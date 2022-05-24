@@ -21,13 +21,11 @@
   <http://www.gnu.org/licenses/>.
 
  */
-#include <float.h>
 #include <stdexcept>
 #include <algorithm>
-#include <r.h>
+#include <cmath>
 #include "v3.h"
 #include "oquam/SmoothPath.h"
-#include "oquam/print.h"
 
 namespace romi {
 
