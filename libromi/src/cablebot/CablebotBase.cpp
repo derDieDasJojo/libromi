@@ -35,7 +35,7 @@ namespace romi {
         CablebotBase::CablebotBase(std::unique_ptr<romiserial::IRomiSerialClient>& serial)
                 : serial_(std::move(serial)),
                   range_(),
-                  diameter_(0.04),
+                  diameter_(kDiameter),
                   circumference_(0.0)
         {
                 circumference_ = diameter_ * M_PI;
