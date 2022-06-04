@@ -28,6 +28,7 @@
 #include "Arduino.h"
 #include "config.h"
 #include "stepper.h"
+#include "MovingAverage.h"
 
 volatile int32_t left_stepper_position_ = 0;
 volatile int32_t right_stepper_position_ = 0;
@@ -37,9 +38,16 @@ volatile static int16_t right_encoder_target_ = 0;
 volatile static int32_t left_stepper_target_ = 0;
 volatile static int32_t right_stepper_target_ = 0;
 static IArduino *arduino_;
+static MovingAverage left_filter_;
+static MovingAverage right_filter_;
 
 static uint8_t pins_ = 0;
 static uint8_t dir_ = 0;
+volatile int16_t left_encoder_value_ = 0;
+volatile int16_t right_encoder_value_ = 0;
+static uint8_t encoder_update_counter_ = 0;
+
+
 
 void init_stepper_timer();
 void init_reset_step_pins_timer();
@@ -366,10 +374,6 @@ static inline void right_step_down()
         right_stepper_position_--;
 }
 
-/**
- * \brief The interrupt service routine for the stepper timer.
- *
- */
 static inline void move_to_stepper_target()
 {
         if (left_stepper_position_ < left_stepper_target_) {
@@ -385,24 +389,56 @@ static inline void move_to_stepper_target()
         }
 }
 
-static inline void move_to_encoder_target()
+static inline int16_t update_encoder_value(IEncoder& encoder, IFilter& filter)
 {
-        int16_t left = (int16_t) arduino_->left_encoder().get_position();
-        int16_t right = (int16_t) arduino_->right_encoder().get_position();
+        int16_t value = (int16_t) encoder.get_position();
+        return filter.process(value);
+}
 
-        if (left < left_encoder_target_) {
+static inline void do_update_encoder_values()
+{
+        left_encoder_value_ = update_encoder_value(arduino_->left_encoder(),
+                                                   left_filter_);
+        right_encoder_value_ = update_encoder_value(arduino_->right_encoder(),
+                                                    right_filter_);
+}
+
+static inline void update_encoder_values()
+{
+        if (encoder_update_counter_ == 0) {
+                do_update_encoder_values();
+        }
+        encoder_update_counter_++;
+        if (encoder_update_counter_ * PERIOD_STEPPER_MILLIS == ENCODER_PERIOD_MILLIS) {
+                encoder_update_counter_ = 0;
+        }
+}
+
+static inline void step_to_encoder_target()
+{
+        if (left_encoder_value_ < left_encoder_target_ - 1) {
                 left_step_up();
-        } else if (left > left_encoder_target_) {
+        } else if (left_encoder_value_ > left_encoder_target_ + 1) {
                 left_step_down();
         }
 
-        if (right < right_encoder_target_) {
+        if (right_encoder_value_ < right_encoder_target_ - 1) {
                 right_step_up();
-        } else if (right > right_encoder_target_) {
+        } else if (right_encoder_value_ > right_encoder_target_ + 1) {
                 right_step_down();
         }
 }
 
+static inline void move_to_encoder_target()
+{
+        update_encoder_values();
+        step_to_encoder_target();
+}
+
+/**
+ * \brief The interrupt service routine for the stepper timer.
+ *
+ */
 ISR(TIMER1_COMPA_vect)
 {
         pins_ = 0;

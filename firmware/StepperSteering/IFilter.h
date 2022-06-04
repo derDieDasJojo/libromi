@@ -19,14 +19,16 @@
   <http://www.gnu.org/licenses/>.
 
  */
-#include "IncrementalEncoderUno.h"
-        
-void IncrementalEncoderUno::init(uint16_t pulses_per_revolution, int8_t increment)
+#ifndef _STEERING_I_FILTER_H
+ #define _STEERING_I_FILTER_H
+
+#include <stdint.h>
+
+class IFilter
 {
-        IncrementalEncoder::init(pulses_per_revolution, increment);
-        pinMode(pin_a_, INPUT_PULLUP);
-        pinMode(pin_b_, INPUT_PULLUP);
-        attachInterrupt(digitalPinToInterrupt(pin_a_),
-                        callback_,
-                        RISING);
-}
+public:
+        virtual ~IFilter() = default;
+        virtual int16_t process(int16_t) = 0;
+};
+
+#endif // _STEERING_I_FILTER_H

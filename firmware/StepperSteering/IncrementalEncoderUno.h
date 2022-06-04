@@ -30,18 +30,22 @@ typedef void (*EncoderInterruptHandler)();
 class IncrementalEncoderUno : public IncrementalEncoder
 {
 public:
+        uint8_t pin_a_;
         uint8_t pin_b_;
+        EncoderInterruptHandler callback_;
         
-        IncrementalEncoderUno() : IncrementalEncoder(), pin_b_(0) {
+        IncrementalEncoderUno(uint8_t pin_a,
+                              uint8_t pin_b,
+                              EncoderInterruptHandler callback)
+                : IncrementalEncoder(),
+                  pin_a_(pin_a),
+                  pin_b_(pin_b),
+                  callback_(callback) {
         }
         
         ~IncrementalEncoderUno() override = default;
 
-        void init(uint16_t pulses_per_revolution,
-                  int8_t increment, 
-                  uint8_t pin_a,
-                  uint8_t pin_b,
-                  EncoderInterruptHandler callback);
+        void init(uint16_t pulses_per_revolution, int8_t increment);
         
         inline void update() {
                 bool b = digitalRead(pin_b_);

@@ -19,14 +19,22 @@
   <http://www.gnu.org/licenses/>.
 
  */
-#include "IncrementalEncoderUno.h"
-        
-void IncrementalEncoderUno::init(uint16_t pulses_per_revolution, int8_t increment)
+#ifndef _STEERING_MOVINGAVERAGE_H
+ #define _STEERING_MOVINGAVERAGE_H
+
+#include "IFilter.h"
+
+class MovingAverage : public IFilter
 {
-        IncrementalEncoder::init(pulses_per_revolution, increment);
-        pinMode(pin_a_, INPUT_PULLUP);
-        pinMode(pin_b_, INPUT_PULLUP);
-        attachInterrupt(digitalPinToInterrupt(pin_a_),
-                        callback_,
-                        RISING);
-}
+public:
+        const static uint8_t kSize = 10;
+        
+        uint8_t index_;
+        int16_t buffer_[kSize];
+        
+        MovingAverage();
+        ~MovingAverage() override = default;
+        int16_t process(int16_t) override;
+};
+
+#endif // _STEERING_MOVINGAVERAGE_H

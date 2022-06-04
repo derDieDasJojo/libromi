@@ -21,9 +21,26 @@
  */
 #include <Arduino.h>
 #include "ArduinoUno.h"
+#include "IncrementalEncoderUno.h"
+#include "AnalogAbsoluteEncoder.h"
 
-static IncrementalEncoderUno left_encoder_;
-static IncrementalEncoderUno right_encoder_;
+#define USE_INCREMENTAL_ENCODERS 0
+
+static void update_left_encoder();
+static void update_right_encoder();
+
+        
+#if USE_INCREMENTAL_ENCODERS
+static IncrementalEncoderUno left_encoder_(ArduinoUno::kLeftEncoderPinA,
+                                           ArduinoUno::kLeftEncoderPinB,
+                                           update_left_encoder);
+static IncrementalEncoderUno right_encoder_(ArduinoUno::kRightEncoderPinA,
+                                            ArduinoUno::kRightEncoderPinB,
+                                            update_right_encoder);
+#else
+static AnalogAbsoluteEncoder left_encoder_(A2);
+static AnalogAbsoluteEncoder right_encoder_(A3);
+#endif
 
 void setup_pin_change_interrupt(byte pin)
 {
@@ -36,6 +53,7 @@ ArduinoUno::ArduinoUno()
 {
 }
 
+#if USE_INCREMENTAL_ENCODERS
 // Interrupt callback for the left and right encoders
 static void update_left_encoder()
 {
@@ -46,6 +64,7 @@ static void update_right_encoder()
 {
         right_encoder_.update();
 }
+#endif
 
 void ArduinoUno::setup()
 {
@@ -55,19 +74,13 @@ void ArduinoUno::init_encoders(uint16_t encoder_steps,
                                int8_t left_increment,
                                int8_t right_increment)
 {
-        left_encoder_.init(encoder_steps,
-                           left_increment, 
-                           kLeftEncoderPinA,
-                           kLeftEncoderPinB,
-                           update_left_encoder);
-        setup_pin_change_interrupt(A0);
+        left_encoder_.init(encoder_steps, left_increment);
+        right_encoder_.init(encoder_steps, right_increment);
         
-        right_encoder_.init(encoder_steps,
-                            right_increment, 
-                            kRightEncoderPinA,
-                            kRightEncoderPinB,
-                            update_right_encoder);
+#if USE_INCREMENTAL_ENCODERS
+        setup_pin_change_interrupt(A0);
         setup_pin_change_interrupt(A1);
+#endif
 }
 
 IEncoder& ArduinoUno::left_encoder()
@@ -82,12 +95,14 @@ IEncoder& ArduinoUno::right_encoder()
 
 ISR(PCINT1_vect) // handle pin change interrupt for A0 to A5 here
 {
+#if USE_INCREMENTAL_ENCODERS
         if (digitalRead(A0)) {
                 left_encoder_.set_index();
         }
         if (digitalRead(A1)) {
                 right_encoder_.set_index();
         }
+#endif
 }  
 
 

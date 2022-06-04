@@ -19,14 +19,23 @@
   <http://www.gnu.org/licenses/>.
 
  */
-#include "IncrementalEncoderUno.h"
+#include "MovingAverage.h"
         
-void IncrementalEncoderUno::init(uint16_t pulses_per_revolution, int8_t increment)
+MovingAverage::MovingAverage()
+        : index_(0)
 {
-        IncrementalEncoder::init(pulses_per_revolution, increment);
-        pinMode(pin_a_, INPUT_PULLUP);
-        pinMode(pin_b_, INPUT_PULLUP);
-        attachInterrupt(digitalPinToInterrupt(pin_a_),
-                        callback_,
-                        RISING);
+        for (int8_t i = 0; i < kSize; i++)
+                buffer_[i] = 0;
 }
+
+int16_t MovingAverage::process(int16_t value)
+{
+        buffer_[index_] = value;
+        if (++index_ == kSize)
+                index_ = 0;
+        int16_t avg = 0;
+        for (int16_t i = 0; i < kSize; i++)
+                avg += buffer_[i];
+        return avg / kSize;
+}
+
