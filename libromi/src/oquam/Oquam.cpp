@@ -50,6 +50,9 @@ namespace romi {
                                                   settings_.homing_[2])) {
                         throw std::runtime_error("Oquam: configure_homing failed");
                 }
+                if (!spindle(0.0)) {
+                        throw std::runtime_error("Oquam: failed to stop spindle");
+                }
         }
                 
         bool Oquam::get_range(CNCRange &range)
