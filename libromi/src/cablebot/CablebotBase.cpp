@@ -35,7 +35,7 @@ namespace romi {
         CablebotBase::CablebotBase(std::unique_ptr<romiserial::IRomiSerialClient>& serial)
                 : serial_(std::move(serial)),
                   range_(),
-                  diameter_(0.04),
+                  diameter_(kDiameter),
                   circumference_(0.0)
         {
                 circumference_ = diameter_ * M_PI;
@@ -71,16 +71,21 @@ namespace romi {
         
         bool CablebotBase::send_command(const char *command)
         {
+                bool success = false;
                 nlohmann::json response;
+                
                 serial_->send(command, response);
                 
-                bool success = (response[romiserial::kStatusCode] == 0);
-                if (!success) {
-                    std::string message = response[romiserial::kErrorMessage];
-                    r_err("CablebotBase::send_command: %s: %s",
-                          command, message.c_str());
+                if (response.is_array()
+                    && response[0].is_number()) {
+
+                        success = (response[romiserial::kStatusCode] == 0);
+                        if (!success) {
+                                std::string message = response[romiserial::kErrorMessage];
+                                r_err("CablebotBase::send_command: %s: %s",
+                                      command, message.c_str());
+                        }
                 }
-                
                 return success;
         }
         
@@ -157,16 +162,17 @@ namespace romi {
         
         bool CablebotBase::is_on_target()
         {
-            nlohmann::json response;
-            serial_->send("p", response);
+                nlohmann::json response;
+                serial_->send("p", response);
 
-            bool success = (response[0] == 0.0);
-            if (!success) {
-                std::string message = response[1];
-                r_err("CablebotBase::is_on_target: %s", message.c_str());
-                throw std::runtime_error("CablebotBase::is_on_target");
-            }
-            return response[1] != 0.0;
+                bool success = (response[0] == 0.0);
+                if (!success) {
+                        std::string message = response[1];
+                        r_err("CablebotBase::is_on_target: %s", message.c_str());
+                        throw std::runtime_error("CablebotBase::is_on_target");
+                }
+                r_debug("CablebotBase::is_on_target: %f", response[1]);
+                return response[1] != 0.0;
         }
                        
         bool CablebotBase::moveat(int16_t speed_x, int16_t speed_y, int16_t speed_z)

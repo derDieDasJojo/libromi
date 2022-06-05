@@ -251,7 +251,7 @@ ISR(TIMER2_COMPA_vect)
  * \brief The interrupt service routine for the stepper timer.
  *
  */
-static inline do_open_loop_control()
+static inline void do_open_loop_control()
 {
         /* If a reset is requested, set the current block and other
          * state variables to zero and return. */
@@ -421,7 +421,7 @@ static inline do_open_loop_control()
         }
 }
 
-static inline step_to_target()
+static inline void step_to_target()
 {
         uint8_t pins = 0;
         uint8_t dir = 0;
@@ -430,16 +430,20 @@ static inline step_to_target()
 
         if (left < left_target) {
                 toggle_left_step(pins);
+                stepper_position_[0]++;
         } else if (left > left_target) {
                 toggle_left_step(pins);
                 toggle_dir(dir, LEFT_DIRECTION_BIT);
+                stepper_position_[0]--;
         }
 
         if (right < right_target) {
                 toggle_right_step(pins);
+                stepper_position_[1]++;
         } else if (right > right_target) {
                 toggle_right_step(pins);
                 toggle_dir(dir, RIGHT_DIRECTION_BIT);
+                stepper_position_[1]--;
         }
 
         if (pins) {
@@ -449,7 +453,7 @@ static inline step_to_target()
         }
 }
 
-static inline do_closed_loop_control()
+static inline void do_closed_loop_control()
 {
         static uint8_t down_clocking = 0;
         down_clocking++;

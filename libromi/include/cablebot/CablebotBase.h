@@ -36,6 +36,7 @@ namespace romi {
         protected:
 
                 static const constexpr double kPrecision = 36.0;
+                static const constexpr double kDiameter = 0.0575;
                 
                 std::unique_ptr<romiserial::IRomiSerialClient> serial_;
                 CNCRange range_;
