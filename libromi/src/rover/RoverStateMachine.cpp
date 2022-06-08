@@ -94,7 +94,7 @@ namespace romi {
         {
                 r_debug("confirm_navigation_step_1");
                 rover.display.show(0, "Hold to navigate");
-                rover.event_timer.set_timeout(3.0);
+                rover.event_timer.set_timeout(RoverStateMachine::kHoldTimeout);
                 return true;
         }
 
@@ -102,7 +102,7 @@ namespace romi {
         {
                 r_debug("confirm_navigation_step_2");
                 rover.display.show(0, "Navigate? (X)");
-                rover.event_timer.set_timeout(2.0);
+                rover.event_timer.set_timeout(RoverStateMachine::kConfirmTimeout);
                 rover.notifications.notify(RoverNotifications::confirm_navigation_mode);
                 return true;
         }
@@ -115,7 +115,7 @@ namespace romi {
                 rover.navigation.initialise();
                 rover.display.show(0, "Navigating");
                 // set timer to return to main mode
-                rover.event_timer.set_timeout(10.0);
+                rover.event_timer.set_timeout(RoverStateMachine::kNavigationTimeout);
                 return true;
         }
 
@@ -132,7 +132,7 @@ namespace romi {
         bool start_driving_forward(Rover& rover)
         {
                 r_debug("start moving forward");
-                rover.event_timer.set_timeout(10.0); // restart timer
+                rover.event_timer.set_timeout(RoverStateMachine::kNavigationTimeout); // restart timer
                 return true;
         }
 
@@ -144,14 +144,14 @@ namespace romi {
                 if (speed < 0.0)
                         speed = 0.0;
                 rover.speed_controller.drive_at(speed, direction);
-                rover.event_timer.set_timeout(10.0); // restart timer
+                rover.event_timer.set_timeout(RoverStateMachine::kNavigationTimeout); // restart timer
                 return true;
         }
 
         bool start_driving_backward(Rover& rover)
         {
                 r_debug("start moving backward");
-                rover.event_timer.set_timeout(10.0); // restart timer
+                rover.event_timer.set_timeout(RoverStateMachine::kNavigationTimeout); // restart timer
                 return true;
         }
         
@@ -163,7 +163,7 @@ namespace romi {
                 if (speed < 0.0)
                         speed = 0.0;
                 rover.speed_controller.drive_at(-speed, direction);
-                rover.event_timer.set_timeout(10.0); // restart timer
+                rover.event_timer.set_timeout(RoverStateMachine::kNavigationTimeout); // restart timer
                 return true;
         }
 
@@ -171,14 +171,14 @@ namespace romi {
         {
                 r_debug("stop");
                 rover.speed_controller.stop();
-                rover.event_timer.set_timeout(10.0); // restart timer
+                rover.event_timer.set_timeout(RoverStateMachine::kNavigationTimeout); // restart timer
                 return true;
         }
         
         bool start_driving_forward_accurately(Rover& rover)
         {
                 r_debug("start moving forward accurately");
-                rover.event_timer.set_timeout(10.0); // restart timer
+                rover.event_timer.set_timeout(RoverStateMachine::kNavigationTimeout); // restart timer
                 return true;
         }
         
@@ -190,14 +190,14 @@ namespace romi {
                 if (speed < 0.0)
                         speed = 0.0;
                 rover.speed_controller.drive_accurately_at(speed, direction);
-                rover.event_timer.set_timeout(10.0); // restart timer
+                rover.event_timer.set_timeout(RoverStateMachine::kNavigationTimeout); // restart timer
                 return true;
         }
 
         bool start_driving_backward_accurately(Rover& rover)
         {
                 r_debug("start moving backward accurately");
-                rover.event_timer.set_timeout(10.0); // restart timer
+                rover.event_timer.set_timeout(RoverStateMachine::kNavigationTimeout); // restart timer
                 return true;
         }
         
@@ -209,14 +209,14 @@ namespace romi {
                 if (speed < 0.0)
                         speed = 0.0;
                 rover.speed_controller.drive_accurately_at(-speed, direction);
-                rover.event_timer.set_timeout(10.0); // restart timer
+                rover.event_timer.set_timeout(RoverStateMachine::kNavigationTimeout); // restart timer
                 return true;
         }
         
         bool start_spinning(Rover& rover)
         {
                 r_debug("start spinning");
-                rover.event_timer.set_timeout(10.0); // restart timer
+                rover.event_timer.set_timeout(RoverStateMachine::kNavigationTimeout); // restart timer
                 return true;
         }
         
@@ -224,7 +224,7 @@ namespace romi {
         {
                 r_debug("spinning");
                 rover.speed_controller.spin(rover.input_device.get_direction());
-                rover.event_timer.set_timeout(10.0); // restart timer
+                rover.event_timer.set_timeout(RoverStateMachine::kNavigationTimeout); // restart timer
                 return true;
         }
 
@@ -233,7 +233,7 @@ namespace romi {
         {
                 r_debug("confirm_menu_step_1");
                 rover.display.show(0, "Hold for menu");
-                rover.event_timer.set_timeout(3.0);
+                rover.event_timer.set_timeout(RoverStateMachine::kHoldTimeout);
                 return true;
         }
 
@@ -241,7 +241,7 @@ namespace romi {
         {
                 r_debug("confirm_menu_step_2");
                 rover.display.show(0, "Menu? (X)");
-                rover.event_timer.set_timeout(2.0);
+                rover.event_timer.set_timeout(RoverStateMachine::kConfirmTimeout);
                 rover.notifications.notify(RoverNotifications::confirm_menu_mode);
                 return true;
         }
@@ -254,7 +254,7 @@ namespace romi {
                 rover.display.show(0, name.c_str());
                 rover.display.clear(1);
                 // set timer to return to main mode
-                rover.event_timer.set_timeout(10.0);  
+                rover.event_timer.set_timeout(RoverStateMachine::kReturnToMainTimeout);  
                 return true;
         }
 
@@ -264,7 +264,7 @@ namespace romi {
                 std::string name;
                 rover.menu.next_menu_item(name);
                 rover.display.show(0, name.c_str());
-                rover.event_timer.set_timeout(10.0);  // restart timer
+                rover.event_timer.set_timeout(RoverStateMachine::kReturnToMainTimeout);  // restart timer
                 rover.notifications.notify(RoverNotifications::change_menu);
                 return true;
         }
@@ -275,7 +275,7 @@ namespace romi {
                 std::string name;
                 rover.menu.previous_menu_item(name);
                 rover.display.show(0, name.c_str());
-                rover.event_timer.set_timeout(10.0); // restart timer
+                rover.event_timer.set_timeout(RoverStateMachine::kReturnToMainTimeout); // restart timer
                 rover.notifications.notify(RoverNotifications::change_menu);
                 return true;
         }
@@ -287,7 +287,7 @@ namespace romi {
                 rover.menu.get_current_menu(name);
                 rover.display.show(0, name.c_str());
                 rover.display.clear(1);
-                rover.event_timer.set_timeout(10.0); // restart timer
+                rover.event_timer.set_timeout(RoverStateMachine::kReturnToMainTimeout); // restart timer
                 return true;
         }
 
@@ -295,7 +295,7 @@ namespace romi {
         {
                 r_debug("select_menu");
                 rover.display.show(1, "X to confirm");
-                rover.event_timer.set_timeout(1.0);
+                rover.event_timer.set_timeout(RoverStateMachine::kConfirmTimeout);
                 return true;
         }
 

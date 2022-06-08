@@ -31,6 +31,13 @@ namespace romi {
 
         class RoverStateMachine : public StateMachine<Rover>
         {
+        public:
+
+                static const constexpr float kNavigationTimeout = 60.0f;
+                static const constexpr float kHoldTimeout = 1.0f;
+                static const constexpr float kConfirmTimeout = 10.0f;
+                static const constexpr float kReturnToMainTimeout = 10.0f;
+                
         protected:
 
                 void init_state_transitions();
