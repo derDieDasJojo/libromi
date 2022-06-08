@@ -74,6 +74,8 @@ protected:
                                       Return(true)));
         EXPECT_CALL(controller, configure_homing(_,_,_))
                 .WillRepeatedly(Return(true));
+        EXPECT_CALL(controller, spindle(0))
+                .WillOnce(Return(true));
         EXPECT_CALL(controller, enable())
                 .WillRepeatedly(Return(true));
         EXPECT_CALL(controller, synchronize(_))
@@ -118,6 +120,8 @@ TEST_F(oquam_tests, constructor_calls_configure_homing)
 {
         EXPECT_CALL(controller, configure_homing(_,_,_))
                 .Times(1)
+                .WillOnce(Return(true));
+        EXPECT_CALL(controller, spindle(0))
                 .WillOnce(Return(true));
 
         romi::Session session(linux, session_directory, romiDeviceData, softwareVersion, std::move(locationPrivider));
@@ -232,6 +236,8 @@ TEST_F(oquam_tests, constructor_copies_range)
         EXPECT_CALL(controller, configure_homing(_,_,_))
                 .Times(1)
                 .WillOnce(Return(true));
+        EXPECT_CALL(controller, spindle(0))
+                .WillOnce(Return(true));
 
         romi::Session session(linux, session_directory, romiDeviceData, softwareVersion, std::move(locationPrivider));
         session.start(observation_id);
@@ -280,6 +286,8 @@ TEST_F(oquam_tests, returns_false_when_get_position_fails)
         EXPECT_CALL(controller, configure_homing(_,_,_))
                 .Times(1)
                 .WillOnce(Return(true));
+        EXPECT_CALL(controller, spindle(0))
+                .WillOnce(Return(true));
         EXPECT_CALL(controller, get_position(_))
                 .Times(1)
                 .WillOnce(Return(false));
@@ -295,6 +303,8 @@ TEST_F(oquam_tests, returns_false_when_moveto_fails)
 {
         EXPECT_CALL(controller, configure_homing(_,_,_))
                 .Times(1)
+                .WillOnce(Return(true));
+        EXPECT_CALL(controller, spindle(0))
                 .WillOnce(Return(true));
         EXPECT_CALL(controller, get_position(_))
                 .WillRepeatedly(Invoke(this, &oquam_tests::get_position));
@@ -313,6 +323,8 @@ TEST_F(oquam_tests, returns_false_when_synchronize_fails)
 {
         EXPECT_CALL(controller, configure_homing(_,_,_))
                 .Times(1)
+                .WillOnce(Return(true));
+        EXPECT_CALL(controller, spindle(0))
                 .WillOnce(Return(true));
         EXPECT_CALL(controller, get_position(_))
                 .WillRepeatedly(Invoke(this, &oquam_tests::get_position));
@@ -336,6 +348,8 @@ TEST_F(oquam_tests, test_oquam_moveto)
         EXPECT_CALL(controller, configure_homing(_,_,_))
                 .Times(1)
                 .WillOnce(Return(true));
+        EXPECT_CALL(controller, spindle(0))
+                .WillOnce(Return(true));
         EXPECT_CALL(controller, get_position(_))
                 .WillRepeatedly(Invoke(this, &oquam_tests::get_position));
         EXPECT_CALL(controller, move(_,_,_,_))
@@ -358,6 +372,8 @@ TEST_F(oquam_tests, test_oquam_moveto_2)
 
         EXPECT_CALL(controller, configure_homing(_,_,_))
                 .Times(1)
+                .WillOnce(Return(true));
+        EXPECT_CALL(controller, spindle(0))
                 .WillOnce(Return(true));
         for (int i = 0; i < 2; i++) {
                 EXPECT_CALL(controller, get_position(_))
@@ -715,7 +731,7 @@ TEST_F(oquam_tests, power_up_calls_homing_after_spindle)
     EXPECT_CALL(controller, homing())
             .Times(2)
             .WillRepeatedly(Return(true));
-    EXPECT_CALL(controller, spindle(_))
+    EXPECT_CALL(controller, spindle(1.0))
             .WillOnce(Return(true));
 
     romi::Session session(linux, session_directory, romiDeviceData,

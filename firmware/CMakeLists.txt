@@ -38,12 +38,12 @@ if (${BUILD_ARDUINO})
             install_romiserial_lib
             )
 
-    add_custom_target(Steering ALL
-            COMMAND "${ARDUINOCLI_EXE}" "compile" "--clean" "--export-binaries" "--fqbn" "arduino:avr:uno" "${CMAKE_CURRENT_SOURCE_DIR}/Steering"
+    add_custom_target(StepperSteering ALL
+            COMMAND "${ARDUINOCLI_EXE}" "compile" "--clean" "--export-binaries" "--fqbn" "arduino:avr:uno" "${CMAKE_CURRENT_SOURCE_DIR}/StepperSteering"
             COMMENT
             "Building Arduino Steering"
             WORKING_DIRECTORY
-            ${CMAKE_CURRENT_SOURCE_DIR}/Steering
+            ${CMAKE_CURRENT_SOURCE_DIR}/StepperSteering
             DEPENDS
             install_romiserial_lib
             )

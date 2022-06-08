@@ -26,7 +26,8 @@ protected:
 
 	~oquam_helix_tests() override = default;
         
-	void SetUp() override {}
+	void SetUp() override {
+        }
 
 	void TearDown() override {}
 
@@ -563,8 +564,11 @@ TEST_F(oquam_helix_tests, test_helix_full_circle)
         MockCNCController controller;
         MockSession session;
 
+
         EXPECT_CALL(controller, configure_homing(_,_,_))
                 .WillRepeatedly(Return(true));
+        EXPECT_CALL(controller, spindle(0))
+                .WillOnce(Return(true));
         EXPECT_CALL(controller, get_position(_))
                 .WillRepeatedly(Invoke(this, &oquam_helix_tests::get_position));
         EXPECT_CALL(controller, moveto(_,_,_,_))
