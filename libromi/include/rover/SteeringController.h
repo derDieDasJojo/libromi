@@ -54,12 +54,8 @@ namespace romi {
                 bool get_position(int32_t *pos) override;
                 bool homing() override;
                 
-                bool move(int16_t millis, int16_t steps_left, int16_t steps_right) override;
-                bool moveat(int16_t speed_left, int16_t speed_right_z) override;
-                bool moveto(int16_t millis, int16_t pos_left, int16_t pos_right) override;
-                
                 bool set_target(int16_t left, int16_t right) override;
-                bool set_mode(int16_t mode) override;
+                bool set_mode(SteeringMode mode) override;
                 
                 bool synchronize(double timeout) override;
 
