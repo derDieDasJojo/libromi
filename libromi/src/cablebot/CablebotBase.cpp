@@ -71,16 +71,21 @@ namespace romi {
         
         bool CablebotBase::send_command(const char *command)
         {
+                bool success = false;
                 nlohmann::json response;
+                
                 serial_->send(command, response);
                 
-                bool success = (response[romiserial::kStatusCode] == 0);
-                if (!success) {
-                    std::string message = response[romiserial::kErrorMessage];
-                    r_err("CablebotBase::send_command: %s: %s",
-                          command, message.c_str());
+                if (response.is_array()
+                    && response[0].is_number()) {
+
+                        success = (response[romiserial::kStatusCode] == 0);
+                        if (!success) {
+                                std::string message = response[romiserial::kErrorMessage];
+                                r_err("CablebotBase::send_command: %s: %s",
+                                      command, message.c_str());
+                        }
                 }
-                
                 return success;
         }
         
@@ -157,16 +162,23 @@ namespace romi {
         
         bool CablebotBase::is_on_target()
         {
-            nlohmann::json response;
-            serial_->send("p", response);
+                nlohmann::json response;
+                serial_->send("S", response);
 
-            bool success = (response[0] == 0.0);
-            if (!success) {
-                std::string message = response[1];
-                r_err("CablebotBase::is_on_target: %s", message.c_str());
-                throw std::runtime_error("CablebotBase::is_on_target");
-            }
-            return response[1] != 0.0;
+                bool success = (response[0] == 0.0);
+                if (!success) {
+                        std::string message = response[1];
+                        r_err("CablebotBase::is_on_target: %s", message.c_str());
+                        throw std::runtime_error("CablebotBase::is_on_target");
+                }
+                int error = (int) response[1];
+                bool on_target = (bool) (response[2] != 0.0);
+                double distance = response[3];
+                double voltage = response[4];
+                double current = response[6];
+                r_debug("CablebotBase::is_on_target: %s, distance: %f, error: %d, voltage: %0.3f, current: %0.3f",
+                        on_target? "yes" : "no", distance, error, voltage, current);
+                return on_target;
         }
                        
         bool CablebotBase::moveat(int16_t speed_x, int16_t speed_y, int16_t speed_z)
