@@ -45,7 +45,11 @@ uint8_t controller_state;
 //static int32_t stepper_steps_per_revolution = 245650;
 //static int32_t stepper_steps_per_revolution = 61412;
 static int32_t stepper_steps_per_revolution = 57000;
-static int32_t encoder_steps_per_revolution = 1024;
+
+static int32_t encoder_steps_per_revolution = (int32_t) 1024;
+
+extern volatile int16_t left_encoder_value_;
+extern volatile int16_t right_encoder_value_;
 
 
 static const char *kInvalidState = "Invalid state";
@@ -59,6 +63,7 @@ void handle_enable(IRomiSerial *romiSerial, int16_t *args, const char *string_ar
 void handle_print(IRomiSerial *romiSerial, int16_t *args, const char *string_arg);
 void change_mode(IRomiSerial *romiSerial, int16_t *args, const char *string_arg);
 void send_info(IRomiSerial *romiSerial, int16_t *args, const char *string_arg);
+void send_idle(IRomiSerial *romiSerial, int16_t *args, const char *string_arg);
 
 const static MessageHandler handlers[] = {
         { 'm', 2, false, handle_moveto },
@@ -69,6 +74,7 @@ const static MessageHandler handlers[] = {
         { 'E', 1, false, handle_enable },
         { 'D', 1, false, handle_print },
         { 'C', 1, false, change_mode },
+        { 'I', 0, false, send_idle },
         { '?', 0, false, send_info },
 };
 
@@ -99,7 +105,7 @@ void setup()
                 ;
         
         arduino_.setup();
-        arduino_.init_encoders(encoder_steps_per_revolution, 1, -1);
+        arduino_.init_encoders(1024, 1, 1); // TODO TODO
 
         // init_block_buffer();
         init_pins();
@@ -112,17 +118,17 @@ void setup()
 static unsigned long last_time = 0;
 static unsigned long last_print_time = 0;
 static int16_t id = 0;
-static bool print_ = true;
+static bool print_ = false;
 
 void loop()
 {
         romiSerial.handle_input();
 
-        if (check_zero_index(0, arduino_.left_encoder()))
-                romiSerial.log("LEFT=0");
+        // if (check_zero_index(0, arduino_.left_encoder()))
+        //         romiSerial.log("LEFT=0");
 
-        if (check_zero_index(1, arduino_.right_encoder()))
-                romiSerial.log("RIGHT=0");
+        // if (check_zero_index(1, arduino_.right_encoder()))
+        //         romiSerial.log("RIGHT=0");
 
         delay(1);
 
@@ -151,19 +157,17 @@ void print_status()
         get_stepper_target(left_stepper_target, right_stepper_target);
         
         snprintf(reply_string, sizeof(reply_string),
-                 "[%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld]",
+                 "[enc(%ld,%ld),fltr(%ld,%ld),step(%ld,%ld),Te(%ld,%ld),Ts(%ld,%ld)]",
                  (int32_t) arduino_.left_encoder().get_position(),
                  (int32_t) arduino_.right_encoder().get_position(),
+                 (int32_t) left_encoder_value_,
+                 (int32_t) right_encoder_value_,
                  (int32_t) get_stepper_left(),
                  (int32_t) get_stepper_right(),
                  (int32_t) left_encoder_target,
                  (int32_t) right_encoder_target,
                  (int32_t) left_stepper_target,
-                 (int32_t) right_stepper_target,
-                 (int32_t) arduino_.left_encoder().get_increment_count(),
-                 (int32_t) arduino_.left_encoder().get_decrement_count(),
-                 (int32_t) arduino_.right_encoder().get_increment_count(),
-                 (int32_t) arduino_.right_encoder().get_decrement_count());
+                 (int32_t) right_stepper_target);
         romiSerial.log(reply_string);
 }
 
@@ -234,9 +238,12 @@ void send_position(IRomiSerial *romiSerial, int16_t *args, const char *string_ar
         int32_t right_encoder = arduino_.right_encoder().get_position();
         
         snprintf(reply_string, sizeof(reply_string),
-                 "[0,%ld,%ld,%ld,%ld]",
+                 "[0,%ld,%ld,%ld,%ld,%ld,%ld,%ld,%ld]",
                  get_stepper_left(), get_stepper_right(),
-                 left_encoder, right_encoder);
+                 left_encoder, right_encoder,
+                 left_encoder_value_, right_encoder_value_,
+                 (3600 * left_encoder) / encoder_steps_per_revolution,
+                 (3600 * right_encoder) / encoder_steps_per_revolution);
         
         romiSerial->send(reply_string); 
 }
@@ -370,5 +377,17 @@ void change_mode(IRomiSerial *romiSerial, int16_t *args, const char *string_arg)
 
 void send_info(IRomiSerial *romiSerial, int16_t *args, const char *string_arg)
 {
-        romiSerial->send("[0,\"SteeringClosedLoop\",\"0.1\",\"" __DATE__ " " __TIME__ "\"]"); 
+        romiSerial->send("[0,\"StepperSteering\",\"0.1\",\"" __DATE__ " " __TIME__ "\"]"); 
+}
+
+static inline bool is_idle()
+{
+        return controller_state == STATE_RUNNING; // Duh
+}
+
+void send_idle(IRomiSerial *romiSerial, int16_t *args, const char *string_arg)
+{
+        snprintf(reply_string, sizeof(reply_string), "[0,%d,\"%c\"]",
+                 is_idle(), controller_state);
+        romiSerial->send(reply_string); 
 }

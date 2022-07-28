@@ -104,6 +104,7 @@ set(SOURCES
 
         include/cablebot/CablebotBase.h
         
+        #include/camera/Camera360.h
         include/camera/FileCamera.h
         include/camera/USBCamera.h
         include/camera/Imager.h
@@ -249,6 +250,7 @@ set(SOURCES
         src/cv/Superpixels.cpp
         src/cv/slic.cpp
         
+        #src/camera/Camera360.cpp
         src/camera/FileCamera.cpp
         src/camera/USBCamera.cpp
         src/camera/camera_v4l.h

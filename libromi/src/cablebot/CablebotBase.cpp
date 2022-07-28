@@ -171,6 +171,7 @@ namespace romi {
                         r_err("CablebotBase::is_on_target: %s", message.c_str());
                         throw std::runtime_error("CablebotBase::is_on_target");
                 }
+
                 int error = (int) response[1];
                 bool on_target = (bool) (response[2] != 0.0);
                 double distance = response[3];

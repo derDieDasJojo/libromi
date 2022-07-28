@@ -32,30 +32,26 @@ namespace romi {
         {
         public:
                 enum { RUNNING, HOMING, ERROR };
+                enum SteeringMode { kOpenLoop, kClosedLoop };
                         
                 ~ISteeringController() override = default;
 
                 virtual bool get_position(int32_t *pos) = 0;
 
-                /** The homing operation sets the ICNC in the home
-                 * position AND resets the origin to the location
-                 * after the homing operation. */
+                /** The homing operation sets the wheels in the
+                 * straight position using the index signal of the
+                 * encoders. It also resets the origin to that
+                 * position, and sets the target angles to zero as
+                 * well. */
                 virtual bool homing() = 0;
                 virtual bool synchronize(double timeout) = 0;
-                
-                /* Move a given amount relative to the current position */
-                virtual bool move(int16_t millis,
-                                  int16_t steps_left,
-                                  int16_t steps_right) = 0;
-                /* Move to an absolute position */
-                virtual bool moveto(int16_t millis,
-                                    int16_t position_left,
-                                    int16_t position_right) = 0;
-                /* Move at a give speed */
-                virtual bool moveat(int16_t speed_left, int16_t speed_right) = 0;
 
+                virtual bool set_mode(SteeringMode mode) = 0;
+                
+                /** The angles are given in 10th of a degree. For
+                 * example, for an angle of -5°, the value should be
+                 * -50. */
                 virtual bool set_target(int16_t left, int16_t right) = 0;
-                virtual bool set_mode(int16_t mode) = 0;
                 
                 virtual bool enable() = 0;
                 virtual bool disable() = 0;

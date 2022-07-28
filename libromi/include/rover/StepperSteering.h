@@ -54,13 +54,7 @@ namespace romi {
                 std::atomic<bool> quitting_;
                 
                 bool set_target(double target_left, double target_right);
-                void run_target_updates();
-                bool angles_need_updating();
-                bool update_angles(double t);
-                bool do_update_angles(double t);
-                bool do_turn_wheel(double target_left, double target_right);
-                bool moveto(int16_t steps_left, int16_t steps_right);
-                int16_t angle_to_steps(double angle);
+                int16_t radians_to_10th_of_degrees(double angle);
                 bool homing();
 
         public:

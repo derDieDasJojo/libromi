@@ -23,7 +23,6 @@
 #define _STEERING_ARDUINO_UNO_H
 
 #include "IArduino.h"
-#include "IncrementalEncoderUno.h"
 
 class ArduinoUno : public IArduino
 {

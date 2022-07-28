@@ -37,6 +37,10 @@ namespace romi {
                   _activity_helper()
         {
                 _romi_serial = std::move(romi_serial);
+                if (!set_mode(ISteeringController::kClosedLoop)) {
+                        r_err("SteeringController: set_mode failed");
+                        throw std::runtime_error("SteeringController: set_mode failed");
+                }
         }
 
         int SteeringController::send_command(const char *command)
@@ -92,39 +96,21 @@ namespace romi {
                 r_info("SteeringController: homing");
                 return (send_command("H") == 0 && synchronize(120.0));
         }
-        
-        bool SteeringController::move(int16_t dt, int16_t steps_left, int16_t steps_right)
-        {
-                char buffer[64];
-                rprintf(buffer, 64, "M[%d,%d,%d]", dt, steps_left, steps_right);
-                return (send_command(buffer) == 0);
-        }
-
-        bool SteeringController::moveat(int16_t speed_left, int16_t speed_right)
-        {
-                char buffer[64];
-                rprintf(buffer, 64, "V[%hd,%hd]", speed_left, speed_right);
-                return (send_command(buffer) == 0);
-        }
-        
-        bool SteeringController::moveto(int16_t dt, int16_t pos_left, int16_t pos_right)
-        {
-                char buffer[64];
-                rprintf(buffer, 64, "m[%d,%d,%d]", dt, pos_left, pos_right);
-                return (send_command(buffer) == 0);                
-        }
 
         bool SteeringController::set_target(int16_t left, int16_t right)
         {
                 char buffer[64];
-                rprintf(buffer, 64, "T[%d,%d]", left, right);
+                rprintf(buffer, 64, "m[%d,%d]", left, right);
                 return (send_command(buffer) == 0);                
         }
 
-        bool SteeringController::set_mode(int16_t mode)
+        bool SteeringController::set_mode(SteeringMode mode)
         {
                 char buffer[64];
-                rprintf(buffer, 64, "C[%d]", mode);
+                if (mode == ISteeringController::kOpenLoop)
+                        rprintf(buffer, 64, "C[0]", mode);
+                else
+                        rprintf(buffer, 64, "C[1]", mode);
                 return (send_command(buffer) == 0);                
         }
 
