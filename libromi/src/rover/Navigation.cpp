@@ -23,7 +23,7 @@
  */
 
 #include <algorithm>
-#include <log.h>
+#include <Logger.h>
 #include <ClockAccessor.h>
 #include "rover/WheelOdometry.h"
 #include "rover/Navigation.h"

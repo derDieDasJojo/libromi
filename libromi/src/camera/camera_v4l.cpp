@@ -93,8 +93,8 @@
 #include <asm/types.h>
 #include <linux/videodev2.h>
 #include <malloc.h>
-#include <r.h>
 #include "camera_v4l.h"
+#include "Logger.h"
 
 
 #define CLEAR(x) memset (&(x), 0, sizeof (x))
@@ -146,9 +146,9 @@ static int xioctl(int fd, unsigned long request, void* argp);
 camera_t* new_camera(const char* dev, size_t width, size_t height)
 {
         camera_t *camera = (camera_t*) malloc(sizeof(camera_t));
-        if (camera == NULL) {
+        if (camera == nullptr) {
                 r_err("Camera: Out of memory");
-                return NULL;
+                return nullptr;
         }
         memset(camera, 0, sizeof(camera_t));
         
@@ -157,16 +157,16 @@ camera_t* new_camera(const char* dev, size_t width, size_t height)
         camera->width = width;
         camera->height = height;
         camera->frame_rate = 1;
-        camera->buffers = NULL;
+        camera->buffers = nullptr;
         camera->n_buffers = 0;
-        camera->rgb_buffer = NULL;
+        camera->rgb_buffer = nullptr;
         camera->rgb_buffer_size = 0;
         camera->state = CAMERA_CLEAN;
 
         if (camera_prepare(camera) != 0) {
                 r_err("Camera: Failed to prepare the camera");
                 delete_camera(camera);
-                return NULL;
+                return nullptr;
         }
         
         return camera;
@@ -234,7 +234,7 @@ int camera_capture(camera_t *camera)
                 tv.tv_sec = 2;
                 tv.tv_usec = 0;
 
-                r = select(camera->fd + 1, &fds, NULL, NULL, &tv);
+                r = select(camera->fd + 1, &fds, nullptr, nullptr, &tv);
 
                 if (-1 == r) {
                         if (EINTR == errno)
@@ -381,20 +381,20 @@ static int camera_convert(camera_t *camera, void* src)
         size_t size = camera->width * camera->height * 3;
         
         if ((camera->rgb_buffer_size != size) 
-            && (camera->rgb_buffer != NULL)) {
+            && (camera->rgb_buffer != nullptr)) {
                 free(camera->rgb_buffer);
-                camera->rgb_buffer = NULL;
+                camera->rgb_buffer = nullptr;
         }
-        if (camera->rgb_buffer == NULL) {
-                camera->rgb_buffer = malloc(size);
-                if (camera->rgb_buffer == NULL) {
+        if (camera->rgb_buffer == nullptr) {
+                camera->rgb_buffer = (uint8_t *)malloc(size);
+                if (camera->rgb_buffer == nullptr) {
                         r_err("Camera: Out of memory");
                         return -1;
                 }
                 camera->rgb_buffer_size = size;
         }
 
-        convert_yuv422_to_rgb888(camera->width, camera->height, src, camera->rgb_buffer);
+        convert_yuv422_to_rgb888(camera->width, camera->height, (uint8_t *)src, camera->rgb_buffer);
         
         return 0;
 }
@@ -493,7 +493,7 @@ static int camera_cleanup(camera_t *camera)
 {
         unsigned int i;
 
-        if (camera == NULL)
+        if (camera == nullptr)
                 return 0;
 
         for (i = 0; i < camera->n_buffers; ++i)
@@ -505,10 +505,10 @@ static int camera_cleanup(camera_t *camera)
         if (camera->buffers)
                 free(camera->buffers);
 
-        if (camera->device_name != NULL)
+        if (camera->device_name != nullptr)
                 free(camera->device_name);
 
-        if (camera->rgb_buffer != NULL) 
+        if (camera->rgb_buffer != nullptr) 
                 free(camera->rgb_buffer);
 
         return 0;
@@ -542,7 +542,7 @@ static int camera_mmapinit(camera_t *camera)
                 return -1;
         }
 
-        camera->buffers = calloc(req.count, sizeof(buffer_t));
+        camera->buffers = (buffer_t*)calloc(req.count, sizeof(buffer_t));
         if (!camera->buffers) {
                 r_err("Camera: Out of memory");
                 return -1;
@@ -563,7 +563,7 @@ static int camera_mmapinit(camera_t *camera)
                         return -1;
                 }
                 camera->buffers[camera->n_buffers].length = buf.length;
-                camera->buffers[camera->n_buffers].start = mmap(NULL /* start anywhere */, 
+                camera->buffers[camera->n_buffers].start = mmap(nullptr /* start anywhere */, 
                                                                 buf.length, 
                                                                 PROT_READ | PROT_WRITE, 
                                                                 MAP_SHARED /*recommended*/, 

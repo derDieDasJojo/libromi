@@ -22,7 +22,7 @@
 
  */
 #include <stdexcept>
-#include <r.h>
+
 #include "picamera/PiCamera.h"
 #include "picamera/StillCamera.h"
 #include "picamera/VideoCamera.h"

@@ -30,7 +30,7 @@
 #include <CRC8.h>
 #include <RomiSerialClient.h>
 #include <RomiSerialErrors.h>
-#include <log.h>
+#include <Logger.h>
 #include <ClockAccessor.h>
 #include "RomiSerialUtil.h"
 #include "RSerial.h"

@@ -2,7 +2,7 @@
 #include "data_provider/JsonFieldNames.h"
 #include "data_provider/GpsLocationProvider.h"
 #include "json.hpp"
-#include <log.h>
+#include <Logger.h>
 
 namespace romi {
 

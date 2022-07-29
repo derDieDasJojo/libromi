@@ -24,7 +24,7 @@
 #ifndef __OQUAM_OQUAM_STEPPER_H_
 #define __OQUAM_OQUAM_STEPPER_H_
 
-#include <r.h>
+
 #include <RomiSerialClient.h> 
 #include <RSerial.h>
 

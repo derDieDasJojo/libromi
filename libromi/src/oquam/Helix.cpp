@@ -25,7 +25,7 @@
 #include <stdexcept>
 #include <algorithm>
 #include <math.h>
-#include <r.h>
+
 #include "v3.h"
 #include "oquam/Helix.h"
 #include "oquam/print.h"

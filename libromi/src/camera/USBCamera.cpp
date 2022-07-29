@@ -24,7 +24,7 @@
 
 #include "camera_v4l.h"
 #include "camera/USBCamera.h"
-#include <log.h>
+#include <Logger.h>
 #include <chrono>
 
 namespace romi {

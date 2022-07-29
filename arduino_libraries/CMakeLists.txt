@@ -36,7 +36,7 @@ target_include_directories(romiserial
         "${CMAKE_CURRENT_SOURCE_DIR}/RomiSerial"
         )
 
-target_link_libraries(romiserial rpp r)
+target_link_libraries(romiserial rpp)
 
 if (${BUILD_ARDUINO})
     add_custom_command(OUTPUT ${ROMISERIAL_ARDUINO_LIB} POST_BUILD

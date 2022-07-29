@@ -24,7 +24,7 @@
 
 #include <functional>
 #include <ClockAccessor.h>
-#include <log.h>
+#include <Logger.h>
 #include "camera/Imager.h"
 
 namespace romi {

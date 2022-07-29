@@ -21,7 +21,7 @@
   <http://www.gnu.org/licenses/>.
 
 */
-#include <log.h>
+#include <Logger.h>
 #include "rover/EventsAndStates.h"
 #include "rover/RoverStateMachine.h"
 #include "rover/RoverNotifications.h"

@@ -22,7 +22,7 @@
 
  */
 #include <stdexcept>
-#include <r.h>
+
 #include "picamera/MMAL.h"
 
 namespace romi::arm {

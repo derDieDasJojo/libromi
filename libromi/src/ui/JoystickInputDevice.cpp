@@ -22,7 +22,7 @@
 
  */
 #include <stdexcept>
-#include <log.h>
+#include <Logger.h>
 #include "ui/JoystickInputDevice.h"
 
 // FIXME: needed for axis_forward_speed, axis_backward_speed, and axis_direction

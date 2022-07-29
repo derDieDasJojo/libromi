@@ -22,7 +22,7 @@
 
  */
 #include <algorithm>
-#include <log.h>
+#include <Logger.h>
 #include "api/Path.h"
 
 namespace romi {

@@ -24,7 +24,7 @@
 #ifndef __ROMI_FAKE_MOTORDRIVER_H
 #define __ROMI_FAKE_MOTORDRIVER_H
 
-#include <r.h>
+
 #include "api/IMotorDriver.h"
 
 namespace romi {

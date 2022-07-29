@@ -23,8 +23,9 @@
  */
 #include <stdexcept>
 #include <string>
+#include "Logger.h"
 #include <linux/joystick.h>
-#include <r.h>
+
 #include "ui/LinuxJoystick.h"
 
 namespace romi {

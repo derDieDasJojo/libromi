@@ -25,7 +25,7 @@
 #include <math.h>
 #include <limits.h>
 #include <stdexcept>
-#include <log.h>
+#include <Logger.h>
 #include <ClockAccessor.h>
 #include "cablebot/CablebotBase.h"
 #include <json.hpp>

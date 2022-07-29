@@ -24,7 +24,7 @@
 #include <cfloat>
 #include <stdexcept>
 #include <algorithm>
-#include <r.h>
+
 #include <cmath>
 
 #include "v3.h"

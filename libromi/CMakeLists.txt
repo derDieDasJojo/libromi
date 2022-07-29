@@ -254,7 +254,7 @@ set(SOURCES
         src/camera/FileCamera.cpp
         src/camera/USBCamera.cpp
         src/camera/camera_v4l.h
-        src/camera/camera_v4l.c
+        src/camera/camera_v4l.cpp
         src/camera/Imager.cpp
 
         src/fake/FakeScriptEngine.cpp
@@ -363,7 +363,6 @@ target_include_directories(romi
 
 target_link_libraries(romi
         romiserial
-        r
         rpp
         rcom
         fluidsynth

@@ -23,7 +23,8 @@
  */
 #ifndef _ROMI_I_JOYSTICK_H_
 #define _ROMI_I_JOYSTICK_H_
-#include <stdint.h>
+#include <cstdint>
+#include <cstddef>
 
 namespace romi {
 

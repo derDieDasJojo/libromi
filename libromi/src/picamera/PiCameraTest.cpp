@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <stdexcept>
-#include <r.h>
+
 #include <MemBuffer.h>
 #include "picamera/PiCamera.h"
 

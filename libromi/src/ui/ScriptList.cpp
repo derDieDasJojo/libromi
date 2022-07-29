@@ -23,7 +23,7 @@
  */
 
 #include <stdexcept>
-#include <log.h>
+#include <Logger.h>
 #include <algorithm>
 #include <fstream>
 #include <iostream>

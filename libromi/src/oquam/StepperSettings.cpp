@@ -24,7 +24,7 @@
 
 #include <cfloat>
 #include <stdexcept>
-#include <log.h>
+#include <Logger.h>
 #include "oquam/StepperSettings.h"
 
 // TBD: REFACTOR - remove raw pointers and arrays. Replace with vectors.

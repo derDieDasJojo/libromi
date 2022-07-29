@@ -22,7 +22,7 @@
 
  */
 #include <math.h>
-#include <r.h>
+
 #include <ClockAccessor.h>
 #include "rover/LocationTracker.h"
 

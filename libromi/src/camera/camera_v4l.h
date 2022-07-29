@@ -49,9 +49,9 @@
 #include <stdint.h>
 #include <stddef.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+//#ifdef __cplusplus
+//extern "C" {
+//#endif
 
 typedef struct _camera_t camera_t;
 
@@ -67,8 +67,8 @@ size_t camera_width(camera_t* camera);
 size_t camera_height(camera_t* camera);
 uint8_t *camera_getimagebuffer(camera_t* camera);
 
-#ifdef __cplusplus
-}
-#endif
+//#ifdef __cplusplus
+//}
+//#endif
 
 #endif 

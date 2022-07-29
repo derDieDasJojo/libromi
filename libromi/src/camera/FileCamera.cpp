@@ -23,7 +23,7 @@
  */
 
 #include <FileUtils.h>
-#include <log.h>
+#include <Logger.h>
 #include "camera/FileCamera.h"
 
 namespace romi {

@@ -25,7 +25,7 @@
 #ifndef __ROMI_I_FOLDER_H
 #define __ROMI_I_FOLDER_H
 
-#include <r.h>
+
 #include "api/Path.h"
 #include "cv/Image.h"
 

@@ -22,9 +22,10 @@
 
 */
 #include <functional>
-#include <log.h>
+#include <Logger.h>
 #include <util.h>
 #include <ClockAccessor.h>
+#include "StringUtils.h"
 #include <api/DataLogAccessor.h>
 #include "hal/BrushMotorDriver.h"
 
@@ -81,7 +82,7 @@ static const std::string kDriverRightMeasuredSpeedName = "driver-right-measured-
                 settings_.parse(config);
 
                 char command[100];
-                rprintf(command, 100, "C[%d,%d,%d,%d,%d,%d,%d,%d,%d,%d]",
+                StringUtils::rprintf(command, 100, "C[%d,%d,%d,%d,%d,%d,%d,%d,%d,%d]",
                         settings_.encoder_steps,
                         settings_.dir_left,
                         settings_.dir_right,
@@ -149,7 +150,7 @@ static const std::string kDriverRightMeasuredSpeedName = "driver-right-measured-
                         int32_t iright = (int32_t) (1000.0 * right);
                                 
                         char command[64];
-                        rprintf(command, 64, "V[%d,%d]", ileft, iright);
+                        StringUtils::rprintf(command, 64, "V[%d,%d]", ileft, iright);
                                 
                         nlohmann::json response;
                         serial_->send(command, response);

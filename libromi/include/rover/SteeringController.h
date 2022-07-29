@@ -24,7 +24,7 @@
 #ifndef __ROMI_STEERING_CONTROLLER_H_
 #define __ROMI_STEERING_CONTROLLER_H_
 
-#include <r.h>
+
 #include <RomiSerialClient.h> 
 #include <RSerial.h>
 

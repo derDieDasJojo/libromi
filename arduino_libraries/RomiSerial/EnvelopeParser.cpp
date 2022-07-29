@@ -23,7 +23,7 @@
  */
 
 #if !defined(ARDUINO)
-#include <r.h>
+#include "Logger.h"
 #endif
 
 #include "EnvelopeParser.h"

@@ -24,7 +24,7 @@
 #ifndef __ROMI_OQUAM_H
 #define __ROMI_OQUAM_H
 
-#include <r.h>
+
 #include <mutex>
 
 #include "session/ISession.h"

@@ -2,7 +2,7 @@
 #include "gmock/gmock.h"
 #include <string>
 #include <vector>
-#include <r.h>
+//
 #include <RomiSerialClient.h>
 #include <RomiSerialErrors.h>
 #include "../mock/mock_inputstream.h"

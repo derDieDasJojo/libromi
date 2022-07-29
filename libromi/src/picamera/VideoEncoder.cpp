@@ -22,7 +22,7 @@
 
  */
 #include <stdexcept>
-#include <r.h>
+
 #include "picamera/VideoEncoder.h"
 
 namespace romi::arm {

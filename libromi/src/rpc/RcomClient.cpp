@@ -24,7 +24,7 @@
 #include <stdexcept>
 #include <MessageLink.h>
 #include <WebSocketServer.h>
-#include <log.h>
+#include <Logger.h>
 #include "rpc/RcomClient.h"
 
 namespace romi {

@@ -21,7 +21,7 @@
   <http://www.gnu.org/licenses/>.
 
  */
-#include <log.h>
+#include <Logger.h>
 #include "rpc/RemoteWeeder.h"
 #include "rpc/MethodsRover.h"
 

@@ -22,7 +22,7 @@
 
  */
 #include <stdexcept>
-#include <r.h>
+
 #include "rover/RoverOptions.h"
 
 using namespace std;

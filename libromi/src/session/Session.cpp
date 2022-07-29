@@ -29,7 +29,7 @@
 #include "StringUtils.h"
 #include "session/Session.h"
 #include "data_provider/RoverIdentityProvider.h"
-#include "log.h"
+#include "Logger.h"
 #include "Logger.h"
 
 

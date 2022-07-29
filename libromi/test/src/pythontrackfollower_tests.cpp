@@ -1,6 +1,6 @@
 #include "gtest/gtest.h"
 #include "gmock/gmock.h"
-#include <r.h>
+
 #include "../mock/mock_camera.h"
 #include "../mock/mock_rpcclient.h"
 #include "../mock/mock_session.h"

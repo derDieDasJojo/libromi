@@ -24,8 +24,8 @@
 #include <thread>
 #include <ClockAccessor.h>
 #include <WebSocketServerFactory.h>
-#include <r.h>
 #include "api/DataLog.h"
+#include "Logger.h"
 
 namespace romi {
 

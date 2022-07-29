@@ -22,7 +22,7 @@
 
  */
 
-#include <log.h>
+#include <Logger.h>
 #include "rpc/RemoteGimbal.h"
 #include "rpc/MethodsGimbal.h"
 #include "rpc/MethodsPowerDevice.h"

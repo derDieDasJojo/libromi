@@ -1,7 +1,7 @@
 #include "battery_monitor/BatteryMonitor.h"
+#include "Logger.h"
 #include <atomic>
 #include <utility>
-#include <r.h>
 #include <iostream>
 
 namespace romi

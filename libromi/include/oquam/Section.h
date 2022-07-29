@@ -25,7 +25,7 @@
 #ifndef _OQUAM_SECTION_H_
 #define _OQUAM_SECTION_H_
 
-#include <log.h>
+#include <Logger.h>
 #include <vector>
 #include "v3.h"
 

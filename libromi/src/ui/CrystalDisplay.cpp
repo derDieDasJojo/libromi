@@ -22,8 +22,8 @@
 
  */
 
-#include <string.h>
-#include <r.h>
+#include "Logger.h"
+#include "StringUtils.h"
 #include "ui/CrystalDisplay.h"
 
 namespace romi {
@@ -43,7 +43,7 @@ namespace romi {
                         char buffer[64];
                         nlohmann::json response;
                         
-                        rprintf(buffer, 64, "S[%d,\"%s\"]", line, display_string.c_str());
+                        StringUtils::rprintf(buffer, 64, "S[%d,\"%s\"]", line, display_string.c_str());
                         
                         _serial->send(buffer, response);
 
@@ -63,7 +63,7 @@ namespace romi {
                         char buffer[64];
                         nlohmann::json response;
                         
-                        rprintf(buffer, 64, "C[%d]", line);
+                        StringUtils::rprintf(buffer, 64, "C[%d]", line);
                         
                         _serial->send(buffer, response);
 

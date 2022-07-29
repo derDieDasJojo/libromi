@@ -31,7 +31,7 @@
 #include <errno.h>
 #include <sys/poll.h>
 #include <stdexcept>
-#include <log.h>
+#include <Logger.h>
 #include <termios.h>
 #include "RSerial.h"
 #include <ClockAccessor.h>
@@ -74,7 +74,7 @@ namespace romiserial {
 
                 int pollrc = poll(fds, 1, _timeout_ms);
                 if (pollrc < 0) {
-                        r_err("serial_read_timeout poll error %d on %s", errno, _device.c_str());
+                    r_err("serial_read_timeout poll error %d on %s", errno, _device.c_str());
                 
                 } else if ((pollrc > 0) && (fds[0].revents & POLLIN)) {
                         retval = true;

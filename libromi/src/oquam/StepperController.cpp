@@ -25,6 +25,7 @@
 #include <json.hpp>
 #include <RomiSerialErrors.h>
 #include <ClockAccessor.h>
+#include "Logger.h"
 #include "oquam/StepperController.h"
 #include <iostream>
 
@@ -103,21 +104,21 @@ namespace romi {
         bool StepperController::move(int16_t dt, int16_t dx, int16_t dy, int16_t dz)
         {
                 char buffer[64];
-                rprintf(buffer, 64, "M[%d,%d,%d,%d]", dt, dx, dy, dz);
+                StringUtils::rprintf(buffer, 64, "M[%d,%d,%d,%d]", dt, dx, dy, dz);
                 return (send_command(buffer) == 0);
         }
 
         bool StepperController::moveat(int16_t speed_x, int16_t speed_y, int16_t speed_z)
         {
                 char buffer[64];
-                rprintf(buffer, 64, "V[%hd,%hd,%hd]", speed_x, speed_y, speed_z);
+                StringUtils::rprintf(buffer, 64, "V[%hd,%hd,%hd]", speed_x, speed_y, speed_z);
                 return (send_command(buffer) == 0);
         }
         
         bool StepperController::moveto(int16_t dt, int16_t x, int16_t y, int16_t z)
         {
                 char buffer[64];
-                rprintf(buffer, 64, "m[%d,%d,%d,%d]", dt, x, y, z);
+                StringUtils::rprintf(buffer, 64, "m[%d,%d,%d,%d]", dt, x, y, z);
                 return (send_command(buffer) == 0);                
         }
 
@@ -276,7 +277,7 @@ namespace romi {
                                                  AxisIndex axis3)
         {
                 char command[64];
-                rprintf(command, 64, "h[%d,%d,%d]", axis1, axis2, axis3);
+                StringUtils::rprintf(command, 64, "h[%d,%d,%d]", axis1, axis2, axis3);
                 r_info("StepperController: setting homing to [%d,%d,%d]", axis1, axis2, axis3);
                 return send_command_without_interruption(command);
         }

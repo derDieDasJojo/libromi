@@ -24,7 +24,7 @@
 #ifndef __ROMI_STATE_MACHINE_H
 #define __ROMI_STATE_MACHINE_H
 
-#include <log.h>
+#include <Logger.h>
 #include <vector>
 
 namespace romi {

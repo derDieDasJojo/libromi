@@ -23,7 +23,7 @@
  */
 
 #include <stdexcept>
-#include <log.h>
+#include <Logger.h>
 #include "cv/ImageCropper.h"
 
 namespace romi {

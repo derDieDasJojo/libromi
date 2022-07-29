@@ -24,7 +24,7 @@
 
 #include <string>
 #include <stdexcept>
-#include <log.h>
+#include <Logger.h>
 #include <iostream>
 #include "notifications/FluidSoundNotifications.h"
 

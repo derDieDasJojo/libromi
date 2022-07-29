@@ -1,6 +1,6 @@
 #include <ClockAccessor.h>
 #include <data_provider/GpsLocationProvider.h>
-#include <log.h>
+#include <Logger.h>
 #include "Linux.h"
 #include "FileUtils.h"
 #include "gtest/gtest.h"
@@ -53,7 +53,7 @@ protected:
 
 	void TearDown() override {
                 rpp::ClockAccessor::SetInstance(nullptr);
-                r_log_cleanup();
+                log_cleanup();
 	}
 
 	void SetDeviceIDDataExpectations(const std::string& deviceType,
@@ -162,7 +162,7 @@ TEST_F(weedersession, logger_set_to_basdirectory_on_construct_when_logger_not_se
 
     // Act
     romi::Session session(linux, session_dir, deviceData_, softwareVersion_, std::move(mockLocationProvider_));
-    std::filesystem::path log_dir(r_log_get_file());
+    std::filesystem::path log_dir(log_get_file());
     std::filesystem::path session_path(session.base_directory());
 
     // Assert
@@ -183,12 +183,12 @@ TEST_F(weedersession, logger_set_to_basdirectory_on_construct_when_logger_set)
     std::filesystem::remove_all(weeder_session_dir);
 
     std::string original_log_path("./log.txt");
-    r_log_init();
-    r_log_set_file(original_log_path.c_str());
+    log_init();
+    log_set_file(original_log_path.c_str());
 
     // Act
     romi::Session session(linux, session_dir, deviceData_, softwareVersion_, std::move(mockLocationProvider_));
-    std::filesystem::path log_dir(r_log_get_file());
+    std::filesystem::path log_dir(log_get_file());
     std::filesystem::path session_path(session.base_directory());
 
     // Assert

@@ -25,6 +25,7 @@
 #include <json.hpp>
 #include <RomiSerialErrors.h>
 #include <ClockAccessor.h>
+#include "Logger.h"
 #include "rover/SteeringController.h"
 #include <iostream>
 
@@ -100,7 +101,7 @@ namespace romi {
         bool SteeringController::set_target(int16_t left, int16_t right)
         {
                 char buffer[64];
-                rprintf(buffer, 64, "m[%d,%d]", left, right);
+                StringUtils::rprintf(buffer, 64, "m[%d,%d]", left, right);
                 return (send_command(buffer) == 0);                
         }
 
@@ -108,9 +109,9 @@ namespace romi {
         {
                 char buffer[64];
                 if (mode == ISteeringController::kOpenLoop)
-                        rprintf(buffer, 64, "C[0]", mode);
+                        StringUtils::rprintf(buffer, 64, "C[0]", mode);
                 else
-                        rprintf(buffer, 64, "C[1]", mode);
+                        StringUtils::rprintf(buffer, 64, "C[1]", mode);
                 return (send_command(buffer) == 0);                
         }
 

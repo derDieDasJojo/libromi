@@ -26,7 +26,7 @@
 #define _OQUAM_HELIX_H_
 
 #include <vector>
-#include <r.h>
+
 #include "v3.h"
 #include "oquam/Section.h"
 

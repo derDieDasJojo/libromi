@@ -21,7 +21,7 @@
   <http://www.gnu.org/licenses/>.
 
  */
-#include <r.h>
+#include "Logger.h"
 #include "configuration/GetOpt.h"
 
 using namespace std;

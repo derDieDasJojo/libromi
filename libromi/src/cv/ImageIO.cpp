@@ -23,7 +23,7 @@
 */
 
 #include <png.h>
-#include <r.h>
+
 #include <FileUtils.h>
 #include "cv/ImageIO.h"
 #include "cv/stb_includes.h"

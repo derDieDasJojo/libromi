@@ -23,7 +23,7 @@
  */
 
 #include <mutex>
-#include <r.h>
+#include "Logger.h"
 #include "api/ActivityHelper.h"
 
 namespace romi {
