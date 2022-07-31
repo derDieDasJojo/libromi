@@ -193,7 +193,7 @@ if (NOT DEFINED librcom_SOURCE_DIR)
         download_project(
                 PROJ              librcom
                 GIT_REPOSITORY    https://github.com/romi/librcom.git
-                GIT_TAG           master
+                GIT_TAG           remove_libr
                 TIMEOUT           180
                 SOURCE_DIR        ${CMAKE_CURRENT_SOURCE_DIR}/librcom
                 BINARY_DIR        ${CMAKE_CURRENT_BINARY_DIR}/librcom
