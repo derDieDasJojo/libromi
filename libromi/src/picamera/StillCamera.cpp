@@ -38,6 +38,17 @@ namespace romi {
         StillCamera::~StillCamera()
         {
         }
+
+        bool StillCamera::set_value(const std::string& name, double value)
+        {
+                return camera_.set_value(name, value);
+        }
+        
+        bool StillCamera::select_option(const std::string& name,
+                                        const std::string& value)
+        {
+                return camera_.select_option(name, value);
+        }
         
         bool StillCamera::grab(romi::Image &image)
         {

@@ -105,9 +105,20 @@ set(SOURCES
         include/cablebot/CablebotBase.h
         
         #include/camera/Camera360.h
-        include/camera/FileCamera.h
-        include/camera/USBCamera.h
+        include/camera/CameraInfo.h
+        include/camera/CameraInfoIO.h
+        include/camera/CameraIntrinsics.h
+        include/camera/CameraSettings.h
+        include/camera/ICameraDistortion.h
+        include/camera/ICameraInfo.h
+        include/camera/ICameraInfoIO.h
+        include/camera/ICameraIntrinsics.h
+        include/camera/ICameraIntrinsics.h
+        include/camera/ICameraSettings.h
         include/camera/Imager.h
+        include/camera/FileCamera.h
+        include/camera/SimpleRadialDistortion.h        
+        include/camera/USBCamera.h
 
         include/configuration/ConfigurationProvider.h
         include/configuration/IOptions.h
@@ -251,6 +262,11 @@ set(SOURCES
         src/cv/slic.cpp
         
         #src/camera/Camera360.cpp
+        src/camera/CameraInfo.cpp
+        src/camera/CameraInfoIO.cpp
+        src/camera/CameraIntrinsics.cpp
+        src/camera/CameraSettings.cpp
+        src/camera/SimpleRadialDistortion.cpp
         src/camera/FileCamera.cpp
         src/camera/USBCamera.cpp
         src/camera/camera_v4l.h

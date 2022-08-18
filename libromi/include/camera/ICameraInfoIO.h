@@ -22,27 +22,23 @@
 
  */
 
-#ifndef __ROMI_ICAMERA_H
-#define __ROMI_ICAMERA_H
+#ifndef __ROMI_ICAMERAINFOIO_H
+#define __ROMI_ICAMERAINFOIO_H
 
-#include "cv/Image.h"
-#include "json.hpp"
-#include "MemBuffer.h"
-#include "api/IPowerDevice.h"
+#include <memory>
+#include <json.hpp>
+#include "camera/ICameraInfo.h"
 
 namespace romi {
-
-        class ICamera : public IPowerDevice
+        
+        class ICameraInfoIO
         {
         public:
-                virtual ~ICamera() = default;
-                virtual bool grab(Image &image) = 0;
-                virtual rcom::MemBuffer& grab_jpeg() = 0;
-                
-                virtual bool set_value(const std::string& name, double value) = 0;
-                virtual bool select_option(const std::string& name,
-                                           const std::string& value) = 0;
+                virtual ~ICameraInfoIO() = default;
+
+                virtual std::unique_ptr<ICameraInfo> load(nlohmann::json& json) = 0;
+                virtual nlohmann::json store(std::unique_ptr<ICameraInfo>& info) = 0;
         };
 }
 
-#endif // __ROMI_CAMERA_H
+#endif // __ROMI_ICAMERAINFOIO_H

@@ -196,7 +196,7 @@ namespace romi {
                 if (!valid)
                         r_warn("Invalid ditigal gain");
                 return valid;
-        }
+o        }
 
         bool PiCameraSettings::is_colour_effects_valid(uint32_t u,  uint32_t v)
         {

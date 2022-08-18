@@ -49,8 +49,11 @@ namespace romi {
                 ~FileCamera() override = default;
         
                 bool grab(Image &image) override;
-
                 rcom::MemBuffer& grab_jpeg() override;
+                
+                bool set_value(const std::string& name, double value) override;
+                bool select_option(const std::string& name,
+                                   const std::string& value) override;
 
                 // Power device interface
                 bool power_up() override;

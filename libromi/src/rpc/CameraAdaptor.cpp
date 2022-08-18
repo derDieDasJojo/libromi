@@ -36,7 +36,7 @@ namespace romi {
         void CameraAdaptor::execute(const std::string& method,
                                     nlohmann::json &params,
                                     rcom::MemBuffer& result,
-                                    RPCError &error)
+                                    RPCError& error)
         {
                 (void) params;
 
@@ -44,14 +44,14 @@ namespace romi {
                 result.clear();
                 
                 try {
-                        if (method == MethodsCamera::grab_jpeg_binary) {
+                        if (method == MethodsCamera::kGrabJpegBinary) {
                                 
                                 rcom::MemBuffer& jpeg = camera_.grab_jpeg();
                                 result.append(jpeg); // TODO: can we avoid a copy?
                                 
                         } else {
                                 r_warn("Unknown method: %s", method.c_str());
-                                r_debug("Known methods: %s", MethodsCamera::grab_jpeg_binary);
+                                r_debug("Known methods: %s", MethodsCamera::kGrabJpegBinary);
                                 error.code = RPCError::kMethodNotFound;
                                 error.message = "Unknown method";
                         }
@@ -66,9 +66,6 @@ namespace romi {
         void CameraAdaptor::execute(const std::string& method, nlohmann::json& params,
                                     nlohmann::json& result, RPCError& error)
         {
-                (void) params;
-                (void) result;
-
                 error.code = 0;
                                 
                 try {
@@ -84,6 +81,12 @@ namespace romi {
                         } else if (method == MethodsPowerDevice::wake_up) {
                                 execute_wake_up(error);
                                 
+                        } else if (method == MethodsCamera::kSetValue) {
+                                execute_set_value(params, result, error);
+                                
+                        } else if (method == MethodsCamera::kSelectOption) {
+                                execute_select_option(params, result, error);
+                                
                         } else {
                                 error.code = RPCError::kMethodNotFound;
                                 error.message = "Unknown method";
@@ -95,7 +98,7 @@ namespace romi {
                 }
         }
 
-        void CameraAdaptor::execute_power_up(RPCError &error)
+        void CameraAdaptor::execute_power_up(RPCError& error)
         {
                 r_debug("CameraAdaptor::power_up");
                 if (!camera_.power_up()) {
@@ -104,7 +107,7 @@ namespace romi {
                 }
         }
 
-        void CameraAdaptor::execute_power_down(RPCError &error)
+        void CameraAdaptor::execute_power_down(RPCError& error)
         {
                 r_debug("CameraAdaptor::power_down");
                 if (!camera_.power_down()) {
@@ -113,7 +116,7 @@ namespace romi {
                 }
         }
         
-        void CameraAdaptor::execute_stand_by(RPCError &error)
+        void CameraAdaptor::execute_stand_by(RPCError& error)
         {
                 r_debug("CameraAdaptor::stand_by");
                 if (!camera_.stand_by()) {
@@ -122,12 +125,56 @@ namespace romi {
                 }
         }
         
-        void CameraAdaptor::execute_wake_up(RPCError &error)
+        void CameraAdaptor::execute_wake_up(RPCError& error)
         {
                 r_debug("CameraAdaptor::wake_up");
                 if (!camera_.wake_up()) {
                         error.code = 1;
                         error.message = "wake_up failed";
+                }
+        }
+
+        void CameraAdaptor::execute_set_value(nlohmann::json& params,
+                                              nlohmann::json& result,
+                                              RPCError& error)
+        {
+                (void) result;
+                if (!params.contains(MethodsCamera::kSettingName)
+                    && !params.contains(MethodsCamera::kSettingValue)) {
+                        r_err("CameraAdaptor::execute_set_value: missing parameters");
+                        error.code = RPCError::kInvalidParams;
+                        error.message = "missing name or value parameter";
+                } else {
+                        std::string name = params[MethodsCamera::kSettingName];
+                        double value = params[MethodsCamera::kSettingValue];
+                        r_debug("CameraAdaptor::execute_set_value: %s(%f)",
+                                name.c_str(), value);
+                        if (!camera_.set_value(name, value)) {
+                                error.code = 1;
+                                error.message = "set_value failed";
+                        }
+                }
+        }
+
+        void CameraAdaptor::execute_select_option(nlohmann::json& params,
+                                                  nlohmann::json& result,
+                                                  RPCError& error)
+        {
+                (void) result;
+                if (!params.contains(MethodsCamera::kOptionName)
+                    && !params.contains(MethodsCamera::kOptionValue)) {
+                        r_err("CameraAdaptor::execute_select_option: missing parameters");
+                        error.code = RPCError::kInvalidParams;
+                        error.message = "missing name or value parameter";
+                } else {
+                        std::string name = params[MethodsCamera::kOptionName];
+                        std::string value = params[MethodsCamera::kOptionValue];
+                        r_debug("CameraAdaptor::execute_select_option: %s(%f)",
+                                name.c_str(), value);
+                        if (!camera_.select_option(name, value)) {
+                                error.code = 1;
+                                error.message = "set_option failed";
+                        }
                 }
         }
 }

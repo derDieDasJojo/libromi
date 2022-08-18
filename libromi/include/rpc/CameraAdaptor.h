@@ -34,10 +34,16 @@ namespace romi {
         protected:
                 ICamera& camera_;
 
-                void execute_power_up(RPCError &error);
-                void execute_power_down(RPCError &error);
-                void execute_stand_by(RPCError &error);
-                void execute_wake_up(RPCError &error);
+                void execute_power_up(RPCError& error);
+                void execute_power_down(RPCError& error);
+                void execute_stand_by(RPCError& error);
+                void execute_wake_up(RPCError& error);
+                void execute_set_value(nlohmann::json& params,
+                                       nlohmann::json& result,
+                                       RPCError& error);
+                void execute_select_option(nlohmann::json& params,
+                                           nlohmann::json& result,
+                                           RPCError& error);
                 
         public:
                 CameraAdaptor(ICamera& camera);

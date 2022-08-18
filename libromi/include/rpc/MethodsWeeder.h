@@ -30,8 +30,8 @@ namespace romi {
         {
         public:
                 
-                static constexpr const char *hoe = "weeder-hoe";
-                static constexpr const char *stop = "weeder-stop";
+                static constexpr const char *kHoe = "weeder-hoe";
+                static constexpr const char *kStop = "weeder-stop";
 
         };
 }

@@ -22,27 +22,27 @@
 
  */
 
-#ifndef __ROMI_ICAMERA_H
-#define __ROMI_ICAMERA_H
+#ifndef __ROMI_ICAMERADISTORTION_H
+#define __ROMI_ICAMERADISTORTION_H
 
-#include "cv/Image.h"
-#include "json.hpp"
-#include "MemBuffer.h"
-#include "api/IPowerDevice.h"
+#include <vector>
+#include <string>
 
 namespace romi {
-
-        class ICamera : public IPowerDevice
+        
+        class ICameraDistortion
         {
         public:
-                virtual ~ICamera() = default;
-                virtual bool grab(Image &image) = 0;
-                virtual rcom::MemBuffer& grab_jpeg() = 0;
+                static constexpr const char *kSimpleRadialDistortion = "simple-radial";
                 
-                virtual bool set_value(const std::string& name, double value) = 0;
-                virtual bool select_option(const std::string& name,
-                                           const std::string& value) = 0;
+                virtual ~ICameraDistortion() = default;
+
+                virtual std::string& get_type() = 0;
+                virtual void get(std::vector<double>& values) = 0;
+                virtual void set(std::vector<double>& values) = 0;
+                virtual double get(const std::string& name) = 0;
+                virtual void set(const std::string& name, double value) = 0;
         };
 }
 
-#endif // __ROMI_CAMERA_H
+#endif // __ROMI_ICAMERADISTORTION_H

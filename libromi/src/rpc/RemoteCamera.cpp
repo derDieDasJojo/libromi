@@ -35,6 +35,23 @@ namespace romi {
         {
         }
         
+        bool RemoteCamera::set_value(const std::string& name, double value)
+        {
+                nlohmann::json params;
+                params[MethodsCamera::kSettingName] = name;
+                params[MethodsCamera::kSettingValue] = value;
+                return execute_with_params(MethodsCamera::kSetValue, params);
+        }
+        
+        bool RemoteCamera::select_option(const std::string& name,
+                                         const std::string& value)
+        {
+                nlohmann::json params;
+                params[MethodsCamera::kOptionName] = name;
+                params[MethodsCamera::kOptionValue] = value;
+                return execute_with_params(MethodsCamera::kSelectOption, params);
+        }
+        
         bool RemoteCamera::grab(Image &image) 
         {
                 bool success = false;
@@ -52,8 +69,7 @@ namespace romi {
 
                 output_.clear();
                 
-                client_->execute(MethodsCamera::grab_jpeg_binary,
-                                 params, output_, error);
+                client_->execute(MethodsCamera::kGrabJpegBinary, params, output_, error);
                 
                 if (error.code != 0) {
                         r_warn("RemoteCamera::grab_jpeg: %s", error.message.c_str());

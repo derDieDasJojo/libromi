@@ -30,7 +30,7 @@
 
 namespace romi {
         
-        class PiCamera : public ICamera
+        class PiCamera //: public ICamera
         {
         protected:
                 PiCamera();

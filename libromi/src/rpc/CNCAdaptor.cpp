@@ -112,8 +112,9 @@ namespace romi {
                 }
         }
 
-        void CNCAdaptor::execute_get_range(nlohmann::json& params, nlohmann::json& result,
-                                          RPCError &error)
+        void CNCAdaptor::execute_get_range(nlohmann::json& params,
+                                           nlohmann::json& result,
+                                           RPCError &error)
         {
                 (void) params;
                 r_debug("CNCAdaptor::execute_get_range");
@@ -134,7 +135,8 @@ namespace romi {
                 }
         }
 
-        void CNCAdaptor::execute_get_position(nlohmann::json& params, nlohmann::json& result,
+        void CNCAdaptor::execute_get_position(nlohmann::json& params,
+                                              nlohmann::json& result,
                                               RPCError &error)
         {
             (void) params;
@@ -155,8 +157,9 @@ namespace romi {
             }
         }
 
-        void CNCAdaptor::execute_moveto(nlohmann::json& params, __attribute__((unused))nlohmann::json& result,
-                                       RPCError &error)
+        void CNCAdaptor::execute_moveto(nlohmann::json& params,
+                                        nlohmann::json& result,
+                                        RPCError &error)
         {
                 (void) result;
                 r_debug("CNCAdaptor::execute_moveto");
@@ -164,10 +167,13 @@ namespace romi {
                         r_debug("CNCAdaptor::execute_moveto: %s", params.dump().c_str());
                 }
 
-                if (!params.contains(MethodsCNC::kMoveXParam) && !params.contains(MethodsCNC::kMoveYParam) && !params.contains(MethodsCNC::kMoveZParam) ) {
+                if (!params.contains(MethodsCNC::kMoveXParam)
+                    && !params.contains(MethodsCNC::kMoveYParam)
+                    && !params.contains(MethodsCNC::kMoveZParam)) {
                         r_err("CNCAdaptor::execute_moveto failed: missing parameters");
                         error.code = RPCError::kInvalidParams;
                         error.message = "missing x, y, or z parameters";
+                        
                 } else {
                         double x = params.value(MethodsCNC::kMoveXParam, ICNC::UNCHANGED);
                         double y = params.value(MethodsCNC::kMoveYParam, ICNC::UNCHANGED);
@@ -183,8 +189,10 @@ namespace romi {
                 }
         }
 
-        void CNCAdaptor::execute_spindle(nlohmann::json& params, nlohmann::json& result,
-                                        RPCError &error){
+        void CNCAdaptor::execute_spindle(nlohmann::json& params,
+                                         nlohmann::json& result,
+                                        RPCError &error)
+        {
                 (void) result;
                 r_debug("CNCAdaptor::execute_spindle");
                 
@@ -203,8 +211,9 @@ namespace romi {
                 }
         }
 
-        void CNCAdaptor::execute_travel(nlohmann::json& params, nlohmann::json& result,
-                                       RPCError &error)
+        void CNCAdaptor::execute_travel(nlohmann::json& params,
+                                        nlohmann::json& result,
+                                        RPCError &error)
         {
                 (void) result;
                 r_debug("CNCAdaptor::execute_travel");
@@ -229,7 +238,9 @@ namespace romi {
                 }
         }
         
-        void CNCAdaptor::execute_helix(nlohmann::json& params, nlohmann::json& result, RPCError &error)
+        void CNCAdaptor::execute_helix(nlohmann::json& params,
+                                       nlohmann::json& result,
+                                       RPCError &error)
         {
                 (void) result;
                 r_debug("CNCAdaptor::execute_helix");

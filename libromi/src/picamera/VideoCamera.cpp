@@ -42,6 +42,17 @@ namespace romi {
         {
                 encoder_.disable_output();
         }
+
+        bool VideoCamera::set_value(const std::string& name, double value)
+        {
+                return camera_.set_value(name, value);
+        }
+        
+        bool VideoCamera::select_option(const std::string& name,
+                                        const std::string& value)
+        {
+                return camera_.select_option(name, value);
+        }
         
         bool VideoCamera::grab(romi::Image &image)
         {

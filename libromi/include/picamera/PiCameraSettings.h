@@ -85,20 +85,20 @@ namespace romi {
                 
                 bool is_valid();
 
-                bool is_resolution_valid(size_t width, size_t height);
-                bool is_preview_valid(size_t width, size_t height);
-                bool is_saturation_valid(int32_t saturation);
-                bool is_sharpness_valid(int32_t sharpness);
-                bool is_contrast_valid(int32_t contrast);
-                bool is_brightness_valid(int32_t brightness);
-                bool is_iso_valid(uint32_t iso);
-                bool is_exposure_compensation_valid(int32_t value);
-                bool is_roi_valid(float x, float y, float w, float h);
-                bool is_shutter_speed_valid(uint32_t speed);
-                bool are_awb_gains_valid(float red, float blue);
-                bool is_analog_gain_valid(float value);
-                bool is_digital_gain_valid(float value);
-                bool is_colour_effects_valid(uint32_t u,  uint32_t v);
+                static bool is_resolution_valid(size_t width, size_t height);
+                static bool is_preview_valid(size_t width, size_t height);
+                static bool is_saturation_valid(int32_t saturation);
+                static bool is_sharpness_valid(int32_t sharpness);
+                static bool is_contrast_valid(int32_t contrast);
+                static bool is_brightness_valid(int32_t brightness);
+                static bool is_iso_valid(uint32_t iso);
+                static bool is_exposure_compensation_valid(int32_t value);
+                static bool is_roi_valid(float x, float y, float w, float h);
+                static bool is_shutter_speed_valid(uint32_t speed);
+                static bool are_awb_gains_valid(float red, float blue);
+                static bool is_analog_gain_valid(float value);
+                static bool is_digital_gain_valid(float value);
+                static bool is_colour_effects_valid(uint32_t u,  uint32_t v);
         };
 
         struct V2StillCameraSettings : public PiCameraSettings {

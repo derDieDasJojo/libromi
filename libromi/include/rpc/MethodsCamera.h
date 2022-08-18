@@ -29,8 +29,14 @@ namespace romi {
         class MethodsCamera
         {
         public:
+                static constexpr const char *kSettingName = "camera-setting-name";
+                static constexpr const char *kSettingValue = "camera-setting-value";
+                static constexpr const char *kOptionName = "camera-option-name";
+                static constexpr const char *kOptionValue = "camera-option-value";
                 
-                static constexpr const char *grab_jpeg_binary = "camera-grab-jpeg-binary";
+                static constexpr const char *kGrabJpegBinary = "camera-grab-jpeg-binary";
+                static constexpr const char *kSetValue = "camera-set-value";
+                static constexpr const char *kSelectOption = "camera-select-option";
 
         };
 }
