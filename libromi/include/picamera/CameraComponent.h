@@ -64,6 +64,11 @@ namespace romi::arm {
                 bool set_value(const std::string& name, double value);
                 bool select_option(const std::string& name, const std::string& value);
 
+                void set_saturation(int32_t value);
+                void set_sharpness(int32_t value);
+                void set_contrast(int32_t value);
+                void set_brightness(int32_t value);
+                void set_iso(uint32_t value);
 
         protected:
                 void handle_control_callback(MMAL_BUFFER_HEADER_T *buffer) override;
@@ -97,11 +102,6 @@ namespace romi::arm {
                 void set_still_config(size_t width, size_t height);
                 void set_video_config(size_t width, size_t height,
                                       int32_t framerate);
-                void set_saturation(int32_t value);
-                void set_sharpness(int32_t value);
-                void set_contrast(int32_t value);
-                void set_brightness(int32_t value);
-                void set_iso(uint32_t value);
                 void set_video_stabilisation(bool value);
                 void set_exposure_compensation(int32_t value);
                 void set_exposure_mode(MMAL_PARAM_EXPOSUREMODE_T value);

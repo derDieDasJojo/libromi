@@ -586,49 +586,51 @@ namespace romi::arm {
 
         bool CameraComponent::set_value(const std::string& name, double value)
         {
+                (void) name;
+                (void) value;
                 bool success = false;
                 
-                if (name == ICameraSettings::kSaturation) {
-                        int32_t saturation = (int32_t) value;
-                        if (PiCameraSettings::is_saturation_valid(saturation)) {
-                                set_saturation(saturation);
-                                success = true;
-                        } else {
-                                r_err("CameraComponent::set_value: invalid saturation");
-                        }
-                } else if (name == ICameraSettings::kSharpness) {
-                        int32_t sharpness = (int32_t) value;
-                        if (PiCameraSettings::is_sharpness_valid(sharpness)) {
-                                set_sharpness(sharpness);
-                                success = true;
-                        } else {
-                                r_err("CameraComponent::set_value: invalid sharpness");
-                        }
-                } else if (name == ICameraSettings::kContrast) {
-                        int32_t contrast = (int32_t) value;
-                        if (PiCameraSettings::is_contrast_valid(contrast)) {
-                                set_contrast(contrast);
-                                success = true;
-                        } else {
-                                r_err("CameraComponent::set_value: invalid contrast");
-                        }
-                } else if (name == ICameraSettings::kBrightness) {
-                        int32_t brightness = (int32_t) value;
-                        if (PiCameraSettings::is_brightness_valid(brightness)) {
-                                set_brightness(brightness);
-                                success = true;
-                        } else {
-                                r_err("CameraComponent::set_value: invalid brightness");
-                        }
-                } else if (name == ICameraSettings::kISO) {
-                        uint32_t iso = (int32_t) value;
-                        if (PiCameraSettings::is_iso_valid(iso)) {
-                                set_iso(iso);
-                                success = true;
-                        } else {
-                                r_err("CameraComponent::set_value: invalid iso");
-                        }
-                }
+                // if (name == ICameraSettings::kSaturation) {
+                //         int32_t saturation = (int32_t) value;
+                //         if (PiCameraSettings::is_saturation_valid(saturation)) {
+                //                 set_saturation(saturation);
+                //                 success = true;
+                //         } else {
+                //                 r_err("CameraComponent::set_value: invalid saturation");
+                //         }
+                // } else if (name == ICameraSettings::kSharpness) {
+                //         int32_t sharpness = (int32_t) value;
+                //         if (PiCameraSettings::is_sharpness_valid(sharpness)) {
+                //                 set_sharpness(sharpness);
+                //                 success = true;
+                //         } else {
+                //                 r_err("CameraComponent::set_value: invalid sharpness");
+                //         }
+                // } else if (name == ICameraSettings::kContrast) {
+                //         int32_t contrast = (int32_t) value;
+                //         if (PiCameraSettings::is_contrast_valid(contrast)) {
+                //                 set_contrast(contrast);
+                //                 success = true;
+                //         } else {
+                //                 r_err("CameraComponent::set_value: invalid contrast");
+                //         }
+                // } else if (name == ICameraSettings::kBrightness) {
+                //         int32_t brightness = (int32_t) value;
+                //         if (PiCameraSettings::is_brightness_valid(brightness)) {
+                //                 set_brightness(brightness);
+                //                 success = true;
+                //         } else {
+                //                 r_err("CameraComponent::set_value: invalid brightness");
+                //         }
+                // } else if (name == ICameraSettings::kISO) {
+                //         uint32_t iso = (uint32_t) value;
+                //         if (PiCameraSettings::is_iso_valid(iso)) {
+                //                 set_iso(iso);
+                //                 success = true;
+                //         } else {
+                //                 r_err("CameraComponent::set_value: invalid iso");
+                //         }
+                // }
 
                 return success;
         }

@@ -46,8 +46,11 @@ namespace romi {
         {
                 double turns = x / circumference_;
                 double steps = kPrecision * turns;
+                r_info("position_to_steps: position: %0.3f, diameter: %0.5f, "
+                       "turns: %0.3f, steps: %0.1f, precision: %0.3f",
+                       x, diameter_, turns, steps, kPrecision);
                 if (steps > SHRT_MAX || steps < SHRT_MIN) {
-                        r_err("CablebotBase::position_to_turns: steps out of range: "
+                        r_err("CablebotBase::position_to_steps: steps out of range: "
                               "position: %0.3f, turns: 0.3f, "
                               "steps: %0.1f, precision: %0.3f",
                               x, turns, steps, kPrecision);
@@ -177,8 +180,9 @@ namespace romi {
                 double distance = response[3];
                 double voltage = response[4];
                 double current = response[6];
-                r_debug("CablebotBase::is_on_target: %s, distance: %f, error: %d, voltage: %0.3f, current: %0.3f",
-                        on_target? "yes" : "no", distance, error, voltage, current);
+                double position = response[7];
+                r_debug("CablebotBase::is_on_target: %s, distance: %f, position: %f, error: %d, voltage: %0.3f, current: %0.3f",
+                        on_target? "yes" : "no", distance, position, error, voltage, current);
                 return on_target;
         }
                        

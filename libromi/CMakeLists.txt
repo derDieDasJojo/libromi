@@ -39,6 +39,7 @@ endif()
 
 if(${PI_BUILD})
     set(PICAMERA_SOURCES
+      include/picamera/BaseCamera.h
       include/picamera/CameraComponent.h
       include/picamera/Component.h
       include/picamera/Connection.h
@@ -51,6 +52,7 @@ if(${PI_BUILD})
       include/picamera/StillCamera.h
       include/picamera/VideoCamera.h
       include/picamera/VideoEncoder.h
+      src/picamera/BaseCamera.cpp
       src/picamera/CameraComponent.cpp
       src/picamera/Component.cpp
       src/picamera/Connection.cpp
@@ -65,91 +67,20 @@ if(${PI_BUILD})
       src/picamera/VideoEncoder.cpp
       include/cablebot/Cablebot.h
       src/cablebot/Cablebot.cpp)
+
+    set(ROVER_SOURCES
+      )
 else()
    set(PICAMERA_SOURCES)
-endif()
-        
-set(SOURCES
-
-        include/IFileCabinet.h
-        include/IFolder.h
-        include/v3.h
-
-        include/api/ActivityHelper.h
-        include/api/EventTimer.h
-        include/api/IEventTimer.h
-        include/api/CNCRange.h
-        include/api/DataLog.h
-        include/api/DataLogAccessor.h
-        include/api/IActivity.h
-        include/api/ICamera.h
-        include/api/ICNC.h
-        include/api/IDataLog.h
-        include/api/IDisplay.h
-        include/api/IEventSource.h
-        include/api/IGimbal.h
-        include/api/IImager.h
-        include/api/IInputDevice.h
-        include/api/IMotorDriver.h
+   set(ROVER_SOURCES
         include/api/INavigation.h
-        include/api/INotifications.h
-        include/api/IPowerDevice.h
-        include/api/IWeeder.h
-        include/api/IJoystick.h
-        include/api/Path.h
-        include/api/StateMachine.h
-
-        include/battery_monitor/IBatteryMonitor.h
-        include/battery_monitor/BatteryMonitor.h
-
-        include/cablebot/CablebotBase.h
-        
-        #include/camera/Camera360.h
-        include/camera/CameraInfo.h
-        include/camera/CameraInfoIO.h
-        include/camera/CameraIntrinsics.h
-        include/camera/CameraSettings.h
-        include/camera/ICameraDistortion.h
-        include/camera/ICameraInfo.h
-        include/camera/ICameraInfoIO.h
-        include/camera/ICameraIntrinsics.h
-        include/camera/ICameraIntrinsics.h
-        include/camera/ICameraSettings.h
-        include/camera/Imager.h
-        include/camera/FileCamera.h
-        include/camera/SimpleRadialDistortion.h        
-        include/camera/USBCamera.h
-
-        include/configuration/ConfigurationProvider.h
-        include/configuration/IOptions.h
-        include/configuration/GetOpt.h
-
+     
         include/cv/connected.h
-        include/cv/cv.h
         include/cv/ConnectedComponentsImage.h
         include/cv/ImageCropper.h
         include/cv/IImageCropper.h
-        include/cv/Image.h
-        include/cv/ImageIO.h
         include/cv/IPrincipalComponentAnalysis.h
-        include/cv/slic.h
-
-        include/fake/FakeCNC.h
-        include/fake/FakeDisplay.h
-        include/fake/FakeInputDevice.h
-        include/fake/FakeMotorDriver.h
-        include/fake/FakeNavigation.h
-        include/fake/FakeNotifications.h
-        include/fake/FakeScriptEngine.h
-        include/fake/FakeWeeder.h
-
-        include/hal/BldcGimbal.h
-        include/hal/BrushMotorDriver.h
-        include/hal/FakeGimbal.h
-        include/hal/ImagingDevice.h
-
-        include/notifications/FluidSoundNotifications.h
-
+        
         include/oquam/ATDC.h
         include/oquam/ICNCController.h
         include/oquam/FakeCNCController.h
@@ -193,35 +124,7 @@ set(SOURCES
         include/rover/StepperSteering.h
         include/rover/WheelOdometry.h
         include/rover/ZeroNavigationController.h
-
-        include/rpc/CameraAdaptor.h
-        include/rpc/CNCAdaptor.h
-        include/rpc/GimbalAdaptor.h
-        include/rpc/IRPCClient.h
-        include/rpc/IRPCHandler.h
-        include/rpc/IRPCServer.h
-        include/rpc/MethodsActivity.h
-        include/rpc/MethodsCamera.h
-        include/rpc/MethodsCNC.h
-        include/rpc/MethodsGimbal.h
-        include/rpc/MethodsNavigation.h
-        include/rpc/MethodsRover.h
-        include/rpc/MethodsWeeder.h
-        include/rpc/NavigationAdaptor.h
-        include/rpc/RcomClient.h
-        include/rpc/RcomMessageHandler.h
-        include/rpc/RcomServer.h
-        include/rpc/RemoteCamera.h
-        include/rpc/RemoteCNC.h
-        include/rpc/RemoteGimbal.h
-        include/rpc/RemoteNavigation.h
-        include/rpc/RemoteStub.h
-        include/rpc/RemoteWeeder.h
-        include/rpc/IScriptHub.h
-        include/rpc/ScriptHub.h
-        include/rpc/WeederAdaptor.h
-        include/rpc/RemoteFunctionCallNames.h
-
+        
         include/ui/CrystalDisplay.h
         include/ui/JoystickInputDevice.h
         include/ui/IJoystickEventMapper.h
@@ -229,53 +132,13 @@ set(SOURCES
         include/ui/Menu.h
         include/ui/RemoteStateInputDevice.h
         include/ui/IScriptEngine.h
-        include/ui/ScriptList.h
         include/ui/ScriptMenu.h
         include/ui/UIEventMapper.h
 
-        src/api/CNCRange.cpp
-        src/api/DataLog.cpp
-        src/api/DataLogAccessor.cpp
-        src/api/Path.cpp
-        src/api/ActivityHelper.cpp
-        src/api/EventTimer.cpp
-
-        src/battery_monitor/BatteryMonitor.cpp
-
-        src/cablebot/CablebotBase.cpp
-
-        src/hal/BldcGimbal.cpp
-        src/hal/BrushMotorDriver.cpp
-        src/hal/FakeGimbal.cpp
-        src/hal/ImagingDevice.cpp
-
-        src/configuration/ConfigurationProvider.cpp
-        src/configuration/GetOpt.cpp
-
-        src/cv/cv.cpp
         src/cv/ConnectedComponentsImage.cpp
-        src/cv/Image.cpp
-        src/cv/ImageIO.cpp
         src/cv/ImageCropper.cpp
         src/cv/PrincipalComponentAnalysis.cpp
         src/cv/Superpixels.cpp
-        src/cv/slic.cpp
-        
-        #src/camera/Camera360.cpp
-        src/camera/CameraInfo.cpp
-        src/camera/CameraInfoIO.cpp
-        src/camera/CameraIntrinsics.cpp
-        src/camera/CameraSettings.cpp
-        src/camera/SimpleRadialDistortion.cpp
-        src/camera/FileCamera.cpp
-        src/camera/USBCamera.cpp
-        src/camera/camera_v4l.h
-        src/camera/camera_v4l.c
-        src/camera/Imager.cpp
-
-        src/fake/FakeScriptEngine.cpp
-
-        src/notifications/FluidSoundNotifications.cpp
 
         src/oquam/ATDC.cpp
         src/oquam/Helix.cpp
@@ -310,6 +173,161 @@ set(SOURCES
         src/rover/StepperSteering.cpp
         src/rover/WheelOdometry.cpp
 
+        src/ui/CrystalDisplay.cpp
+        src/ui/JoystickInputDevice.cpp
+        src/ui/LinuxJoystick.cpp
+        src/ui/UIEventMapper.cpp
+        src/ui/RemoteStateInputDevice.cpp
+        src/ui/ScriptMenu.cpp
+
+      )
+endif()
+        
+set(SOURCES
+
+        include/IFileCabinet.h
+        include/IFolder.h
+        include/v3.h
+
+        include/api/ActivityHelper.h
+        include/api/EventTimer.h
+        include/api/IEventTimer.h
+        include/api/DataLog.h
+        include/api/DataLogAccessor.h
+        include/api/IActivity.h
+        include/api/ICamera.h
+        include/api/ICNC.h
+        include/api/IDataLog.h
+        include/api/IDisplay.h
+        include/api/IEventSource.h
+        include/api/IGimbal.h
+        include/api/IImager.h
+        include/api/IInputDevice.h
+        include/api/IMotorDriver.h
+        include/api/INotifications.h
+        include/api/IPowerDevice.h
+        include/api/IWeeder.h
+        include/api/IJoystick.h
+        include/api/Path.h
+        include/api/StateMachine.h
+
+        include/battery_monitor/IBatteryMonitor.h
+        include/battery_monitor/BatteryMonitor.h
+
+        include/cablebot/CablebotBase.h
+        
+        #include/camera/Camera360.h
+        include/camera/CameraInfo.h
+        include/camera/CameraInfoIO.h
+        include/camera/CameraIntrinsics.h
+        include/camera/CameraSettings.h
+        include/camera/ICameraDistortion.h
+        include/camera/ICameraInfo.h
+        include/camera/ICameraInfoIO.h
+        include/camera/ICameraIntrinsics.h
+        include/camera/ICameraIntrinsics.h
+        include/camera/ICameraSettings.h
+        include/camera/Imager.h
+        include/camera/FileCamera.h
+        include/camera/SimpleRadialDistortion.h        
+        include/camera/USBCamera.h
+
+        include/configuration/ConfigurationProvider.h
+        include/configuration/IOptions.h
+        include/configuration/GetOpt.h
+
+        include/cv/cv.h
+        include/cv/Image.h
+        include/cv/ImageIO.h
+        include/cv/slic.h
+
+        include/fake/FakeCNC.h
+        include/fake/FakeDisplay.h
+        include/fake/FakeInputDevice.h
+        include/fake/FakeMotorDriver.h
+        include/fake/FakeNavigation.h
+        include/fake/FakeNotifications.h
+        include/fake/FakeScriptEngine.h
+        include/fake/FakeWeeder.h
+
+        include/hal/BldcGimbal.h
+        include/hal/BrushMotorDriver.h
+        include/hal/FakeGimbal.h
+        include/hal/ImagingDevice.h
+
+        include/notifications/FluidSoundNotifications.h
+
+
+        include/rpc/CameraAdaptor.h
+        include/rpc/CNCAdaptor.h
+        include/rpc/GimbalAdaptor.h
+        include/rpc/IRPCClient.h
+        include/rpc/IRPCHandler.h
+        include/rpc/IRPCServer.h
+        include/rpc/MethodsActivity.h
+        include/rpc/MethodsCamera.h
+        include/rpc/MethodsCNC.h
+        include/rpc/MethodsGimbal.h
+        include/rpc/MethodsNavigation.h
+        include/rpc/MethodsRover.h
+        include/rpc/MethodsWeeder.h
+        include/rpc/NavigationAdaptor.h
+        include/rpc/RcomClient.h
+        include/rpc/RcomMessageHandler.h
+        include/rpc/RcomServer.h
+        include/rpc/RemoteCamera.h
+        include/rpc/RemoteCNC.h
+        include/rpc/RemoteGimbal.h
+        include/rpc/RemoteNavigation.h
+        include/rpc/RemoteStub.h
+        include/rpc/RemoteWeeder.h
+        include/rpc/IScriptHub.h
+        include/rpc/ScriptHub.h
+        include/rpc/WeederAdaptor.h
+        include/rpc/RemoteFunctionCallNames.h
+
+        include/ui/ScriptList.h
+
+        src/api/CNCRange.cpp
+        src/api/DataLog.cpp
+        src/api/DataLogAccessor.cpp
+        src/api/Path.cpp
+        src/api/ActivityHelper.cpp
+        src/api/EventTimer.cpp
+
+        src/battery_monitor/BatteryMonitor.cpp
+
+        src/cablebot/CablebotBase.cpp
+
+        src/hal/BldcGimbal.cpp
+        src/hal/BrushMotorDriver.cpp
+        src/hal/FakeGimbal.cpp
+        src/hal/ImagingDevice.cpp
+
+        src/configuration/ConfigurationProvider.cpp
+        src/configuration/GetOpt.cpp
+        
+        #src/camera/Camera360.cpp
+        src/camera/CameraInfo.cpp
+        src/camera/CameraInfoIO.cpp
+        src/camera/CameraIntrinsics.cpp
+        src/camera/CameraSettings.cpp
+        src/camera/SimpleRadialDistortion.cpp
+        src/camera/FileCamera.cpp
+        src/camera/USBCamera.cpp
+        src/camera/camera_v4l.h
+        src/camera/camera_v4l.c
+        src/camera/Imager.cpp
+
+        src/cv/cv.cpp
+        src/cv/Image.cpp
+        src/cv/ImageIO.cpp
+        src/cv/slic.cpp
+        
+        src/fake/FakeScriptEngine.cpp
+
+        src/notifications/FluidSoundNotifications.cpp
+
         src/rpc/CameraAdaptor.cpp
         src/rpc/CNCAdaptor.cpp
         src/rpc/GimbalAdaptor.cpp
@@ -327,14 +345,8 @@ set(SOURCES
         src/rpc/ScriptHubListener.cpp
         src/rpc/WeederAdaptor.cpp
 
-        src/ui/CrystalDisplay.cpp
-        src/ui/JoystickInputDevice.cpp
-        src/ui/LinuxJoystick.cpp
-        src/ui/UIEventMapper.cpp
-        src/ui/RemoteStateInputDevice.cpp
         src/ui/ScriptList.cpp
-        src/ui/ScriptMenu.cpp
-
+        
         src/v3.cpp
         )
 
@@ -370,7 +382,7 @@ set(DATA_PROVIDER_SOURCES
         include/debug_tools/debug_data_dumper.h
         src/debug_tools/debug_data_dumper.cpp)
 
-add_library(romi SHARED ${SOURCES} ${DATA_PROVIDER_SOURCES} ${PICAMERA_SOURCES})
+add_library(romi SHARED ${SOURCES} ${DATA_PROVIDER_SOURCES} ${PICAMERA_SOURCES} ${ROVER_SOURCES})
 
 target_include_directories(romi
         PUBLIC

@@ -28,7 +28,8 @@
 namespace romi {
         
         StillCamera::StillCamera(PiCameraSettings& settings)
-                : camera_(settings),
+                : //camera_(settings),
+                  BaseCamera(settings),
                   encoder_(),
                   encoder_connection_(camera_.get_still_port(),
                                       encoder_.get_input_port())
@@ -39,16 +40,16 @@ namespace romi {
         {
         }
 
-        bool StillCamera::set_value(const std::string& name, double value)
-        {
-                return camera_.set_value(name, value);
-        }
+        // bool StillCamera::set_value(const std::string& name, double value)
+        // {
+        //         return camera_.set_value(name, value);
+        // }
         
-        bool StillCamera::select_option(const std::string& name,
-                                        const std::string& value)
-        {
-                return camera_.select_option(name, value);
-        }
+        // bool StillCamera::select_option(const std::string& name,
+        //                                 const std::string& value)
+        // {
+        //         return camera_.select_option(name, value);
+        // }
         
         bool StillCamera::grab(romi::Image &image)
         {
@@ -66,24 +67,24 @@ namespace romi {
                 return encoder_.get_buffer();
         }
 
-        bool StillCamera::power_up()
-        {
-                return true;
-        }
+        // bool StillCamera::power_up()
+        // {
+        //         return true;
+        // }
         
-        bool StillCamera::power_down()
-        {
-                return true;
-        }
+        // bool StillCamera::power_down()
+        // {
+        //         return true;
+        // }
         
-        bool StillCamera::stand_by()
-        {
-                return true;
-        }
+        // bool StillCamera::stand_by()
+        // {
+        //         return true;
+        // }
         
-        bool StillCamera::wake_up()
-        {
-                return true;
-        }
+        // bool StillCamera::wake_up()
+        // {
+        //         return true;
+        // }
 }
 

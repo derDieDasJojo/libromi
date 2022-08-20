@@ -196,7 +196,7 @@ namespace romi {
                 if (!valid)
                         r_warn("Invalid ditigal gain");
                 return valid;
-o        }
+        }
 
         bool PiCameraSettings::is_colour_effects_valid(uint32_t u,  uint32_t v)
         {
@@ -204,6 +204,56 @@ o        }
                 if (!valid)
                         r_warn("Invalid colour effect");
                 return valid;
+        }
+
+        bool PiCameraSettings::set_saturation(int32_t saturation)
+        {
+                bool result = false;
+                if (is_saturation_valid(saturation)) {
+                        saturation_ = saturation;
+                        result = true;
+                }
+                return result;
+        }
+        
+        bool PiCameraSettings::set_sharpness(int32_t sharpness)
+        {
+                bool result = false;
+                if (is_sharpness_valid(sharpness)) {
+                        sharpness_ = sharpness;
+                        result = true;
+                }
+                return result;
+        }
+        
+        bool PiCameraSettings::set_contrast(int32_t contrast)
+        {
+                bool result = false;
+                if (is_contrast_valid(contrast)) {
+                        contrast_ = contrast;
+                        result = true;
+                }
+                return result;
+        }
+        
+        bool PiCameraSettings::set_brightness(int32_t brightness)
+        {
+                bool result = false;
+                if (is_brightness_valid(brightness)) {
+                        brightness_ = brightness;
+                        result = true;
+                }
+                return result;
+        }
+        
+        bool PiCameraSettings::set_iso(uint32_t iso)
+        {
+                bool result = false;
+                if (is_iso_valid(iso)) {
+                        iso_ = iso;
+                        result = true;
+                }
+                return result;
         }
 
         V2StillCameraSettings::V2StillCameraSettings(size_t width, size_t height)
