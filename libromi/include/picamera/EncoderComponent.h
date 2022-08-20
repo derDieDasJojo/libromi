@@ -47,7 +47,7 @@ namespace romi::arm {
                 rcom::MemBuffer& get_buffer();
                 MMAL_PORT_T *get_input_port();
                 
-                virtual void set_jpeg_quality(uint32_t value) = 0;
+                virtual bool set_jpeg_quality(uint32_t value) = 0;
                 
         private:
                 EncoderComponent(EncoderComponent& other) = default;

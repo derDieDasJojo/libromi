@@ -56,13 +56,14 @@ namespace romi {
 
         bool PiCamera::try_create_implementation()
         {
-                bool reset = false;
+                bool result = false;
                 try {
                         create_implementation();
-                        reset = true;
+                        result = true;
                 } catch (std::runtime_error& e) {
                         r_err("PiCamera::try_create_implementation: failed");
                 }
+                return result;
         }
 
         void PiCamera::create_implementation()
@@ -113,6 +114,10 @@ namespace romi {
                         result = set_brightness((int32_t) value);
                 } else if (name == ICameraSettings::kISO) {
                         result = set_iso((uint32_t) value);
+                } else if (name == ICameraSettings::kShutterSpeed) {
+                        result = set_shutter_speed((uint32_t) value);
+                } else if (name == ICameraSettings::kAnalogGain) {
+                        result = set_analog_gain((float) value);
                 }
                 return result;
         }
@@ -125,11 +130,38 @@ namespace romi {
                 if (name == ICameraSettings::kResolution) {
                         result = set_resolution(value);
                 } else if (name == ICameraSettings::kCameraMode) {
-                        result = set_resolution(value);
+                        result = set_mode(value);
+                } else if (name == ICameraSettings::kExposureMode) {
+                        result = set_exposure_mode(value);
+                } else {
+                        r_err("PiCamera::select_option: unknown option: %s",
+                              name.c_str());
                 }
                 return result;
         }
 
+        bool PiCamera::set_shutter_speed(uint32_t value)
+        { 
+                bool result = false;
+                if (settings_.set_shutter_speed(value)) {
+                        result = impl_->set_shutter_speed(value);                        
+                } else {
+                        r_err("PiCamera::set_shutter_speed: set failed");
+                }
+                return result;
+        }
+
+        bool PiCamera::set_analog_gain(float value)
+        { 
+                bool result = false;
+                if (settings_.set_analog_gain(value)) {
+                        result = impl_->set_analog_gain(value);                        
+                } else {
+                        r_err("PiCamera::set_analog_gain: set failed");
+                }
+                return result;
+        }
+        
         bool PiCamera::set_resolution(const std::string& value)
         { 
                bool result = true;
@@ -177,6 +209,25 @@ namespace romi {
                         result = try_create_implementation();
                 } else {
                         r_err("PiCamera::set_mode: invalid mode: %s", value.c_str());
+                }
+                return result;
+        }
+        
+        bool PiCamera::set_exposure_mode(const std::string& value)
+        {
+                bool result = false;
+                if (value == ICameraSettings::kExposureAuto) {
+                        if (settings_.set_exposure_mode(MMAL_PARAM_EXPOSUREMODE_AUTO))
+                                result = impl_->set_exposure_mode(MMAL_PARAM_EXPOSUREMODE_AUTO);
+                } else if (value == ICameraSettings::kExposureOff) {
+                        if (settings_.set_exposure_mode(MMAL_PARAM_EXPOSUREMODE_OFF))
+                                result = impl_->set_exposure_mode(MMAL_PARAM_EXPOSUREMODE_OFF);
+                } else if (value == ICameraSettings::kExposureSports) {
+                        if (settings_.set_exposure_mode(MMAL_PARAM_EXPOSUREMODE_SPORTS))
+                                result = impl_->set_exposure_mode(MMAL_PARAM_EXPOSUREMODE_SPORTS);
+                } else {
+                        r_err("PiCamera::set_exposure_mode: unhandled mode: %s",
+                              value.c_str());
                 }
                 return result;
         }
@@ -247,7 +298,7 @@ namespace romi {
                 bool result = false;
                 assert_implementation();
                 if (settings_.set_jpeg_quality(quality)) {
-                        result = impl_->set_jpeg_quality(quality);
+                        impl_->set_jpeg_quality(quality);
                         result = true;
                 } else {
                         r_err("PiCamera::set_iso: failed to set the jpeg quality");

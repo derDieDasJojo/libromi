@@ -44,13 +44,16 @@ namespace romi {
                 
                 virtual bool grab(Image &image) = 0;
                 virtual rcom::MemBuffer& grab_jpeg() = 0;                
-                virtual void set_jpeg_quality(uint32_t value) = 0;
+                virtual bool set_jpeg_quality(uint32_t value) = 0;
                 
                 bool set_saturation(int32_t saturation);
                 bool set_sharpness(int32_t sharpness);
                 bool set_contrast(int32_t contrast);
                 bool set_brightness(int32_t brightness);
                 bool set_iso(uint32_t iso);
+                bool set_exposure_mode(MMAL_PARAM_EXPOSUREMODE_T mode);
+                bool set_shutter_speed(uint32_t speed);
+                bool set_analog_gain(float value);
         };
 }
 

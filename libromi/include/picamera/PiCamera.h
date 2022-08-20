@@ -68,7 +68,11 @@ namespace romi {
                 bool set_brightness(int32_t brightness);
                 bool set_iso(uint32_t iso);
                 bool set_resolution(size_t width, size_t height);
-                
+                bool set_jpeg_quality(uint32_t quality);
+                bool set_mode(const std::string& value);
+                bool set_analog_gain(float value);
+                bool set_shutter_speed(uint32_t value);
+                bool set_exposure_mode(const std::string& value);
         };
 }
 

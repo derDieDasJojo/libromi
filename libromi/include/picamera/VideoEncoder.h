@@ -53,8 +53,8 @@ namespace romi::arm {
                 void enable_output();
                 void disable_output();
                 void send_buffers();
-
-                void set_jpeg_quality(uint32_t value) override;
+                
+                bool set_jpeg_quality(uint32_t value) override;
                 
         protected:
 

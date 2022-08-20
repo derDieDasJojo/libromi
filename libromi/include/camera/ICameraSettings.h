@@ -108,6 +108,12 @@ namespace romi {
                 static constexpr const char* kResolution820x616 = "820x616";
                 static constexpr const char* kResolution1920x1080 = "1920x1080"; 
                 static constexpr const char* kResolution640x480 = "640x480"; 
+                static constexpr const char* kExposureMode = "exposure-mode"; 
+                static constexpr const char* kExposureAuto = "auto"; 
+                static constexpr const char* kExposureOff = "off"; 
+                static constexpr const char* kExposureSports = "sports"; 
+                static constexpr const char* kShutterSpeed = "shutter-speed"; 
+                static constexpr const char* kAnalogGain = "analog-gain"; 
                 static constexpr const char* kJpegQuality = "jpeg-quality"; 
                 static constexpr const char* kSaturation = "saturation"; 
                 static constexpr const char* kSharpness = "sharpness"; 

@@ -47,7 +47,7 @@ namespace romi {
                 
                 bool grab(Image &image) override;
                 rcom::MemBuffer& grab_jpeg() override;
-                void set_jpeg_quality() override;
+                bool set_jpeg_quality(uint32_t quality) override;
         };
 }
 

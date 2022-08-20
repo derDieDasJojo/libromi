@@ -56,7 +56,7 @@ namespace romi::arm {
                 // Start video recording
                 void start_video();
                 
-                void set_shutter_speed();
+                void init_shutter_speed();
                 
                 MMAL_PORT_T *get_still_port();
                 MMAL_PORT_T *get_video_port();
@@ -66,6 +66,9 @@ namespace romi::arm {
                 void set_contrast(int32_t value);
                 void set_brightness(int32_t value);
                 void set_iso(uint32_t value);
+                void set_exposure_mode(MMAL_PARAM_EXPOSUREMODE_T value);
+                void set_shutter_speed(uint32_t value);
+                void set_analog_gain(float value);
 
         protected:
                 void handle_control_callback(MMAL_BUFFER_HEADER_T *buffer) override;
@@ -101,7 +104,6 @@ namespace romi::arm {
                                       int32_t framerate);
                 void set_video_stabilisation(bool value);
                 void set_exposure_compensation(int32_t value);
-                void set_exposure_mode(MMAL_PARAM_EXPOSUREMODE_T value);
                 void set_metering_mode(MMAL_PARAM_EXPOSUREMETERINGMODE_T value);
                 void set_awb_mode(MMAL_PARAM_AWBMODE_T value);
                 void set_awb_gains(float red, float blue);
@@ -113,10 +115,9 @@ namespace romi::arm {
                 void set_roi(FloatRectangle& value);
                 void set_drc(MMAL_PARAMETER_DRC_STRENGTH_T value);
                 void set_stats_pass(bool value);
-                void set_analog_gain(float value);
                 void set_digital_gain(float value);
                 void set_focus_window(bool value);
-                void set_shutter_speed(uint32_t value);
+                void init_shutter_speed(uint32_t value);
                 void set_fraction(const char *caller_name,
                                   uint32_t id, int nominator);
                 
