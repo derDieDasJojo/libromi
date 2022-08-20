@@ -215,6 +215,19 @@ namespace romi {
                 return valid;
         }
 
+        bool PiCameraSettings::set_resolution(size_t width, size_t height)
+        {
+                bool result = false;
+                if (is_resolution_valid(width, height)) {
+                        width_ = width;
+                        height_ = height;
+                        preview_width_ = width;
+                        preview_height_ = height;
+                        result = true;
+                }
+                return result;
+        }
+
         bool PiCameraSettings::set_saturation(int32_t saturation)
         {
                 bool result = false;

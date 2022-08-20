@@ -39,8 +39,11 @@ namespace romi {
                 std::unique_ptr<BaseCamera> impl_;
                 std::mutex mutex_;
                 
+                void try_create_implementation();
                 void create_implementation();
                 void destroy_implementation();
+                void assert_implementation();
+                bool set_resolution(const std::string& value);
 
         public:                
                 PiCamera(PiCameraSettings& settings);
@@ -64,6 +67,7 @@ namespace romi {
                 bool set_contrast(int32_t contrast);
                 bool set_brightness(int32_t brightness);
                 bool set_iso(uint32_t iso);
+                bool set_resolution(size_t width, size_t height);
                 
         };
 }

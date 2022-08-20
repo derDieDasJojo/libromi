@@ -54,6 +54,17 @@ namespace romi {
                 impl_.reset();
         }
 
+        bool PiCamera::try_create_implementation()
+        {
+                bool reset = false;
+                try {
+                        create_implementation();
+                        reset = true;
+                } catch (std::runtime_error& e) {
+                        r_err("PiCamera::try_create_implementation: failed");
+                }
+        }
+
         void PiCamera::create_implementation()
         {
                 destroy_implementation();
@@ -64,15 +75,25 @@ namespace romi {
                         impl_ = std::make_unique<VideoCamera>(settings_);
         }
 
+        void PiCamera::assert_implementation()
+        {
+                if (!impl_) {
+                        r_err("PiCamera::assert_implementation");
+                        throw std::runtime_error("PiCamera::assert_implementation");
+                }
+        }
+        
         bool PiCamera::grab(Image &image)
         {
                 SynchronizedCodeBlock sync(mutex_);
+                assert_implementation();
                 return impl_->grab(image);
         }
         
         rcom::MemBuffer& PiCamera::grab_jpeg()
         {
                 SynchronizedCodeBlock sync(mutex_);
+                assert_implementation();
                 return impl_->grab_jpeg();
         }
                 
@@ -99,16 +120,74 @@ namespace romi {
         bool PiCamera::select_option(const std::string& name,
                                      const std::string& value)
         {
-                (void) name;
-                (void) value;
                 SynchronizedCodeBlock sync(mutex_);
-                r_debug("PiCamera::select_option: %s='%s'", name.c_str(), value.c_str());
-                return false;
+                bool result = false;
+                if (name == ICameraSettings::kResolution) {
+                        result = set_resolution(value);
+                } else if (name == ICameraSettings::kCameraMode) {
+                        result = set_resolution(value);
+                }
+                return result;
+        }
+
+        bool PiCamera::set_resolution(const std::string& value)
+        { 
+               size_t width = 0;
+               size_t height = 0;
+               bool result = true;
+
+               if (value == ICameraSettings::kResolution4056x3040) {
+                       result = set_resolution(4056, 3040);
+               } else if (value == ICameraSettings::kResolution2028x1520) {
+                       result = set_resolution(2028, 1520);
+               } else if (value == ICameraSettings::kResolution1014x760) {
+                       result = set_resolution(1014, 760);
+               } else if (value == ICameraSettings::kResolution3280x2464) {
+                       result = set_resolution(3280, 2464);
+               } else if (value == ICameraSettings::kResolution1640x1232) {
+                       result = set_resolution(1640, 1232);
+               } else if (value == ICameraSettings::kResolution820x616) {
+                       result = set_resolution(820, 616);
+               } else if (value == ICameraSettings::kResolution1920x1080) {
+                       result = set_resolution(1920, 1080);
+               } else if (value == ICameraSettings::kResolution640x480) {
+                       result = set_resolution(640, 480);
+               } else {
+                       r_err("PiCamera::set_resolution: unhandled resolution: %s",
+                             value.c_str());
+                       result = false;
+               }
+        }
+
+        bool PiCamera::set_resolution(size_t width, size_t height)
+        { 
+                bool result = false;
+                if (settings_.set_resolution(width, height)) {
+                        result = try_create_implementation();                        
+                }
+                return result;
+        }
+
+        bool PiCamera::set_mode(const std::string& value)
+        {
+                bool result = false;
+                if (value == ICameraSettings::kStillMode) {
+                        settings_.mode_ = kStillMode;
+                        result = try_create_implementation();
+                } else if (value == ICameraSettings::kVideoMode) {
+                        settings_.mode_ = kVideoMode;
+                        result = try_create_implementation();
+                } else {
+                        r_err("PiCamera::set_mode: invalid mode: %s", value.c_str());
+                }
+                return result;
         }
         
         bool PiCamera::set_saturation(int32_t saturation)
         {
                 bool result = false;
+                assert_implementation();
+
                 if (settings_.set_saturation(saturation)) {
                         result = impl_->set_saturation(saturation);
                 } else {
@@ -120,6 +199,7 @@ namespace romi {
         bool PiCamera::set_sharpness(int32_t sharpness)
         {
                 bool result = false;
+                assert_implementation();
                 if (settings_.set_sharpness(sharpness)) {
                         result = impl_->set_sharpness(sharpness);
                 } else {
@@ -131,6 +211,7 @@ namespace romi {
         bool PiCamera::set_contrast(int32_t contrast)
         {
                 bool result = false;
+                assert_implementation();
                 if (settings_.set_contrast(contrast)) {
                         result = impl_->set_contrast(contrast);
                 } else {
@@ -142,6 +223,7 @@ namespace romi {
         bool PiCamera::set_brightness(int32_t brightness)
         {
                 bool result = false;
+                assert_implementation();
                 if (settings_.set_brightness(brightness)) {
                         result = impl_->set_brightness(brightness);
                 } else {
@@ -153,6 +235,7 @@ namespace romi {
         bool PiCamera::set_iso(uint32_t iso)
         {
                 bool result = false;
+                assert_implementation();
                 if (settings_.set_iso(iso)) {
                         result = impl_->set_iso(iso);
                 } else {
@@ -164,6 +247,7 @@ namespace romi {
         bool PiCamera::set_jpeg_quality(uint32_t quality)
         {
                 bool result = false;
+                assert_implementation();
                 if (settings_.set_jpeg_quality(quality)) {
                         result = impl_->set_jpeg_quality(quality);
                 } else {
