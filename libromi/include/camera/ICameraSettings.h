@@ -96,6 +96,7 @@ namespace romi {
         {
         public:
 
+                static constexpr const char* kJpegQuality = "jpeg-quality"; 
                 static constexpr const char* kSaturation = "saturation"; 
                 static constexpr const char* kSharpness = "sharpness"; 
                 static constexpr const char* kContrast = "contrast"; 

@@ -60,9 +60,6 @@ namespace romi::arm {
                 
                 MMAL_PORT_T *get_still_port();
                 MMAL_PORT_T *get_video_port();
-                
-                bool set_value(const std::string& name, double value);
-                bool select_option(const std::string& name, const std::string& value);
 
                 void set_saturation(int32_t value);
                 void set_sharpness(int32_t value);

@@ -80,7 +80,9 @@ namespace romi {
         {
                 SynchronizedCodeBlock sync(mutex_);
                 bool result = false;
-                if (name == ICameraSettings::kContrast) {
+                if (name == ICameraSettings::kJpegQuality) {
+                        result = set_jpeg_quality((uint32_t) value);
+                } else if (name == ICameraSettings::kContrast) {
                         result = set_contrast((int32_t) value);
                 } else if (name == ICameraSettings::kSaturation) {
                         result = set_saturation((int32_t) value);
@@ -155,6 +157,17 @@ namespace romi {
                         result = impl_->set_iso(iso);
                 } else {
                         r_err("PiCamera::set_iso: failed to set the iso");
+                }
+                return result;
+        }
+        
+        bool PiCamera::set_jpeg_quality(uint32_t quality)
+        {
+                bool result = false;
+                if (settings_.set_jpeg_quality(quality)) {
+                        result = impl_->set_jpeg_quality(quality);
+                } else {
+                        r_err("PiCamera::set_iso: failed to set the jpeg quality");
                 }
                 return result;
         }

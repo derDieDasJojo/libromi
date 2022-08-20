@@ -43,7 +43,8 @@ namespace romi {
                 virtual ~BaseCamera();
                 
                 virtual bool grab(Image &image) = 0;
-                virtual rcom::MemBuffer& grab_jpeg() = 0;
+                virtual rcom::MemBuffer& grab_jpeg() = 0;                
+                virtual void set_jpeg_quality(uint32_t value) = 0;
                 
                 bool set_saturation(int32_t saturation);
                 bool set_sharpness(int32_t sharpness);

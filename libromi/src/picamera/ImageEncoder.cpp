@@ -33,7 +33,7 @@ namespace romi::arm {
                   capture_failed_(false)
         {
                 set_format();
-                set_jpeg_quality();
+                set_jpeg_quality(85);
                 disable_jpeg_restart();
                 disable_thumbnail();
                 enable();
@@ -66,12 +66,12 @@ namespace romi::arm {
                 assert_status("set_format", status);
         }
 
-        void ImageEncoder::set_jpeg_quality()
+        void ImageEncoder::set_jpeg_quality(uint32_t value)
         {
                 MMAL_STATUS_T status;                
                 status = mmal_port_parameter_set_uint32(output_,
                                                         MMAL_PARAMETER_JPEG_Q_FACTOR,
-                                                        85);
+                                                        value);
                 assert_status("set_jpeg_quality", status);
         }
 
@@ -98,6 +98,7 @@ namespace romi::arm {
                 wait_capture();
                 disable_output();
                 assert_successful_capture();
+                r_debug("buffer size: %d", (int) buffer_.size());
         }
 
         void ImageEncoder::assert_successful_capture()

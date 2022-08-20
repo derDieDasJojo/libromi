@@ -39,17 +39,6 @@ namespace romi {
         StillCamera::~StillCamera()
         {
         }
-
-        // bool StillCamera::set_value(const std::string& name, double value)
-        // {
-        //         return camera_.set_value(name, value);
-        // }
-        
-        // bool StillCamera::select_option(const std::string& name,
-        //                                 const std::string& value)
-        // {
-        //         return camera_.select_option(name, value);
-        // }
         
         bool StillCamera::grab(romi::Image &image)
         {
@@ -67,24 +56,9 @@ namespace romi {
                 return encoder_.get_buffer();
         }
 
-        // bool StillCamera::power_up()
-        // {
-        //         return true;
-        // }
-        
-        // bool StillCamera::power_down()
-        // {
-        //         return true;
-        // }
-        
-        // bool StillCamera::stand_by()
-        // {
-        //         return true;
-        // }
-        
-        // bool StillCamera::wake_up()
-        // {
-        //         return true;
-        // }
+        void StillCamera::set_jpeg_quality()
+        {
+                encoder_.set_jpeg_quality();
+        }
 }
 

@@ -30,7 +30,8 @@ namespace romi {
         PiCameraSettings::PiCameraSettings()
                 : mode_(kStillMode),
                   framerate_(kVariableFrameRate),
-                  bitrate_(kDefaultBitRate), 
+                  bitrate_(kDefaultBitRate),
+                  jpeg_quality_(kDefaultJpegQuality),
                   max_width_(640),
                   max_height_(480),
                   width_(640),
@@ -167,7 +168,7 @@ namespace romi {
 
         bool PiCameraSettings::is_shutter_speed_valid(uint32_t speed)
         {
-                bool valid = (speed < 60*1000);
+                bool valid = (speed < 200*1000);
                 if (!valid)
                         r_warn("Invalid shutter speed");
                 return valid;
@@ -203,6 +204,14 @@ namespace romi {
                 bool valid = (u <= 255 && v <= 255);
                 if (!valid)
                         r_warn("Invalid colour effect");
+                return valid;
+        }
+
+        bool PiCameraSettings::is_jpeg_quality_valid(uint32_t quality)
+        {
+                bool valid = (quality <= 100);
+                if (!valid)
+                        r_warn("Invalid jpeg quality, %d != [0,100]", (int) quality);
                 return valid;
         }
 
@@ -251,6 +260,16 @@ namespace romi {
                 bool result = false;
                 if (is_iso_valid(iso)) {
                         iso_ = iso;
+                        result = true;
+                }
+                return result;
+        }
+
+        bool PiCameraSettings::set_jpeg_quality(uint32_t quality)
+        {
+                bool result = false;
+                if (is_jpeg_quality_valid(quality)) {
+                        jpeg_quality_ = quality;
                         result = true;
                 }
                 return result;
