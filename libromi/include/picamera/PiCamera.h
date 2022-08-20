@@ -39,7 +39,7 @@ namespace romi {
                 std::unique_ptr<BaseCamera> impl_;
                 std::mutex mutex_;
                 
-                void try_create_implementation();
+                bool try_create_implementation();
                 void create_implementation();
                 void destroy_implementation();
                 void assert_implementation();

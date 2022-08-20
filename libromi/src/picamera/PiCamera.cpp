@@ -132,10 +132,7 @@ namespace romi {
 
         bool PiCamera::set_resolution(const std::string& value)
         { 
-               size_t width = 0;
-               size_t height = 0;
                bool result = true;
-
                if (value == ICameraSettings::kResolution4056x3040) {
                        result = set_resolution(4056, 3040);
                } else if (value == ICameraSettings::kResolution2028x1520) {
@@ -157,6 +154,7 @@ namespace romi {
                              value.c_str());
                        result = false;
                }
+               return result;
         }
 
         bool PiCamera::set_resolution(size_t width, size_t height)
@@ -250,6 +248,7 @@ namespace romi {
                 assert_implementation();
                 if (settings_.set_jpeg_quality(quality)) {
                         result = impl_->set_jpeg_quality(quality);
+                        result = true;
                 } else {
                         r_err("PiCamera::set_iso: failed to set the jpeg quality");
                 }
