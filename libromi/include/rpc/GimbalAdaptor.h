@@ -39,6 +39,7 @@ namespace romi {
                 void execute_moveto(nlohmann::json& params, RPCError &error);
                 void execute_get_position(nlohmann::json& result, RPCError &error);
                 void execute_get_range(nlohmann::json& result, RPCError &error);
+                void execute_homing(RPCError &error);
                 
                 void execute_stop(RPCError &error);
                 void execute_pause(RPCError &error);

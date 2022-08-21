@@ -68,6 +68,9 @@ namespace romi {
                         } else if (method == MethodsGimbal::kGetRange) {
                                 execute_get_range(result, error);
                         
+                        } else if (method == MethodsGimbal::kHoming) {
+                                execute_homing(error);
+                        
                         } else if (method == MethodsActivity::activity_pause) {
                                 execute_pause(error);
                                 
@@ -147,6 +150,16 @@ namespace romi {
                         r_err("GimbalAdaptor::execute_get_range failed");
                         error.code = 1;
                         error.message = "Get range failed";
+                }
+        }
+        
+        void GimbalAdaptor::execute_homing(RPCError &error)
+        {
+                r_debug("GimbalAdaptor::execute_homing");
+                
+                if (!gimbal_.homing()) {
+                        error.code = 1;
+                        error.message = "homing failed";
                 }
         }
 

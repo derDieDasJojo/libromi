@@ -81,6 +81,12 @@ namespace romi {
 
                 return success;
         }
+
+        bool RemoteGimbal::homing()
+        {
+                r_debug("RemoteGimbal::homing");
+                return execute_simple_request(MethodsGimbal::kHoming);
+        }
  
         bool RemoteGimbal::pause_activity()
         {

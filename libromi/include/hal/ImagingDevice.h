@@ -60,6 +60,7 @@ namespace romi {
                 bool moveto(double x, double y, double z,
                             double phi_x, double phi_y, double phi_z,
                             double relative_speed) override;
+                bool get_position(v3& xyz, v3& angles) override;
                 
                 // IActivity interface
                 bool pause_activity() override;

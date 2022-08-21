@@ -43,11 +43,12 @@ namespace romi {
                 ~CNCAndGimbal() override = default;
 
                 bool get_cnc_range(CNCRange &range) override;
-                bool get_gimbal_range(IRange &range) override;
-                
+                bool get_gimbal_range(IRange &range) override;                
                 bool moveto(double x, double y, double z,
                             double phi_x, double phi_y, double phi_z,
                             double relative_speed) override;
+                bool get_position(v3& xyz, v3& angles) override;
+                bool homing() override; 
         };
 }
 

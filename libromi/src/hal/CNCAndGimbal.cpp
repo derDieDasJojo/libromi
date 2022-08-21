@@ -53,5 +53,16 @@ namespace romi {
                                 && gimbal_->moveto(phi_x, phi_y, phi_z, relative_speed));
                 return success;
         }
+        
+        bool CNCAndGimbal::get_position(v3& xyz, v3& angles)
+        {
+                return (cnc_->get_position(xyz)
+                        && gimbal_->get_position(angles));
+        }
+
+        bool CNCAndGimbal::homing()
+        {
+                return (cnc_->homing() && gimbal_->homing());
+        }
 }
 

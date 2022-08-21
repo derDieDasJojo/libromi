@@ -70,6 +70,11 @@ namespace romi {
         {
                 return mount_->moveto(x, y, z, phi_x, phi_y, phi_z, relative_speed);
         }
+        
+        bool ImagingDevice::get_position(v3& xyz, v3& angles)
+        {
+                return mount_->get_position(xyz, angles);
+        }
 
         bool ImagingDevice::pause_activity()
         {

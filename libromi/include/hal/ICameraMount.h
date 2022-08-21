@@ -38,11 +38,12 @@ namespace romi {
                 virtual ~ICameraMount() = default;
 
                 virtual bool get_cnc_range(CNCRange &range) = 0;
-                virtual bool get_gimbal_range(IRange &range) = 0;
-                
+                virtual bool get_gimbal_range(IRange &range) = 0;                
                 virtual bool moveto(double x, double y, double z,
                                     double phi_x, double phi_y, double phi_z,
                                     double relative_speed) = 0;
+                virtual bool get_position(v3& xyz, v3& angles) = 0;
+                virtual bool homing() = 0; 
         };
 }
 

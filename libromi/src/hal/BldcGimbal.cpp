@@ -164,6 +164,11 @@ namespace romi {
                 return (response[0] == 0);
         }
 
+        bool BldcGimbal::homing()
+        {
+                return true; // false?
+        }
+
         bool BldcGimbal::stand_by()
         {
                 return power_down();

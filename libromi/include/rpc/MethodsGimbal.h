@@ -33,6 +33,7 @@ namespace romi {
                 static constexpr const char *kMoveto = "gimbal-moveto";
                 static constexpr const char *kGetRange = "gimbal-get-range";
                 static constexpr const char *kGetPosition = "gimbal-get-position";
+                static constexpr const char *kHoming = "gimbal-homing";
 
                 static constexpr const char *kSpeedParam = "speed";
                 static constexpr const char *kMoveXParam = "x";

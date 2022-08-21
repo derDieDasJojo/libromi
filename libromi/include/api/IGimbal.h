@@ -42,6 +42,7 @@ namespace romi {
                                     double relative_speed) = 0;
                 virtual bool get_position(v3& position) = 0; 
                 virtual bool get_range(IRange& range) = 0; 
+                virtual bool homing() = 0; 
         };
 }
 

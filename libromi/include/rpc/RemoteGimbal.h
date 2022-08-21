@@ -41,6 +41,7 @@ namespace romi {
                             double relative_speed) override;
                 bool get_position(v3& position) override; 
                 bool get_range(IRange& range) override;
+                bool homing() override; 
                 
                 bool pause_activity() override;
                 bool continue_activity() override;
