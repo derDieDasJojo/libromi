@@ -24,8 +24,10 @@
 #ifndef __ROMI_I_GIMBAL_H
 #define __ROMI_I_GIMBAL_H
 
+#include "v3.h"
 #include "api/IActivity.h"
 #include "api/IPowerDevice.h"
+#include "api/IRange.h"
 
 namespace romi {
         
@@ -34,11 +36,12 @@ namespace romi {
         public:
                 
                 virtual ~IGimbal() = default;
-                
-                virtual bool moveto(double angle_in_degrees) = 0;
-                virtual bool moveat(double revolutions_per_second) = 0;
-                virtual bool get_angle(double& angle_in_degrees) = 0;
-                virtual bool set_angle(double angle_in_degrees) = 0;
+
+                // Angles in degrees.
+                virtual bool moveto(double phi_x, double phi_y, double phi_z,
+                                    double relative_speed) = 0;
+                virtual bool get_position(v3& position) = 0; 
+                virtual bool get_range(IRange& range) = 0; 
         };
 }
 

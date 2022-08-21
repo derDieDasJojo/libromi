@@ -31,17 +31,18 @@ namespace romi {
         class FakeGimbal : public IGimbal
         {
         protected:
-                double angle_;
+                double x_;
+                double y_;
+                double z_;
                 
         public:
                 FakeGimbal();
                 virtual ~FakeGimbal() = default;
                                 
                 // IGimbal
-                bool moveto(double angle_in_degrees) override;
-                bool moveat(double rps) override;
-                bool get_angle(double& value) override;
-                bool set_angle(double value) override;
+                bool moveto(double x, double y, double z, double relative_speed) override;
+                bool get_position(v3& position) override; 
+                bool get_range(IRange& range) override; 
 
                 // IActivity
                 bool pause_activity() override;

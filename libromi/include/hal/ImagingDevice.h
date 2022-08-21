@@ -26,8 +26,7 @@
 
 #include <memory>
 #include "api/ICamera.h"
-#include "api/ICNC.h"
-#include "api/IGimbal.h"
+#include "hal/IDisplacementDevice.h"
 #include "api/IActivity.h"
 #include "api/IPowerDevice.h"
 
@@ -38,12 +37,10 @@ namespace romi {
         public:
 
                 std::shared_ptr<ICamera> camera_;
-                std::shared_ptr<ICNC> cnc_;
-                std::shared_ptr<IGimbal> gimbal_;
+                std::shared_ptr<IDisplacementDevice> carrier_;
                 
                 ImagingDevice(std::shared_ptr<ICamera>& camera,
-                              std::shared_ptr<ICNC>& cnc,
-                              std::shared_ptr<IGimbal>& gimbal);
+                              std::shared_ptr<IDisplacementDevice>& carrier_);
                 
                 virtual ~ImagingDevice() = default;
 

@@ -248,7 +248,7 @@ namespace romi {
                 assert_implementation();
                 if (settings_.set_jpeg_quality(quality)) {
                         result = impl_->set_jpeg_quality(quality);
-                        result = true;
+                        result = false;
                 } else {
                         r_err("PiCamera::set_iso: failed to set the jpeg quality");
                 }

@@ -21,22 +21,29 @@
   <http://www.gnu.org/licenses/>.
 
  */
+#ifndef __ROMI_I_DISPLACEMENTDEVICE_H
+#define __ROMI_I_DISPLACEMENTDEVICE_H
 
+#include "api/IActivity.h"
+#include "api/IPowerDevice.h"
+#include "api/IRange.h"
 #include "api/CNCRange.h"
 
 namespace romi {
         
-        CNCRange::CNCRange() : Range() {
-        }
-        
-        CNCRange::CNCRange(const double *xmin, const double *xmax)
-                : Range(xmin, xmax) {
-        }
-        
-        CNCRange::CNCRange(v3 xmin, v3 xmax)
-                : Range(xmin, xmax) {
-        }
+        class IDisplacementDevice : public IActivity, public IPowerDevice
+        {
+        public:
 
-        CNCRange::CNCRange(nlohmann::json& json) : Range(json) {
-        }
+                virtual ~IDisplacementDevice() = default;
+
+                virtual bool get_cnc_range(CNCRange &range) = 0;
+                virtual bool get_gimbal_range(IRange &range) = 0;
+                
+                virtual bool moveto(double x, double y, double z,
+                                    double phi_x, double phi_y, double phi_z,
+                                    double relative_speed) = 0;
+        };
 }
+
+#endif // __ROMI_DISPLACEMENTDEVICE_H

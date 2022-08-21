@@ -21,36 +21,34 @@
   <http://www.gnu.org/licenses/>.
 
  */
-#ifndef _ROMI_REMOTE_GIMBAL_H_
-#define _ROMI_REMOTE_GIMBAL_H_
+#ifndef __ROMI_CNCANDGIMBAL_H
+#define __ROMI_CNCANDGIMBAL_H
 
+#include <memory>
+#include "hal/IDisplacementDevice.h"
+#include "api/ICNC.h"
 #include "api/IGimbal.h"
-#include "rpc/RemoteStub.h"
 
 namespace romi {
         
-        class RemoteGimbal : public IGimbal, public RemoteStub
+        class CNCAndGimbal : public IDisplacementDevice
         {
+        protected:
+                std::unique_ptr<ICNC> cnc_;
+                std::unique_ptr<IGimbal> gimbal_;
+                
         public:
-                static constexpr const char *ClassName = "remote-gimbal";
-                
-                explicit RemoteGimbal(std::unique_ptr<IRPCClient>& client);
-                ~RemoteGimbal() override = default;
+                CNCAndGimbal(std::unique_ptr<ICNC>& cnc,
+                             std::unique_ptr<IGimbal>& gimbal);
+                ~CNCAndGimbal() override = default;
 
-                bool moveto(double phi_x, double phi_y, double phi_z,
+                bool get_cnc_range(CNCRange &range) override;
+                bool get_gimbal_range(IRange &range) override;
+                
+                bool moveto(double x, double y, double z,
+                            double phi_x, double phi_y, double phi_z,
                             double relative_speed) override;
-                bool get_position(v3& position) override; 
-                bool get_range(IRange& range) override;
-                
-                bool pause_activity() override;
-                bool continue_activity() override;
-                bool reset_activity() override;
-
-                bool power_up() override;
-                bool power_down() override;
-                bool stand_by() override;
-                bool wake_up() override;
         };
 }
 
-#endif // _ROMI_REMOTE_GIMBAL_H_
+#endif // __ROMCNCANDGIMBAL_H

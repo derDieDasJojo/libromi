@@ -45,12 +45,16 @@ namespace romi {
         public:
                 BldcGimbal(romiserial::IRomiSerialClient& serial);
                 virtual ~BldcGimbal() = default;
+
+                // bonus:
+                bool moveat(double wx, double wy, double wz); //override;
+                bool set_angle(double value); //override;
                                 
                 // IGimbal
-                bool moveto(double angle_in_degrees) override;
-                bool moveat(double rps) override;
-                bool get_angle(double& value) override;
-                bool set_angle(double value) override;
+                bool moveto(double phi_x, double phi_y, double phi_z,
+                            double relative_speed) override;
+                bool get_position(v3& position) override; 
+                bool get_range(IRange& range) override;
 
                 // IActivity
                 bool pause_activity() override;

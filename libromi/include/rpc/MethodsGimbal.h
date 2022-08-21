@@ -30,14 +30,17 @@ namespace romi {
         {
         public:
                 
-                static constexpr const char *get_angle = "gimbal-get-angle";
-                static constexpr const char *set_angle = "gimbal-set-angle";
-                static constexpr const char *moveto = "gimbal-moveto";
-                static constexpr const char *moveat = "gimbal-moveat";
+                static constexpr const char *kMoveto = "gimbal-moveto";
+                static constexpr const char *kGetRange = "gimbal-get-range";
+                static constexpr const char *kGetPosition = "gimbal-get-position";
 
-                static constexpr const char *angle_param = "angle";
-                static constexpr const char *angle_result = "angle";
-                static constexpr const char *rps_param = "rps";
+                static constexpr const char *kSpeedParam = "speed";
+                static constexpr const char *kMoveXParam = "x";
+                static constexpr const char *kMoveYParam = "y";
+                static constexpr const char *kMoveZParam = "z";
+                static constexpr const char *kPositionX = "x";
+                static constexpr const char *kPositionY = "y";
+                static constexpr const char *kPositionZ = "z";
         };
 }
 

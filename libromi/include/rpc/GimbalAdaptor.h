@@ -37,9 +37,8 @@ namespace romi {
                 IGimbal& gimbal_;
                 
                 void execute_moveto(nlohmann::json& params, RPCError &error);
-                void execute_moveat(nlohmann::json& params, RPCError &error);
-                void execute_get_angle(nlohmann::json& result, RPCError &error);
-                void execute_set_angle(nlohmann::json& result, RPCError &error);
+                void execute_get_position(nlohmann::json& result, RPCError &error);
+                void execute_get_range(nlohmann::json& result, RPCError &error);
                 
                 void execute_stop(RPCError &error);
                 void execute_pause(RPCError &error);

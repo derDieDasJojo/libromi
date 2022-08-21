@@ -26,31 +26,32 @@
 namespace romi {
         
         FakeGimbal::FakeGimbal()
-                : angle_(0.0)
+                : x_(0.0),
+                  y_(0.0),
+                  z_(0.0)
         {
         }
 
-        bool FakeGimbal::moveto(double angle)
+        bool FakeGimbal::moveto(double x, double y, double z, double relative_speed)
         {
-                angle_ = angle;
-                return true;
-        }
-
-        bool FakeGimbal::moveat(double rps)
-        {
-                (void) rps;
+                (void) relative_speed;
+                x_ = x;
+                y_ = y;
+                z_ = z;
                 return true;
         }
                         
-        bool FakeGimbal::get_angle(double& angle)
+        bool FakeGimbal::get_position(v3& position)
         {
-                angle = angle_;
+                position.set(x_, y_, z_);
                 return true;
         }
         
-        bool FakeGimbal::set_angle(double angle)
+        bool FakeGimbal::get_range(IRange& range)
         {
-                angle_ = angle;
+                v3 min(-360.0, 0.0, 0.0);
+                v3 max(360.0, 0.0, 0.0);
+                range.init(min, max);
                 return true;
         }
 

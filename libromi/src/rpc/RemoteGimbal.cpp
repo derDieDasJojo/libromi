@@ -35,46 +35,53 @@ namespace romi {
         {
         }
         
-        bool RemoteGimbal::moveto(double angle)
+        bool RemoteGimbal::moveto(double x, double y, double z,
+                                  double relative_speed)
         {
                 r_debug("RemoteGimbal::moveto");
                 nlohmann::json params{
-                        {MethodsGimbal::angle_param, angle}
+                        {MethodsGimbal::kMoveXParam, x},
+                        {MethodsGimbal::kMoveYParam, y},
+                        {MethodsGimbal::kMoveZParam, z},
+                        {MethodsGimbal::kSpeedParam, relative_speed},
                 };
-                return execute_with_params(MethodsGimbal::moveto, params);
-        }
-                
-        bool RemoteGimbal::moveat(double rps)
-        {
-                r_debug("RemoteGimbal::moveat");
-                nlohmann::json params{
-                        {MethodsGimbal::rps_param, rps}
-                };
-                return execute_with_params(MethodsGimbal::moveto, params);
+                return execute_with_params(MethodsGimbal::kMoveto, params);
         }
         
-        bool RemoteGimbal::get_angle(double& angle)
+        bool RemoteGimbal::get_position(v3& position)
         {
-                r_debug("RemoteGimbal::get_angle");
+                r_debug("RemoteGimbal::get_position");
                 bool success = false;
                 nlohmann::json result;
-                if (execute_with_result(MethodsGimbal::get_angle, result)) {
-                        angle = result[MethodsGimbal::angle_result];
+                if (execute_with_result(MethodsGimbal::kGetPosition, result)) {
+                        position.x(result[MethodsGimbal::kPositionX]);
+                        position.y(result[MethodsGimbal::kPositionY]);
+                        position.z(result[MethodsGimbal::kPositionZ]);
                         success = true;
                 }
                 return success;
         }
-        
-        bool RemoteGimbal::set_angle(double angle)
-        {
-                r_debug("RemoteGimbal::set_angle");
-                nlohmann::json params
-                        {
-                            {MethodsGimbal::angle_param, angle }
-                        };
-                return execute_with_params(MethodsGimbal::moveto, params);
-        }
 
+        bool RemoteGimbal::get_range(IRange &range)
+        {
+                r_debug("RemoteGimbal::get_range");
+
+                bool success = false;
+                nlohmann::json result;
+
+                try {
+                        if (execute_with_result(MethodsGimbal::kGetRange, result)) {
+                                range.init(result);
+                                success = true;
+                        }
+                        
+                } catch (nlohmann::json::exception& je) {
+                        r_err("RemoteCNC::get_range failed: %s", je.what());
+                }
+
+                return success;
+        }
+ 
         bool RemoteGimbal::pause_activity()
         {
                 r_debug("RemoteGimbal::stop_activity");

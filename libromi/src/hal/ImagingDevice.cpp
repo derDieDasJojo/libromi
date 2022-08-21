@@ -27,57 +27,48 @@
 namespace romi {
         
         ImagingDevice::ImagingDevice(std::shared_ptr<ICamera>& camera,
-                                     std::shared_ptr<ICNC>& cnc,
-                                     std::shared_ptr<IGimbal>& gimbal)
+                                     std::shared_ptr<IDisplacementDevice>& carrier)
                 : camera_(camera),
-                  cnc_(cnc),
-                  gimbal_(gimbal)
+                  carrier_(carrier)
         {
         }
 
         bool ImagingDevice::pause_activity()
         {
-                return cnc_->pause_activity()
-                        && gimbal_->pause_activity();
+                return carrier_->pause_activity();
         }
         
         bool ImagingDevice::continue_activity()
         {
-                return cnc_->continue_activity()
-                        && gimbal_->continue_activity();
+                return carrier_->continue_activity();
         }
         
         bool ImagingDevice::reset_activity()
         {
-                return cnc_->reset_activity()
-                        && gimbal_->reset_activity();
+                return carrier_->reset_activity();
         }
 
         bool ImagingDevice::power_up()
         {
                 return camera_->power_up()
-                        && cnc_->power_up()
-                        && gimbal_->power_up();
+                        && carrier_->power_up();
         }
         
         bool ImagingDevice::power_down()
         {
                 return camera_->power_down()
-                        && cnc_->power_down()
-                        && gimbal_->power_down();
+                        && carrier_->power_down();
         }
         
         bool ImagingDevice::stand_by()
         {
                 return camera_->stand_by()
-                        && cnc_->stand_by()
-                        && gimbal_->stand_by();
+                        && carrier_->stand_by();
         }
         
         bool ImagingDevice::wake_up()
         {
                 return camera_->wake_up()
-                        && cnc_->wake_up()
-                        && gimbal_->wake_up();
+                        && carrier_->wake_up();
         }
 }

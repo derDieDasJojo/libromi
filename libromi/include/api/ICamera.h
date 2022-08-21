@@ -42,6 +42,9 @@ namespace romi {
                 virtual bool set_value(const std::string& name, double value) = 0;
                 virtual bool select_option(const std::string& name,
                                            const std::string& value) = 0;
+
+                
+                //virtual bool load_settings(const std::string& name, double value) = 0;
         };
 }
 

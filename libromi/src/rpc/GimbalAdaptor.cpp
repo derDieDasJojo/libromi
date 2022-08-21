@@ -27,6 +27,7 @@
 #include "rpc/MethodsGimbal.h"
 #include "rpc/MethodsPowerDevice.h"
 #include "rpc/MethodsActivity.h"
+#include "api/GimbalRange.h"
 
 namespace romi {
         
@@ -58,17 +59,14 @@ namespace romi {
                 
                 try {
 
-                        if (method == MethodsGimbal::moveto) {
+                        if (method == MethodsGimbal::kMoveto) {
                                 execute_moveto(params, error);
                         
-                        } else if (method == MethodsGimbal::moveat) {
-                                execute_moveat(params, error);
+                        } else if (method == MethodsGimbal::kGetPosition) {
+                                execute_get_position(result, error);
                         
-                        } else if (method == MethodsGimbal::get_angle) {
-                                execute_get_angle(result, error);
-                        
-                        } else if (method == MethodsGimbal::set_angle) {
-                                execute_set_angle(params, error);
+                        } else if (method == MethodsGimbal::kGetRange) {
+                                execute_get_range(result, error);
                         
                         } else if (method == MethodsActivity::activity_pause) {
                                 execute_pause(error);
@@ -105,42 +103,50 @@ namespace romi {
         void GimbalAdaptor::execute_moveto(nlohmann::json& params, RPCError &error)
         {
                 r_debug("GimbalAdaptor::execute_moveto");
-                double angle = params[MethodsGimbal::angle_param];
-                if (!gimbal_.moveto(angle)) {
+                double x = params[MethodsGimbal::kMoveXParam];
+                double y = params[MethodsGimbal::kMoveYParam];
+                double z = params[MethodsGimbal::kMoveZParam];
+                double v = params[MethodsGimbal::kSpeedParam];
+                if (!gimbal_.moveto(x, y, z, v)) {
+                        r_err("GimbalAdaptor::execute_moveto failed");
                         error.code = 1;
                         error.message = "Moveto failed";
                 }
         }
 
-        void GimbalAdaptor::execute_moveat(nlohmann::json& params, RPCError &error)
+        void GimbalAdaptor::execute_get_position(nlohmann::json& result, RPCError &error)
         {
-                r_debug("GimbalAdaptor::execute_moveat");
-                double rps = params[MethodsGimbal::rps_param];
-                if (!gimbal_.moveat(rps)) {
-                        error.code = 1;
-                        error.message = "Moveat failed";
-                }
-        }
-
-        void GimbalAdaptor::execute_get_angle(nlohmann::json& result, RPCError &error)
-        {
-                r_debug("GimbalAdaptor::get_angle");
-                double angle;
-                if (gimbal_.get_angle(angle)) {
-                        result[MethodsGimbal::angle_result] = angle;
+                r_debug("GimbalAdaptor::get_position");
+                v3 position;
+                if (gimbal_.get_position(position)) {
+                        result[MethodsGimbal::kPositionX] = position.x();
+                        result[MethodsGimbal::kPositionY] = position.y();
+                        result[MethodsGimbal::kPositionZ] = position.z();
                 } else {
+                        r_err("GimbalAdaptor::execute_get_position failed");
                         error.code = 1;
                         error.message = "Get position failed";
                 }
         }
 
-        void GimbalAdaptor::execute_set_angle(nlohmann::json& params, RPCError &error)
+        void GimbalAdaptor::execute_get_range(nlohmann::json& result,
+                                              RPCError &error)
         {
-                r_debug("GimbalAdaptor::set_angle");
-                double angle = params[MethodsGimbal::angle_param];
-                if (!gimbal_.set_angle(angle)) {
+                r_debug("GimbalAdaptor::get_range");
+                GimbalRange range;
+                if (gimbal_.get_range(range)) {
+                    result = nlohmann::json::array({
+                                    nlohmann::json::array(
+                                            {range.xmin(), range.xmax()}),
+                                            nlohmann::json::array(
+                                                    {range.ymin(), range.ymax()}),
+                                            nlohmann::json::array(
+                                                    {range.zmin(), range.zmax()})
+                                            });
+                } else {
+                        r_err("GimbalAdaptor::execute_get_range failed");
                         error.code = 1;
-                        error.message = "set_angle failed";
+                        error.message = "Get range failed";
                 }
         }
 
@@ -148,6 +154,7 @@ namespace romi {
         {
                 r_debug("GimbalAdaptor::execute_pause");
                 if (!gimbal_.pause_activity()) {
+                        r_err("GimbalAdaptor::execute_pause failed");
                         error.code = 1;
                         error.message = "stop failed";
                 }
@@ -157,6 +164,7 @@ namespace romi {
         {
                 r_debug("GimbalAdaptor::execute_continue");
                 if (!gimbal_.continue_activity()) {
+                        r_err("GimbalAdaptor::execute_continue failed");
                         error.code = 1;
                         error.message = "continue failed";
                 }
@@ -166,6 +174,7 @@ namespace romi {
         {
                 r_debug("GimbalAdaptor::execute_reset");
                 if (!gimbal_.reset_activity()) {
+                        r_err("GimbalAdaptor::execute_reset failed");
                         error.code = 1;
                         error.message = "reset failed";
                 }
@@ -175,6 +184,7 @@ namespace romi {
         {
                 r_debug("GimbalAdaptor::power_up");
                 if (!gimbal_.power_up()) {
+                        r_err("GimbalAdaptor::execute_power_up failed");
                         error.code = 1;
                         error.message = "power up failed";
                 }
@@ -184,6 +194,7 @@ namespace romi {
         {
                 r_debug("GimbalAdaptor::power_down");
                 if (!gimbal_.power_down()) {
+                        r_err("GimbalAdaptor::execute_power_down failed");
                         error.code = 1;
                         error.message = "power down failed";
                 }
@@ -193,6 +204,7 @@ namespace romi {
         {
                 r_debug("GimbalAdaptor::stand_by");
                 if (!gimbal_.stand_by()) {
+                        r_err("GimbalAdaptor::execute_stand_by failed");
                         error.code = 1;
                         error.message = "stand_by failed";
                 }
@@ -202,6 +214,7 @@ namespace romi {
         {
                 r_debug("GimbalAdaptor::wake_up");
                 if (!gimbal_.wake_up()) {
+                        r_err("GimbalAdaptor::execute_wake_up failed");
                         error.code = 1;
                         error.message = "wake_up failed";
                 }

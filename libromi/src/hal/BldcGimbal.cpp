@@ -50,11 +50,24 @@ namespace romi {
                         angle += 360.0;
                 return angle;
         }
-
-        bool BldcGimbal::moveto(double angle)
+        
+        bool BldcGimbal::get_range(IRange& range)
         {
+                v3 min(-360.0, 0.0, 0.0);
+                v3 max(360.0, 0.0, 0.0);
+                range.init(min, max);
+                return true;
+        }
+
+        bool BldcGimbal::moveto(double phi_x, double phi_y, double phi_z,
+                                double relative_speed)
+        {
+                (void) phi_y;
+                (void) phi_z;
+                (void) relative_speed;
+                
                 char command[64];
-                snprintf(command, sizeof(command), "M[%d]", angle_to_arg(angle));
+                snprintf(command, sizeof(command), "M[%d]", angle_to_arg(phi_x));
                 
                 nlohmann::json response;
                 serial_.send(command, response);
@@ -66,9 +79,14 @@ namespace romi {
                 return success;
         }
 
-        bool BldcGimbal::moveat(double rps)
+        bool BldcGimbal::moveat(double wx, double wy, double wz)
         {
+                (void) wy;
+                (void) wz;
+                
                 char command[64];
+                double rps = wx / 360.0;
+                // FIXME: firmware should use degrees/second also
                 snprintf(command, sizeof(command), "V[%d]", (int) (rps * 1000.0));
                 
                 nlohmann::json response;
@@ -80,15 +98,17 @@ namespace romi {
                 }
                 return success;
         }
-                        
-        bool BldcGimbal::get_angle(double& angle)
+
+        bool BldcGimbal::get_position(v3& position)
         {
                 nlohmann::json response;
                 serial_.send("s", response);
-                
+
+                position.set(0.0);
+                             
                 bool success = (response[0] == 0);
                 if (success) {
-                        angle = arg_to_angle(response[1]);
+                        position.x(arg_to_angle(response[1]));
                 } else {
                         r_err("BldcGimbal::get_position: %s", to_string(response[1]).c_str());
                 }

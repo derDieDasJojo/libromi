@@ -22,21 +22,23 @@
 
  */
 
-#include "api/CNCRange.h"
+#ifndef __ROMI_GIMBALRANGE_H
+#define __ROMI_GIMBALRANGE_H
+
+#include "json.hpp"
+#include "v3.h"
+#include "Range.h"
 
 namespace romi {
-        
-        CNCRange::CNCRange() : Range() {
-        }
-        
-        CNCRange::CNCRange(const double *xmin, const double *xmax)
-                : Range(xmin, xmax) {
-        }
-        
-        CNCRange::CNCRange(v3 xmin, v3 xmax)
-                : Range(xmin, xmax) {
-        }
 
-        CNCRange::CNCRange(nlohmann::json& json) : Range(json) {
-        }
+        class GimbalRange : public Range
+        {
+            public:
+                GimbalRange();
+                explicit GimbalRange(nlohmann::json &range);
+                GimbalRange(const double *min, const double *max);
+                GimbalRange(v3 min, v3 max);
+        };
 }
+
+#endif // __ROMI_GIMBALRANGE_H

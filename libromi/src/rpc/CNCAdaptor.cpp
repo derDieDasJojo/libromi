@@ -121,13 +121,13 @@ namespace romi {
                 CNCRange range;
                 if (cnc_.get_range(range)) {
                     result = nlohmann::json::array({
-                                                         nlohmann::json::array(
-                                                                 {range.xmin(), range.xmax()}),
-                                                         nlohmann::json::array(
-                                                                 {range.ymin(), range.ymax()}),
-                                                         nlohmann::json::array(
-                                                                 {range.zmin(), range.zmax()})
-                                                     });
+                                    nlohmann::json::array(
+                                            {range.xmin(), range.xmax()}),
+                                            nlohmann::json::array(
+                                                    {range.ymin(), range.ymax()}),
+                                            nlohmann::json::array(
+                                                    {range.zmin(), range.zmax()})
+                                            });
                 } else {
                         r_err("CNCAdaptor::execute_get_range failed");
                         error.code = 1;
