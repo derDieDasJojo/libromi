@@ -36,6 +36,35 @@ namespace romi {
         {
         }
 
+        bool BaseCamera::set_exposure_mode(MMAL_PARAM_EXPOSUREMODE_T mode)
+        {
+                bool success = true;
+                try {
+                        camera_.set_exposure_mode(mode);
+                } catch (std::runtime_error& e) {
+                        success = false;
+                }
+                return success;
+        }
+
+        bool BaseCamera::set_shutter_speed(uint32_t speed)
+        {
+                bool result = true;
+                camera_.set_shutter_speed(speed);
+                return result;
+        }
+
+        bool BaseCamera::set_analog_gain(float value)
+        {
+                bool success = true;
+                try {
+                        camera_.set_analog_gain(value);
+                } catch (std::runtime_error& e) {
+                        success = false;
+                }
+                return success;
+        }
+
         bool BaseCamera::set_saturation(int32_t saturation)
         {
                 bool result = true;

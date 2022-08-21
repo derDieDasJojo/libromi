@@ -168,7 +168,7 @@ namespace romi {
 
         bool PiCameraSettings::is_shutter_speed_valid(uint32_t speed)
         {
-                bool valid = (speed < 200*1000);
+                bool valid = (speed <= 230*1000);
                 if (!valid)
                         r_warn("Invalid shutter speed");
                 return valid;
@@ -228,6 +228,12 @@ namespace romi {
                 return result;
         }
 
+        bool PiCameraSettings::set_exposure_mode(MMAL_PARAM_EXPOSUREMODE_T mode)
+        {
+                exposure_mode_ = mode;
+                return true;
+        }
+
         bool PiCameraSettings::set_saturation(int32_t saturation)
         {
                 bool result = false;
@@ -283,6 +289,26 @@ namespace romi {
                 bool result = false;
                 if (is_jpeg_quality_valid(quality)) {
                         jpeg_quality_ = quality;
+                        result = true;
+                }
+                return result;
+        }
+
+        bool PiCameraSettings::set_analog_gain(float value)
+        {
+                bool result = false;
+                if (is_analog_gain_valid(value)) {
+                        analog_gain_ = value;
+                        result = true;
+                }
+                return result;
+        }
+        
+        bool PiCameraSettings::set_shutter_speed(uint32_t speed)
+        {
+                bool result = false;
+                if (is_shutter_speed_valid(speed)) {
+                        shutter_speed_ = speed;
                         result = true;
                 }
                 return result;

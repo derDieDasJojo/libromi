@@ -169,8 +169,8 @@ namespace romi {
                 } else {
                         std::string name = params[MethodsCamera::kOptionName];
                         std::string value = params[MethodsCamera::kOptionValue];
-                        r_debug("CameraAdaptor::execute_select_option: %s(%f)",
-                                name.c_str(), value);
+                        r_debug("CameraAdaptor::execute_select_option: %s(%s)",
+                                name.c_str(), value.c_str());
                         if (!camera_.select_option(name, value)) {
                                 error.code = 1;
                                 error.message = "set_option failed";

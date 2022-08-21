@@ -214,11 +214,12 @@ namespace romi::arm {
                 }
         }
 
-        void VideoEncoder::set_jpeg_quality(uint32_t value)
+        bool VideoEncoder::set_jpeg_quality(uint32_t value)
         {
                 (void) value;
                 r_info("VideoEncoder::set_jpeg_quality has no effect. "
                        "Use the bitrate instead");
+                return false;
         }
 }
 

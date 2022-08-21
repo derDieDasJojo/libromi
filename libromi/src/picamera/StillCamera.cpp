@@ -50,15 +50,15 @@ namespace romi {
         rcom::MemBuffer& StillCamera::grab_jpeg()
         {
                 encoder_.prepare_capture();
-                camera_.set_shutter_speed();
+                camera_.init_shutter_speed();
                 camera_.trigger_capture();
                 encoder_.finish_capture();
                 return encoder_.get_buffer();
         }
 
-        void StillCamera::set_jpeg_quality()
+        bool StillCamera::set_jpeg_quality(uint32_t value)
         {
-                encoder_.set_jpeg_quality();
+                return encoder_.set_jpeg_quality(value);
         }
 }
 

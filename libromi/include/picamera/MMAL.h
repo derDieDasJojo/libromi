@@ -34,6 +34,7 @@ namespace romi::arm {
                 virtual ~MMAL() = default;
 
                 void assert_status(const char *caller_name, MMAL_STATUS_T status);
+                bool status_is_ok(const char *caller_name, MMAL_STATUS_T status);
         };
 }
 

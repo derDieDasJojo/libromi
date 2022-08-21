@@ -57,9 +57,9 @@ namespace romi {
                 return encoder_.get_buffer();
         }
 
-        void VideoCamera::set_jpeg_quality()
+        bool VideoCamera::set_jpeg_quality(uint32_t value)
         {
-                encoder_.set_jpeg_quality();
+                return encoder_.set_jpeg_quality(value);
         }
 }
 

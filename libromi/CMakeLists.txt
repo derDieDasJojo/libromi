@@ -210,6 +210,10 @@ set(SOURCES
         include/api/IJoystick.h
         include/api/Path.h
         include/api/StateMachine.h
+        include/api/IRange.h
+        include/api/Range.h
+        include/api/CNCRange.h
+        include/api/GimbalRange.h
 
         include/battery_monitor/IBatteryMonitor.h
         include/battery_monitor/BatteryMonitor.h
@@ -252,9 +256,10 @@ set(SOURCES
 
         include/hal/BldcGimbal.h
         include/hal/BrushMotorDriver.h
+        include/hal/CNCAndGimbal.h
         include/hal/FakeGimbal.h
         include/hal/ImagingDevice.h
-
+        
         include/notifications/FluidSoundNotifications.h
 
 
@@ -288,7 +293,9 @@ set(SOURCES
 
         include/ui/ScriptList.h
 
+        src/api/Range.cpp
         src/api/CNCRange.cpp
+        src/api/GimbalRange.cpp
         src/api/DataLog.cpp
         src/api/DataLogAccessor.cpp
         src/api/Path.cpp
@@ -301,6 +308,7 @@ set(SOURCES
 
         src/hal/BldcGimbal.cpp
         src/hal/BrushMotorDriver.cpp
+        src/hal/CNCAndGimbal.cpp
         src/hal/FakeGimbal.cpp
         src/hal/ImagingDevice.cpp
 

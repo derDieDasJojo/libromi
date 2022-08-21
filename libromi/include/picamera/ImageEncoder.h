@@ -44,7 +44,7 @@ namespace romi::arm {
                 void prepare_capture();
                 void finish_capture();
                                 
-                void set_jpeg_quality(uint32_t value) override;
+                bool set_jpeg_quality(uint32_t value) override;
                 
         protected:
 
