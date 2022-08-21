@@ -34,15 +34,10 @@ namespace romi {
                 gimbal_ = std::move(gimbal);
         }
 
-
-        bool CNCAndGimbal::get_cnc_range(CNCRange &range)
+        bool CNCAndGimbal::get_range(CNCRange &xyz, IRange &angles)
         {
-                return cnc_->get_range(range);
-        }
-        
-        bool CNCAndGimbal::get_gimbal_range(IRange &range)
-        {
-                return gimbal_->get_range(range);
+                return (cnc_->get_range(xyz)
+                        && gimbal_->get_range(angles));
         }
                 
         bool CNCAndGimbal::moveto(double x, double y, double z,

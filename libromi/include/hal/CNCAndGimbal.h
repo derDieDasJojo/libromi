@@ -42,13 +42,12 @@ namespace romi {
                              std::unique_ptr<IGimbal>& gimbal);
                 ~CNCAndGimbal() override = default;
 
-                bool get_cnc_range(CNCRange &range) override;
-                bool get_gimbal_range(IRange &range) override;                
+                bool homing() override; 
+                bool get_position(v3& xyz, v3& angles) override;
+                bool get_range(CNCRange &xyz, IRange &angles) override;
                 bool moveto(double x, double y, double z,
                             double phi_x, double phi_y, double phi_z,
                             double relative_speed) override;
-                bool get_position(v3& xyz, v3& angles) override;
-                bool homing() override; 
         };
 }
 

@@ -54,6 +54,14 @@ namespace romi {
                 range.init(min, max);
                 return true;
         }
+        
+        bool FakeGimbal::homing()
+        {
+                x_ = 0.0;
+                y_ = 0.0;
+                z_ = 0.0;
+                return true;
+        }
 
         bool FakeGimbal::pause_activity()
         {

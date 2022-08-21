@@ -54,14 +54,19 @@ namespace romi {
                 return camera_->select_option(name, value);
         }
         
-        bool ImagingDevice::get_cnc_range(CNCRange &range)
+        bool ImagingDevice::get_range(CNCRange &xyz, IRange &angles)
         {
-                return mount_->get_cnc_range(range);
+                return mount_->get_range(xyz, angles);
         }
         
-        bool ImagingDevice::get_gimbal_range(IRange &range)
+        bool ImagingDevice::get_position(v3& xyz, v3& angles)
         {
-                return mount_->get_gimbal_range(range);
+                return mount_->get_position(xyz, angles);
+        }
+        
+        bool ImagingDevice::homing()
+        {
+                return mount_->homing();
         }
         
         bool ImagingDevice::moveto(double x, double y, double z,
@@ -69,11 +74,6 @@ namespace romi {
                                    double relative_speed)
         {
                 return mount_->moveto(x, y, z, phi_x, phi_y, phi_z, relative_speed);
-        }
-        
-        bool ImagingDevice::get_position(v3& xyz, v3& angles)
-        {
-                return mount_->get_position(xyz, angles);
         }
 
         bool ImagingDevice::pause_activity()

@@ -76,7 +76,7 @@ namespace romi {
 		gimbal = std::make_unique<romi::FakeGimbal>();
 
 
-                std::unique_ptr_ptr<romi::IDisplacementDevice> carrier;
+                std::unique_ptr<romi::IDisplacementDevice> carrier;
                 carrier = std::make_unique<CNCAndGimbal>(cnc, gimbal);
                         
                 // Cablebot
