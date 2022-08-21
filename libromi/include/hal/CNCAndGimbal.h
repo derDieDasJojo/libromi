@@ -25,13 +25,13 @@
 #define __ROMI_CNCANDGIMBAL_H
 
 #include <memory>
-#include "hal/IDisplacementDevice.h"
+#include "hal/ICameraMount.h"
 #include "api/ICNC.h"
 #include "api/IGimbal.h"
 
 namespace romi {
         
-        class CNCAndGimbal : public IDisplacementDevice
+        class CNCAndGimbal : public ICameraMount
         {
         protected:
                 std::unique_ptr<ICNC> cnc_;

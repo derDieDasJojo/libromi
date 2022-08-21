@@ -258,6 +258,7 @@ set(SOURCES
         include/hal/BrushMotorDriver.h
         include/hal/CNCAndGimbal.h
         include/hal/FakeGimbal.h
+        include/hal/ICameraMount.h
         include/hal/ImagingDevice.h
         
         include/notifications/FluidSoundNotifications.h

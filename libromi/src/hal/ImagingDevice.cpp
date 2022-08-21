@@ -27,9 +27,9 @@
 namespace romi {
         
         ImagingDevice::ImagingDevice(std::shared_ptr<ICamera>& camera,
-                                     std::shared_ptr<IDisplacementDevice>& carrier)
+                                     std::shared_ptr<ICameraMount>& mount)
                 : camera_(camera),
-                  carrier_(carrier)
+                  mount_(mount)
         {
         }
         
@@ -56,57 +56,57 @@ namespace romi {
         
         bool ImagingDevice::get_cnc_range(CNCRange &range)
         {
-                return carrier_->get_cnc_range(range);
+                return mount_->get_cnc_range(range);
         }
         
         bool ImagingDevice::get_gimbal_range(IRange &range)
         {
-                return carrier_->get_gimbal_range(range);
+                return mount_->get_gimbal_range(range);
         }
         
         bool ImagingDevice::moveto(double x, double y, double z,
                                    double phi_x, double phi_y, double phi_z,
                                    double relative_speed)
         {
-                return carrier_->moveto(x, y, z, phi_x, phi_y, phi_z, relative_speed);
+                return mount_->moveto(x, y, z, phi_x, phi_y, phi_z, relative_speed);
         }
 
         bool ImagingDevice::pause_activity()
         {
-                return carrier_->pause_activity();
+                return mount_->pause_activity();
         }
         
         bool ImagingDevice::continue_activity()
         {
-                return carrier_->continue_activity();
+                return mount_->continue_activity();
         }
         
         bool ImagingDevice::reset_activity()
         {
-                return carrier_->reset_activity();
+                return mount_->reset_activity();
         }
 
         bool ImagingDevice::power_up()
         {
                 return camera_->power_up()
-                        && carrier_->power_up();
+                        && mount_->power_up();
         }
         
         bool ImagingDevice::power_down()
         {
                 return camera_->power_down()
-                        && carrier_->power_down();
+                        && mount_->power_down();
         }
         
         bool ImagingDevice::stand_by()
         {
                 return camera_->stand_by()
-                        && carrier_->stand_by();
+                        && mount_->stand_by();
         }
         
         bool ImagingDevice::wake_up()
         {
                 return camera_->wake_up()
-                        && carrier_->wake_up();
+                        && mount_->wake_up();
         }
 }

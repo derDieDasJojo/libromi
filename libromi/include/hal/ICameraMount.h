@@ -21,8 +21,8 @@
   <http://www.gnu.org/licenses/>.
 
  */
-#ifndef __ROMI_I_DISPLACEMENTDEVICE_H
-#define __ROMI_I_DISPLACEMENTDEVICE_H
+#ifndef __ROMI_I_CAMERAMOUNT_H
+#define __ROMI_I_CAMERAMOUNT_H
 
 #include "api/IActivity.h"
 #include "api/IPowerDevice.h"
@@ -31,11 +31,11 @@
 
 namespace romi {
         
-        class IDisplacementDevice : public IActivity, public IPowerDevice
+        class ICameraMount : public IActivity, public IPowerDevice
         {
         public:
 
-                virtual ~IDisplacementDevice() = default;
+                virtual ~ICameraMount() = default;
 
                 virtual bool get_cnc_range(CNCRange &range) = 0;
                 virtual bool get_gimbal_range(IRange &range) = 0;
@@ -46,4 +46,4 @@ namespace romi {
         };
 }
 
-#endif // __ROMI_DISPLACEMENTDEVICE_H
+#endif // __ROMI_CAMERAMOUNT_H

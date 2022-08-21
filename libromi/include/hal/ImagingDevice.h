@@ -26,7 +26,7 @@
 
 #include <memory>
 #include "api/ICamera.h"
-#include "hal/IDisplacementDevice.h"
+#include "hal/ICameraMount.h"
 #include "api/IActivity.h"
 #include "api/IPowerDevice.h"
 
@@ -34,15 +34,15 @@ namespace romi {
         
         class ImagingDevice
                 : public ICamera,
-                  public IDisplacementDevice
+                  public ICameraMount
         {
         public:
 
                 std::shared_ptr<ICamera> camera_;
-                std::shared_ptr<IDisplacementDevice> carrier_;
+                std::shared_ptr<ICameraMount> mount_;
                 
                 ImagingDevice(std::shared_ptr<ICamera>& camera,
-                              std::shared_ptr<IDisplacementDevice>& carrier_);
+                              std::shared_ptr<ICameraMount>& mount_);
                 
                 virtual ~ImagingDevice() = default;
 
@@ -54,7 +54,7 @@ namespace romi {
                 bool select_option(const std::string& name,
                                            const std::string& value) override;
 
-                // IDisplacementDevice
+                // ICameraMount
                 bool get_cnc_range(CNCRange &range) override;
                 bool get_gimbal_range(IRange &range) override;
                 bool moveto(double x, double y, double z,
