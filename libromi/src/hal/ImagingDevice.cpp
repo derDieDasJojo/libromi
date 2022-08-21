@@ -32,6 +32,44 @@ namespace romi {
                   carrier_(carrier)
         {
         }
+        
+        bool ImagingDevice::grab(Image &image)
+        {
+                return camera_->grab(image);
+        }
+        
+        rcom::MemBuffer& ImagingDevice::grab_jpeg()
+        {
+                return camera_->grab_jpeg();
+        }
+        
+        bool ImagingDevice::set_value(const std::string& name, double value)
+        {
+                return camera_->set_value(name, value);
+        }
+        
+        bool ImagingDevice::select_option(const std::string& name,
+                                          const std::string& value)
+        {
+                return camera_->select_option(name, value);
+        }
+        
+        bool ImagingDevice::get_cnc_range(CNCRange &range)
+        {
+                return carrier_->get_cnc_range(range);
+        }
+        
+        bool ImagingDevice::get_gimbal_range(IRange &range)
+        {
+                return carrier_->get_gimbal_range(range);
+        }
+        
+        bool ImagingDevice::moveto(double x, double y, double z,
+                                   double phi_x, double phi_y, double phi_z,
+                                   double relative_speed)
+        {
+                return carrier_->moveto(x, y, z, phi_x, phi_y, phi_z, relative_speed);
+        }
 
         bool ImagingDevice::pause_activity()
         {

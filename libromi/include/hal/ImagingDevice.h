@@ -32,7 +32,9 @@
 
 namespace romi {
         
-        class ImagingDevice : public IActivity, public IPowerDevice
+        class ImagingDevice
+                : public ICamera,
+                  public IDisplacementDevice
         {
         public:
 
@@ -44,6 +46,21 @@ namespace romi {
                 
                 virtual ~ImagingDevice() = default;
 
+                // ICamera
+                bool grab(Image &image) override;
+                rcom::MemBuffer& grab_jpeg() override;
+                
+                bool set_value(const std::string& name, double value) override;
+                bool select_option(const std::string& name,
+                                           const std::string& value) override;
+
+                // IDisplacementDevice
+                bool get_cnc_range(CNCRange &range) override;
+                bool get_gimbal_range(IRange &range) override;
+                bool moveto(double x, double y, double z,
+                            double phi_x, double phi_y, double phi_z,
+                            double relative_speed) override;
+                
                 // IActivity interface
                 bool pause_activity() override;
                 bool continue_activity() override;
