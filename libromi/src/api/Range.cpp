@@ -49,6 +49,15 @@ namespace romi {
                 }
         }
 
+        nlohmann::json Range::to_json()
+        {
+                return nlohmann::json::array({
+                                nlohmann::json::array({min_.x(), max_.x()}),
+                                        nlohmann::json::array({min_.y(), max_.y()}),
+                                        nlohmann::json::array({min_.z(), max_.z()})
+                                        });
+        }
+        
         void Range::init(v3 min, v3 max)
         {
                 min_ = min;

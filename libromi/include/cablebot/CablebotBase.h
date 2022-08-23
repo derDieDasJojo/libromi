@@ -26,50 +26,55 @@
 
 #include <stdexcept>
 #include <memory>
-#include "api/ICNC.h"
+#include "hal/ICameraMount.h"
 #include "RomiSerialClient.h"
 
 namespace romi {
         
-        class CablebotBase : public ICNC
+        class CablebotBase : public ICameraMount
         {
         protected:
 
                 static const constexpr double kPrecision = 36.0;
                 static const constexpr double kDiameter = 0.0505;
                 
-                std::unique_ptr<romiserial::IRomiSerialClient> serial_;
-                CNCRange range_;
+                std::unique_ptr<romiserial::IRomiSerialClient> motor_serial_;
+                CNCRange range_xyz_;
+                Range range_angles_;
                 double diameter_;
                 double circumference_;
 
-                void validate_coordinates(double x, double y, double z);
+                void validate_xyz_coordinates(double x, double y, double z);
+                void validate_angles(double ax, double ay, double az);
                 void validate_speed(double v);
-                bool send_command(const char *command);
+                bool send_motor_command(const char *command);
                 int16_t position_to_steps(double x);
                 double steps_to_position(double steps);
                 bool enable_driver();
                 bool disable_driver();
                 void try_moveto(double x, double relative_speed);
-                void send_moveto(double x, double relative_speed);
-                void synchronize(double timeout);
-                bool is_on_target();
+                void motor_moveto(double x, double relative_speed);
+                void synchronize_with_motor(double timeout);
+                bool is_motor_on_target();
+                bool get_motor_position(v3& xyz) override; 
 
         public:
-                CablebotBase(std::unique_ptr<romiserial::IRomiSerialClient>& serial);
+                CablebotBase(std::unique_ptr<romiserial::IRomiSerialClient>& motor_serial);
                 virtual ~CablebotBase() = default;
 
-                bool get_range(CNCRange &range) override;
 
-                bool moveto(double x, double y, double z, double relative_speed) override;
-                bool moveat(int16_t speed_x, int16_t speed_y, int16_t speed_z) override;
                 bool homing() override;
-                bool get_position(v3& position) override; 
+                bool get_position(v3& xyz, v3& angles) override; 
+                bool get_range(CNCRange &xyz, IRange &angles) override;
+                bool moveto(double x, double y, double z,
+                            double ax, double ay, double az,
+                            double relative_speed) override;
+                // bool moveat(int16_t speed_x, int16_t speed_y, int16_t speed_z) override;
 
-                bool spindle(double speed) override;
-                bool travel(Path &path, double relative_speed) override;
-                bool helix(double xc, double yc, double alpha, double z,
-                           double relative_speed) override;
+                // bool spindle(double speed) override;
+                // bool travel(Path &path, double relative_speed) override;
+                // bool helix(double xc, double yc, double alpha, double z,
+                //            double relative_speed) override;
                 
                 // IActivity interface
                 bool pause_activity() override;

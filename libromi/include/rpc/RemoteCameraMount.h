@@ -21,27 +21,28 @@
   <http://www.gnu.org/licenses/>.
 
  */
-#ifndef _ROMI_REMOTE_GIMBAL_H_
-#define _ROMI_REMOTE_GIMBAL_H_
+#ifndef _ROMI_REMOTECAMERAMOUNT_H_
+#define _ROMI_REMOTECAMERAMOUNT_H_
 
-#include "api/IGimbal.h"
+#include "hal/ICameraMount.h"
 #include "rpc/RemoteStub.h"
 
 namespace romi {
         
-        class RemoteGimbal : public IGimbal, public RemoteStub
+        class RemoteCameraMount : public ICameraMount, public RemoteStub
         {
         public:
                 static constexpr const char *ClassName = "remote-gimbal";
                 
-                explicit RemoteGimbal(std::unique_ptr<IRPCClient>& client);
-                ~RemoteGimbal() override = default;
+                explicit RemoteCameraMount(std::unique_ptr<IRPCClient>& client);
+                ~RemoteCameraMount() override = default;
 
-                bool moveto(double phi_x, double phi_y, double phi_z,
-                            double relative_speed) override;
-                bool get_position(v3& position) override; 
-                bool get_range(IRange& range) override;
                 bool homing() override; 
+                bool get_position(v3& xyz, v3& angles) override; 
+                bool get_range(CNCRange& xyz, IRange& angles) override;
+                bool moveto(double x, double y, double z,
+                            double ax, double ay, double az,
+                            double relative_speed) override;
                 
                 bool pause_activity() override;
                 bool continue_activity() override;
@@ -54,4 +55,4 @@ namespace romi {
         };
 }
 
-#endif // _ROMI_REMOTE_GIMBAL_H_
+#endif // _ROMI_REMOTECAMERAMOUNT_H_

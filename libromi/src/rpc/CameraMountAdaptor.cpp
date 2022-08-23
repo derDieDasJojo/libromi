@@ -23,20 +23,20 @@
  */
 
 #include <log.h>
-#include "rpc/GimbalAdaptor.h"
-#include "rpc/MethodsGimbal.h"
+#include "rpc/CameraMountAdaptor.h"
+#include "rpc/MethodsCameraMount.h"
 #include "rpc/MethodsPowerDevice.h"
 #include "rpc/MethodsActivity.h"
-#include "api/GimbalRange.h"
+#include "api/CNCRange.h"
 
 namespace romi {
         
-        GimbalAdaptor::GimbalAdaptor(IGimbal& gimbal)
-                : gimbal_(gimbal)
+        CameraMountAdaptor::CameraMountAdaptor(ICameraMount& mount)
+                : mount_(mount)
         {
         }
 
-        void GimbalAdaptor::execute(const std::string& method,
+        void CameraMountAdaptor::execute(const std::string& method,
                                     nlohmann::json &params,
                                     rcom::MemBuffer& result,
                                     RPCError &error)
@@ -48,27 +48,27 @@ namespace romi {
                 error.message = "Unknown method";
         }
         
-        void GimbalAdaptor::execute(const std::string& method,
+        void CameraMountAdaptor::execute(const std::string& method,
                                     nlohmann::json& params,
                                     nlohmann::json& result,
                                     RPCError &error)
         {
-                r_debug("GimbalAdaptor::execute");
+                r_debug("CameraMountAdaptor::execute");
                 
                 error.code = 0;
                 
                 try {
 
-                        if (method == MethodsGimbal::kMoveto) {
+                        if (method == MethodsCameraMount::kMoveto) {
                                 execute_moveto(params, error);
                         
-                        } else if (method == MethodsGimbal::kGetPosition) {
+                        } else if (method == MethodsCameraMount::kGetPosition) {
                                 execute_get_position(result, error);
                         
-                        } else if (method == MethodsGimbal::kGetRange) {
+                        } else if (method == MethodsCameraMount::kGetRange) {
                                 execute_get_range(result, error);
                         
-                        } else if (method == MethodsGimbal::kHoming) {
+                        } else if (method == MethodsCameraMount::kHoming) {
                                 execute_homing(error);
                         
                         } else if (method == MethodsActivity::activity_pause) {
@@ -103,131 +103,135 @@ namespace romi {
                 }
         }
 
-        void GimbalAdaptor::execute_moveto(nlohmann::json& params, RPCError &error)
+        void CameraMountAdaptor::execute_moveto(nlohmann::json& params, RPCError &error)
         {
-                r_debug("GimbalAdaptor::execute_moveto");
-                double x = params[MethodsGimbal::kMoveXParam];
-                double y = params[MethodsGimbal::kMoveYParam];
-                double z = params[MethodsGimbal::kMoveZParam];
-                double v = params[MethodsGimbal::kSpeedParam];
-                if (!gimbal_.moveto(x, y, z, v)) {
-                        r_err("GimbalAdaptor::execute_moveto failed");
+                r_debug("CameraMountAdaptor::execute_moveto");
+                double x = params[MethodsCameraMount::kXParam];
+                double y = params[MethodsCameraMount::kYParam];
+                double z = params[MethodsCameraMount::kZParam];
+                double ax = params[MethodsCameraMount::kAngleXParam];
+                double ay = params[MethodsCameraMount::kAngleYParam];
+                double az = params[MethodsCameraMount::kAngleZParam];
+                double v = params[MethodsCameraMount::kSpeedParam];
+                if (!mount_.moveto(x, y, z, ax, ay, az, v)) {
+                        r_err("CameraMountAdaptor::execute_moveto failed");
                         error.code = 1;
                         error.message = "Moveto failed";
                 }
         }
 
-        void GimbalAdaptor::execute_get_position(nlohmann::json& result, RPCError &error)
+        void CameraMountAdaptor::execute_get_position(nlohmann::json& result, RPCError &error)
         {
-                r_debug("GimbalAdaptor::get_position");
-                v3 position;
-                if (gimbal_.get_position(position)) {
-                        result[MethodsGimbal::kPositionX] = position.x();
-                        result[MethodsGimbal::kPositionY] = position.y();
-                        result[MethodsGimbal::kPositionZ] = position.z();
+                r_debug("CameraMountAdaptor::get_position");
+                v3 xyz;
+                v3 angles;
+                if (mount_.get_position(xyz, angles)) {
+                        result[MethodsCameraMount::kPositionX] = xyz.x();
+                        result[MethodsCameraMount::kPositionY] = xyz.y();
+                        result[MethodsCameraMount::kPositionZ] = xyz.z();
+                        result[MethodsCameraMount::kPositionAngleX] = angles.x();
+                        result[MethodsCameraMount::kPositionAngleY] = angles.y();
+                        result[MethodsCameraMount::kPositionAngleZ] = angles.z();
                 } else {
-                        r_err("GimbalAdaptor::execute_get_position failed");
+                        r_err("CameraMountAdaptor::execute_get_position failed");
                         error.code = 1;
                         error.message = "Get position failed";
                 }
         }
 
-        void GimbalAdaptor::execute_get_range(nlohmann::json& result,
-                                              RPCError &error)
+        void CameraMountAdaptor::execute_get_range(nlohmann::json& result,
+                                                   RPCError &error)
         {
-                r_debug("GimbalAdaptor::get_range");
-                GimbalRange range;
-                if (gimbal_.get_range(range)) {
-                    result = nlohmann::json::array({
-                                    nlohmann::json::array(
-                                            {range.xmin(), range.xmax()}),
-                                            nlohmann::json::array(
-                                                    {range.ymin(), range.ymax()}),
-                                            nlohmann::json::array(
-                                                    {range.zmin(), range.zmax()})
-                                            });
+                r_debug("CameraMountAdaptor::get_range");
+                CNCRange xyz_range;
+                Range angle_range;
+                if (mount_.get_range(xyz_range, angle_range)) {
+                        result = {
+                                {MethodsCameraMount::kXYZRange, xyz_range.to_json()},
+                                {MethodsCameraMount::kAnglesRange, angle_range.to_json()}
+                        };
                 } else {
-                        r_err("GimbalAdaptor::execute_get_range failed");
+                        r_err("CameraMountAdaptor::execute_get_range failed");
                         error.code = 1;
                         error.message = "Get range failed";
                 }
         }
         
-        void GimbalAdaptor::execute_homing(RPCError &error)
+        void CameraMountAdaptor::execute_homing(RPCError &error)
         {
-                r_debug("GimbalAdaptor::execute_homing");
+                r_debug("CameraMountAdaptor::execute_homing");
                 
-                if (!gimbal_.homing()) {
+                if (!mount_.homing()) {
                         error.code = 1;
                         error.message = "homing failed";
                 }
         }
 
-        void GimbalAdaptor::execute_pause(RPCError &error)
+        void CameraMountAdaptor::execute_pause(RPCError &error)
         {
-                r_debug("GimbalAdaptor::execute_pause");
-                if (!gimbal_.pause_activity()) {
-                        r_err("GimbalAdaptor::execute_pause failed");
+                r_debug("CameraMountAdaptor::execute_pause");
+                if (!mount_.pause_activity()) {
+                        r_err("CameraMountAdaptor::execute_pause failed");
                         error.code = 1;
                         error.message = "stop failed";
                 }
         }
 
-        void GimbalAdaptor::execute_continue(RPCError &error)
+        void CameraMountAdaptor::execute_continue(RPCError &error)
         {
-                r_debug("GimbalAdaptor::execute_continue");
-                if (!gimbal_.continue_activity()) {
-                        r_err("GimbalAdaptor::execute_continue failed");
+                r_debug("CameraMountAdaptor::execute_continue");
+                if (!mount_.continue_activity()) {
+                        r_err("CameraMountAdaptor::execute_continue failed");
                         error.code = 1;
                         error.message = "continue failed";
                 }
         }
 
-        void GimbalAdaptor::execute_reset(RPCError &error)
+        void CameraMountAdaptor::execute_reset(RPCError &error)
         {
-                r_debug("GimbalAdaptor::execute_reset");
-                if (!gimbal_.reset_activity()) {
-                        r_err("GimbalAdaptor::execute_reset failed");
+                r_debug("CameraMountAdaptor::execute_reset");
+                if (!mount_.reset_activity()) {
+                        r_err("CameraMountAdaptor::execute_reset failed");
                         error.code = 1;
                         error.message = "reset failed";
                 }
         }
 
-        void GimbalAdaptor::execute_power_up(RPCError &error)
+        void CameraMountAdaptor::execute_power_up(RPCError &error)
         {
-                r_debug("GimbalAdaptor::power_up");
-                if (!gimbal_.power_up()) {
-                        r_err("GimbalAdaptor::execute_power_up failed");
+                r_debug("CameraMountAdaptor::power_up");
+                if (!mount_.power_up()) {
+                        r_err("CameraMountAdaptor::execute_power_up failed");
                         error.code = 1;
                         error.message = "power up failed";
                 }
         }
         
-        void GimbalAdaptor::execute_power_down(RPCError &error)
+        void CameraMountAdaptor::execute_power_down(RPCError &error)
         {
-                r_debug("GimbalAdaptor::power_down");
-                if (!gimbal_.power_down()) {
-                        r_err("GimbalAdaptor::execute_power_down failed");
+                r_debug("CameraMountAdaptor::power_down");
+                if (!mount_.power_down()) {
+                        r_err("CameraMountAdaptor::execute_power_down failed");
                         error.code = 1;
                         error.message = "power down failed";
                 }
         }
         
-        void GimbalAdaptor::execute_stand_by(RPCError &error)
+        void CameraMountAdaptor::execute_stand_by(RPCError &error)
         {
-                r_debug("GimbalAdaptor::stand_by");
-                if (!gimbal_.stand_by()) {
-                        r_err("GimbalAdaptor::execute_stand_by failed");
+                r_debug("CameraMountAdaptor::stand_by");
+                if (!mount_.stand_by()) {
+                        r_err("CameraMountAdaptor::execute_stand_by failed");
                         error.code = 1;
                         error.message = "stand_by failed";
                 }
         }
         
-        void GimbalAdaptor::execute_wake_up(RPCError &error)
+        void CameraMountAdaptor::execute_wake_up(RPCError &error)
         {
-                r_debug("GimbalAdaptor::wake_up");
-                if (!gimbal_.wake_up()) {
-                        r_err("GimbalAdaptor::execute_wake_up failed");
+                r_debug("CameraMountAdaptor::wake_up");
+                if (!mount_.wake_up()) {
+                        r_err("CameraMountAdaptor::execute_wake_up failed");
                         error.code = 1;
                         error.message = "wake_up failed";
                 }

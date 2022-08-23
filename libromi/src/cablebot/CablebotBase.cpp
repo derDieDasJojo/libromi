@@ -32,14 +32,16 @@
 
 namespace romi {
         
-        CablebotBase::CablebotBase(std::unique_ptr<romiserial::IRomiSerialClient>& serial)
-                : serial_(std::move(serial)),
-                  range_(),
+        CablebotBase::CablebotBase(std::unique_ptr<romiserial::IRomiSerialClient>& motor_serial)
+                : motor_serial_(std::move(motor_serial)),
+                  range_xyz_(),
+                  range_angles_(),
                   diameter_(kDiameter),
                   circumference_(0.0)
         {
                 circumference_ = diameter_ * M_PI;
-                range_.init(v3(0.0), v3(100.0, 0.0, 0.0)); // TODO
+                range_xyz_.init(v3(0.0), v3(100.0, 0.0, 0.0)); // TODO
+                range_angles_.init(v3(-90.0, 0.0, 0.0), v3(90.0, 0.0, 0.0));
         }
 
         int16_t CablebotBase::position_to_steps(double x)
@@ -66,18 +68,19 @@ namespace romi {
                 return turns * circumference_;
         }
         
-        bool CablebotBase::get_range(CNCRange &range)
+        bool CablebotBase::get_range(CNCRange &xyz, IRange &angles)
         {
-                range = range_;
+                xyz = range_xyz_;
+                angles = range_angles_;
                 return true;
         }
         
-        bool CablebotBase::send_command(const char *command)
+        bool CablebotBase::send_motor_command(const char *command)
         {
                 bool success = false;
                 nlohmann::json response;
                 
-                serial_->send(command, response);
+                motor_serial_->send(command, response);
                 
                 if (response.is_array()
                     && response[0].is_number()) {
@@ -85,7 +88,7 @@ namespace romi {
                         success = (response[romiserial::kStatusCode] == 0);
                         if (!success) {
                                 std::string message = response[romiserial::kErrorMessage];
-                                r_err("CablebotBase::send_command: %s: %s",
+                                r_err("CablebotBase::send_motor_command: %s: %s",
                                       command, message.c_str());
                         }
                 }
@@ -96,9 +99,10 @@ namespace romi {
         {
                 bool success = false;
                 try {
-                        validate_coordinates(x, y, z);
+                        validate_xyz_coordinates(x, y, z);
+                        validate_angles(ax, ay, az);
                         validate_speed(relative_speed);
-                        try_moveto(x, relative_speed);
+                        try_moveto(x, ax, relative_speed);
                         success = true;
                         
                 } catch (std::runtime_error& e) {
@@ -107,19 +111,31 @@ namespace romi {
                 return success;
         }
         
-        void CablebotBase::try_moveto(double x, double relative_speed)
+        void CablebotBase::try_moveto(double x, double ax, double relative_speed)
         {
-                send_moveto(x, relative_speed);
-                synchronize(180.0); // Fixme: compute as distance x speed x factor
+                motor_moveto(x, relative_speed);
+                synchronize_with_motor(180.0); // Fixme: compute as distance x speed x factor
         }
         
-        void CablebotBase::validate_coordinates(double x, double y, double z)
+        void CablebotBase::validate_xyz_coordinates(double x, double y, double z)
         {
-                if (!range_.is_inside(x, y, z)) {
-                        r_err("Cablebotbase::validate_coordinates: Position out of range: "
-                                "(%.3f,%.3f,%.3f)", x, y, z);
-                        throw std::runtime_error("Cablebot::validate_coordinates: "
+                if (!range_xyz_.is_inside(x, y, z)) {
+                        r_err("Cablebotbase::validate_xyz_coordinates: "
+                              "Position out of range: "
+                              "(%.3f,%.3f,%.3f)", x, y, z);
+                        throw std::runtime_error("Cablebot::validate_xyz_coordinates: "
                                                  "Position out of range");
+                }
+        }
+        
+        void CablebotBase::validate_angles(double ax, double ay, double az)
+        {
+                if (!range_xyz_.is_inside(ax, ay, az)) {
+                        r_err("Cablebotbase::validate_angles: "
+                              "Angles out of range: "
+                              "(%.3f,%.3f,%.3f)", ax, ay, az);
+                        throw std::runtime_error("Cablebot::validate_angles: "
+                                                 "Angles out of range");
                 }
         }
         
@@ -132,24 +148,24 @@ namespace romi {
                 }
         }
         
-        void CablebotBase::send_moveto(double x, double relative_speed)
+        void CablebotBase::motor_moveto(double x, double relative_speed)
         {
                 (void) relative_speed; // TODO: improve firmware API for speeds
                 char command[64];
                 snprintf(command, sizeof(command), "m[%d]", position_to_steps(x));
-                if (!send_command(command)) {
-                        throw std::runtime_error("Cablebot::send_command: "
-                                                 "send_command failed");
+                if (!send_motor_command(command)) {
+                        throw std::runtime_error("Cablebot::send_motor_command: "
+                                                 "send_motor_command failed");
                 }
         }
         
-        void CablebotBase::synchronize(double timeout)
+        void CablebotBase::synchronize_with_motor(double timeout)
         {
                 auto clock = rpp::ClockAccessor::GetInstance();
                 double start_time = clock->time();
                 
                 while (true) {
-                        if (is_on_target()) {
+                        if (is_motor_on_target()) {
                                 break;
                         } else {
                                 clock->sleep(0.2);
@@ -157,22 +173,22 @@ namespace romi {
 
                         double now = clock->time();
                         if (timeout >= 0.0 && (now - start_time) >= timeout) {
-                                throw std::runtime_error("CablebotBase::synchronize: "
+                                throw std::runtime_error("CablebotBase::synchronize_with_motor: "
                                                          "time out");
                         }
                 }
         }
         
-        bool CablebotBase::is_on_target()
+        bool CablebotBase::is_motor_on_target()
         {
                 nlohmann::json response;
-                serial_->send("S", response);
+                motor_serial_->send("S", response);
 
                 bool success = (response[0] == 0.0);
                 if (!success) {
                         std::string message = response[1];
-                        r_err("CablebotBase::is_on_target: %s", message.c_str());
-                        throw std::runtime_error("CablebotBase::is_on_target");
+                        r_err("CablebotBase::is_motor_on_target: %s", message.c_str());
+                        throw std::runtime_error("CablebotBase::is_motor_on_target");
                 }
 
                 int error = (int) response[1];
@@ -181,30 +197,26 @@ namespace romi {
                 double voltage = response[4];
                 double current = response[6];
                 double position = response[7];
-                r_debug("CablebotBase::is_on_target: %s, distance: %f, position: %f, error: %d, voltage: %0.3f, current: %0.3f",
+                r_debug("CablebotBase::is_motor_on_target: %s, distance: %f, position: %f, error: %d, voltage: %0.3f, current: %0.3f",
                         on_target? "yes" : "no", distance, position, error, voltage, current);
                 return on_target;
-        }
-                       
-        bool CablebotBase::moveat(int16_t speed_x, int16_t speed_y, int16_t speed_z)
-        {
-                (void) speed_x;
-                (void) speed_y;
-                (void) speed_z;
-                r_err("CablebotBase::moveat: Not implemented");
-                throw std::runtime_error("CablebotBase::moveat: Not implemented");
-                return false;
         }
         
         bool CablebotBase::homing()
         {
-                return send_command("H");
+                return send_motor_command("H");
         }
-        
-        bool CablebotBase::get_position(v3& position)
+ 
+        bool CablebotBase::get_position(v3& xyz, v3& angles)
+        {
+                angles.set(0.0);
+                return get_motor_position(xyz);
+        }
+
+        bool CablebotBase::get_motor_position(v3& position)
         {
             nlohmann::json response;
-            serial_->send("P", response);
+            motor_serial_->send("P", response);
 
             bool success = (response[romiserial::kStatusCode] == 0);
             if (success) {
@@ -266,12 +278,12 @@ namespace romi {
 
         bool CablebotBase::enable_driver()
         {
-                return send_command("E[1]");
+                return send_motor_command("E[1]");
         }
 
         bool CablebotBase::disable_driver()
         {
-                return send_command("E[0]");
+                return send_motor_command("E[0]");
         }
 
         bool CablebotBase::power_up()

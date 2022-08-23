@@ -45,6 +45,7 @@ namespace romi {
 
                 void init(nlohmann::json &range) override;
                 void init(v3 min, v3 max) override;
+                nlohmann::json to_json() override;
 
 
                 v3 min() const override;
