@@ -49,9 +49,9 @@ namespace romi {
         }
         
         void CameraMountAdaptor::execute(const std::string& method,
-                                    nlohmann::json& params,
-                                    nlohmann::json& result,
-                                    RPCError &error)
+                                         nlohmann::json& params,
+                                         nlohmann::json& result,
+                                         RPCError &error)
         {
                 r_debug("CameraMountAdaptor::execute");
                 
