@@ -32,8 +32,8 @@
 
 namespace romi {
         
-        CablebotBase::CablebotBase(std::unique_ptr<romiserial::IRomiSerialClient>& motor_serial)
-                : motor_serial_(std::move(motor_serial)),
+        CablebotBase::CablebotBase(std::unique_ptr<romiserial::IRomiSerialClient>& base_serial)
+                : base_serial_(std::move(base_serial)),
                   range_xyz_(),
                   range_angles_(),
                   diameter_(kDiameter),
@@ -75,12 +75,12 @@ namespace romi {
                 return true;
         }
         
-        bool CablebotBase::send_motor_command(const char *command)
+        bool CablebotBase::send_base_command(const char *command)
         {
                 bool success = false;
                 nlohmann::json response;
                 
-                motor_serial_->send(command, response);
+                base_serial_->send(command, response);
                 
                 if (response.is_array()
                     && response[0].is_number()) {
@@ -88,7 +88,7 @@ namespace romi {
                         success = (response[romiserial::kStatusCode] == 0);
                         if (!success) {
                                 std::string message = response[romiserial::kErrorMessage];
-                                r_err("CablebotBase::send_motor_command: %s: %s",
+                                r_err("CablebotBase::send_base_command: %s: %s",
                                       command, message.c_str());
                         }
                 }
@@ -116,8 +116,8 @@ namespace romi {
         void CablebotBase::try_moveto(double x, double ax, double relative_speed)
         {
                 (void) ax;
-                motor_moveto(x, relative_speed);
-                synchronize_with_motor(180.0); // Fixme: compute as distance x speed x factor
+                base_moveto(x, relative_speed);
+                synchronize_with_base(180.0); // Fixme: compute as distance x speed x factor
         }
         
         void CablebotBase::validate_xyz_coordinates(double x, double y, double z)
@@ -151,24 +151,24 @@ namespace romi {
                 }
         }
         
-        void CablebotBase::motor_moveto(double x, double relative_speed)
+        void CablebotBase::base_moveto(double x, double relative_speed)
         {
                 (void) relative_speed; // TODO: improve firmware API for speeds
                 char command[64];
                 snprintf(command, sizeof(command), "m[%d]", position_to_steps(x));
-                if (!send_motor_command(command)) {
-                        throw std::runtime_error("Cablebot::send_motor_command: "
-                                                 "send_motor_command failed");
+                if (!send_base_command(command)) {
+                        throw std::runtime_error("Cablebot::send_base_command: "
+                                                 "send_base_command failed");
                 }
         }
         
-        void CablebotBase::synchronize_with_motor(double timeout)
+        void CablebotBase::synchronize_with_base(double timeout)
         {
                 auto clock = rpp::ClockAccessor::GetInstance();
                 double start_time = clock->time();
                 
                 while (true) {
-                        if (is_motor_on_target()) {
+                        if (is_base_on_target()) {
                                 break;
                         } else {
                                 clock->sleep(0.2);
@@ -176,22 +176,22 @@ namespace romi {
 
                         double now = clock->time();
                         if (timeout >= 0.0 && (now - start_time) >= timeout) {
-                                throw std::runtime_error("CablebotBase::synchronize_with_motor: "
+                                throw std::runtime_error("CablebotBase::synchronize_with_base: "
                                                          "time out");
                         }
                 }
         }
         
-        bool CablebotBase::is_motor_on_target()
+        bool CablebotBase::is_base_on_target()
         {
                 nlohmann::json response;
-                motor_serial_->send("S", response);
+                base_serial_->send("S", response);
 
                 bool success = (response[0] == 0.0);
                 if (!success) {
                         std::string message = response[1];
-                        r_err("CablebotBase::is_motor_on_target: %s", message.c_str());
-                        throw std::runtime_error("CablebotBase::is_motor_on_target");
+                        r_err("CablebotBase::is_base_on_target: %s", message.c_str());
+                        throw std::runtime_error("CablebotBase::is_base_on_target");
                 }
 
                 int error = (int) response[1];
@@ -200,26 +200,26 @@ namespace romi {
                 double voltage = response[4];
                 double current = response[6];
                 double position = response[7];
-                r_debug("CablebotBase::is_motor_on_target: %s, distance: %f, position: %f, error: %d, voltage: %0.3f, current: %0.3f",
+                r_debug("CablebotBase::is_base_on_target: %s, distance: %f, position: %f, error: %d, voltage: %0.3f, current: %0.3f",
                         on_target? "yes" : "no", distance, position, error, voltage, current);
                 return on_target;
         }
         
         bool CablebotBase::homing()
         {
-                return send_motor_command("H");
+                return send_base_command("H");
         }
  
         bool CablebotBase::get_position(v3& xyz, v3& angles)
         {
                 angles.set(0.0);
-                return get_motor_position(xyz);
+                return get_base_position(xyz);
         }
 
-        bool CablebotBase::get_motor_position(v3& position)
+        bool CablebotBase::get_base_position(v3& position)
         {
             nlohmann::json response;
-            motor_serial_->send("P", response);
+            base_serial_->send("P", response);
 
             bool success = (response[romiserial::kStatusCode] == 0);
             if (success) {
@@ -251,12 +251,12 @@ namespace romi {
 
         bool CablebotBase::enable_driver()
         {
-                return send_motor_command("E[1]");
+                return send_base_command("E[1]");
         }
 
         bool CablebotBase::disable_driver()
         {
-                return send_motor_command("E[0]");
+                return send_base_command("E[0]");
         }
 
         bool CablebotBase::power_up()

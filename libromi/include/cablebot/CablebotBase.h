@@ -38,7 +38,7 @@ namespace romi {
                 static const constexpr double kPrecision = 36.0;
                 static const constexpr double kDiameter = 0.0505;
                 
-                std::unique_ptr<romiserial::IRomiSerialClient> motor_serial_;
+                std::unique_ptr<romiserial::IRomiSerialClient> base_serial_;
                 CNCRange range_xyz_;
                 Range range_angles_;
                 double diameter_;
@@ -47,19 +47,19 @@ namespace romi {
                 void validate_xyz_coordinates(double x, double y, double z);
                 void validate_angles(double ax, double ay, double az);
                 void validate_speed(double v);
-                bool send_motor_command(const char *command);
+                bool send_base_command(const char *command);
                 int16_t position_to_steps(double x);
                 double steps_to_position(double steps);
                 bool enable_driver();
                 bool disable_driver();
                 void try_moveto(double x, double ax, double relative_speed);
-                void motor_moveto(double x, double relative_speed);
-                void synchronize_with_motor(double timeout);
-                bool is_motor_on_target();
-                bool get_motor_position(v3& xyz); 
+                void base_moveto(double x, double relative_speed);
+                void synchronize_with_base(double timeout);
+                bool is_base_on_target();
+                bool get_base_position(v3& xyz); 
 
         public:
-                CablebotBase(std::unique_ptr<romiserial::IRomiSerialClient>& motor_serial);
+                CablebotBase(std::unique_ptr<romiserial::IRomiSerialClient>& base_serial);
                 virtual ~CablebotBase() = default;
 
 

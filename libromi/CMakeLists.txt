@@ -361,6 +361,7 @@ set(SOURCES
 
 set(DATA_PROVIDER_SOURCES
         include/data_provider/CNCLocationProvider.h
+        include/data_provider/CameraMountLocationProvider.h
         include/data_provider/Gps.h
         include/data_provider/GpsLocationProvider.h
         include/data_provider/IGPS.h
@@ -374,6 +375,7 @@ set(DATA_PROVIDER_SOURCES
         include/data_provider/SoftwareVersion.h
         
         src/data_provider/CNCLocationProvider.cpp
+        src/data_provider/CameraMountLocationProvider.cpp
         src/data_provider/Gps.cpp
         src/data_provider/GpsLocationProvider.cpp        
         src/data_provider/RoverIdentityProvider.cpp
