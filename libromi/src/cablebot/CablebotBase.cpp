@@ -70,8 +70,8 @@ namespace romi {
         
         bool CablebotBase::get_range(CNCRange &xyz, IRange &angles)
         {
-                xyz = range_xyz_;
-                angles = range_angles_;
+                xyz.init(range_xyz_.min(), range_xyz_.max());
+                angles.init(range_angles_.min(), range_angles_.max());
                 return true;
         }
         
