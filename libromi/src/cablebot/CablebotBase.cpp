@@ -95,7 +95,9 @@ namespace romi {
                 return success;
         }
         
-        bool CablebotBase::moveto(double x, double y, double z, double relative_speed)
+        bool CablebotBase::moveto(double x, double y, double z,
+                                  double ax, double ay, double az,
+                                  double relative_speed)
         {
                 bool success = false;
                 try {
@@ -113,6 +115,7 @@ namespace romi {
         
         void CablebotBase::try_moveto(double x, double ax, double relative_speed)
         {
+                (void) ax;
                 motor_moveto(x, relative_speed);
                 synchronize_with_motor(180.0); // Fixme: compute as distance x speed x factor
         }
@@ -226,36 +229,6 @@ namespace romi {
                     position.z(0.0);
             }
             return success;
-        }
-        
-        bool CablebotBase::spindle(double speed)
-        {
-                (void) speed;
-                r_err("CablebotBase::spindle: Not implemented");
-                throw std::runtime_error("CablebotBase::spindle: Not implemented");
-                return false;
-        }
-        
-        bool CablebotBase::travel(Path &path, double relative_speed)
-        {
-                (void) path;
-                (void) relative_speed;
-                r_err("CablebotBase::travel: Not implemented");
-                throw std::runtime_error("CablebotBase::travel: Not implemented");
-                return false;
-        }
-        
-        bool CablebotBase::helix(double xc, double yc, double alpha, double z,
-                                 double relative_speed)
-        {
-                (void) xc;
-                (void) yc;
-                (void) alpha;
-                (void) z;
-                (void) relative_speed;
-                r_err("CablebotBase::helix: Not implemented");
-                throw std::runtime_error("CablebotBase::helix: Not implemented");
-                return false;
         }
 
         bool CablebotBase::pause_activity()

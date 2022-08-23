@@ -52,11 +52,11 @@ namespace romi {
                 double steps_to_position(double steps);
                 bool enable_driver();
                 bool disable_driver();
-                void try_moveto(double x, double relative_speed);
+                void try_moveto(double x, double ax, double relative_speed);
                 void motor_moveto(double x, double relative_speed);
                 void synchronize_with_motor(double timeout);
                 bool is_motor_on_target();
-                bool get_motor_position(v3& xyz) override; 
+                bool get_motor_position(v3& xyz); 
 
         public:
                 CablebotBase(std::unique_ptr<romiserial::IRomiSerialClient>& motor_serial);
@@ -69,12 +69,6 @@ namespace romi {
                 bool moveto(double x, double y, double z,
                             double ax, double ay, double az,
                             double relative_speed) override;
-                // bool moveat(int16_t speed_x, int16_t speed_y, int16_t speed_z) override;
-
-                // bool spindle(double speed) override;
-                // bool travel(Path &path, double relative_speed) override;
-                // bool helix(double xc, double yc, double alpha, double z,
-                //            double relative_speed) override;
                 
                 // IActivity interface
                 bool pause_activity() override;
