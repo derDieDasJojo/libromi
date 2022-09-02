@@ -38,6 +38,13 @@ namespace romi {
                 virtual ~ICamera() = default;
                 virtual bool grab(Image &image) = 0;
                 virtual rcom::MemBuffer& grab_jpeg() = 0;
+                
+                virtual bool set_value(const std::string& name, double value) = 0;
+                virtual bool select_option(const std::string& name,
+                                           const std::string& value) = 0;
+
+                
+                //virtual bool load_settings(const std::string& name, double value) = 0;
         };
 }
 

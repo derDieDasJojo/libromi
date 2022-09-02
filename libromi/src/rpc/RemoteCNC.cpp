@@ -74,15 +74,15 @@ namespace romi {
                 nlohmann::json params;
                 
                 if (x != UNCHANGED)
-                        params["x"] = x;
+                        params[MethodsCNC::kMoveXParam] = x;
 
                 if (y != UNCHANGED)
-                    params["y"] = y;
+                    params[MethodsCNC::kMoveYParam] = y;
                 
                 if (z != UNCHANGED)
-                    params["z"] = z;
+                    params[MethodsCNC::kMoveZParam] = z;
 
-                params["speed"] = v;
+                params[MethodsCNC::kSpeedParam] = v;
 
                 return execute_with_params(MethodsCNC::moveto, params);
         }
@@ -92,7 +92,7 @@ namespace romi {
                 r_debug("RemoteCNC::spindle");
 
                 nlohmann::json params;
-                params["speed"] = speed;
+                params[MethodsCNC::kSpeedParam] = speed;
                 return execute_with_params(MethodsCNC::spindle, params);
         }
         
@@ -106,8 +106,8 @@ namespace romi {
                     points.emplace_back(nlohmann::json{path[i].x(), path[i].y(), path[i].z()} );
                 }
 
-                parameters["path"] = points;
-                parameters["speed"] = relative_speed;
+                parameters[MethodsCNC::kTravelPathParam] = points;
+                parameters[MethodsCNC::kSpeedParam] = relative_speed;
 
                 return execute_with_params(MethodsCNC::travel, parameters);
         }

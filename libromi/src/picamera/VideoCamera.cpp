@@ -28,7 +28,8 @@
 namespace romi {
         
         VideoCamera::VideoCamera(PiCameraSettings& settings)
-                : camera_(settings),
+                : //camera_(settings),
+                BaseCamera(settings),
                   encoder_(settings),
                   encoder_connection_(camera_.get_video_port(),
                                       encoder_.get_input_port())
@@ -56,24 +57,9 @@ namespace romi {
                 return encoder_.get_buffer();
         }
 
-        bool VideoCamera::power_up()
+        bool VideoCamera::set_jpeg_quality(uint32_t value)
         {
-                return true;
-        }
-        
-        bool VideoCamera::power_down()
-        {
-                return true;
-        }
-        
-        bool VideoCamera::stand_by()
-        {
-                return true;
-        }
-        
-        bool VideoCamera::wake_up()
-        {
-                return true;
+                return encoder_.set_jpeg_quality(value);
         }
 }
 

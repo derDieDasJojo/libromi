@@ -61,10 +61,10 @@ namespace romi {
                                 handler_.execute(method, params, result, error);
                                 
                         } else {
-                                response = construct_response(error);
+                                response = construct_response("unknown", error);
                         }
                 } else {
-                        response = construct_response(error);
+                        response = construct_response("unknown", error);
                 }
  
                 if (error.code == 0) {
@@ -92,19 +92,20 @@ namespace romi {
                         std::string method = get_method(request, error);
                         if (!method.empty()) {
                                 nlohmann::json params;
+
                                 if (request.contains("params"))
                                         params = request["params"];
 
                                 handler_.execute(method, params, result, error);
-                                response = construct_response(error, result);
+                                response = construct_response(method, error, result);
                                 
                         } else {
-                                response = construct_response(error);
+                                response = construct_response("unknown", error);
                         }
                 } else {
-                        response = construct_response(error);
+                        response = construct_response("unknown", error);
                 }
-
+                
                 rcom::MemBuffer serialised;
                 serialised.append_string(response.dump().c_str());
                 websocket.send(serialised, rcom::kTextMessage);
@@ -138,28 +139,37 @@ namespace romi {
 
         /* Construct the envelope for a reponse with results, to be
          * sent back to the client.  */
-        nlohmann::json RcomMessageHandler::construct_response(RPCError& error,
-                                                             nlohmann::json& result)
+        nlohmann::json RcomMessageHandler::construct_response(const std::string& method,
+                                                              RPCError& error,
+                                                              nlohmann::json& result)
         {
-            nlohmann::json response = construct_response(error);
+                nlohmann::json response = construct_response(method, error);
                 if (!result.is_null()) {
                         response["result"] = result;
-                }
+                } 
                 return response;
         }
         
         /* Construct the envelope for a reponse with results, to be
          * sent back to the client.  */
-        nlohmann::json RcomMessageHandler::construct_response(RPCError& error)
+        nlohmann::json RcomMessageHandler::construct_response(const std::string& method,
+                                                              RPCError& error)
         {
-                return construct_response(error.code, error.message.c_str());
+                return construct_response(method, error.code, error.message.c_str());
         }
 
         /* Construct the envelope for an error reponse to be sent back
          * to the client.  */
-        nlohmann::json RcomMessageHandler::construct_response(int code, const char *message)
+        nlohmann::json RcomMessageHandler::construct_response(const std::string& method,
+                                                              int code, const char *message)
         {
-            nlohmann::json response;
+                nlohmann::json response;
+
+                if (!method.empty()) {
+                        response["method"] = method;
+                } else {
+                        response["method"] = "unknown";
+                }
                 
                 if (code != 0) {
                         nlohmann::json error;

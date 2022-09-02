@@ -30,7 +30,8 @@ namespace romi {
         PiCameraSettings::PiCameraSettings()
                 : mode_(kStillMode),
                   framerate_(kVariableFrameRate),
-                  bitrate_(kDefaultBitRate), 
+                  bitrate_(kDefaultBitRate),
+                  jpeg_quality_(kDefaultJpegQuality),
                   max_width_(640),
                   max_height_(480),
                   width_(640),
@@ -167,7 +168,7 @@ namespace romi {
 
         bool PiCameraSettings::is_shutter_speed_valid(uint32_t speed)
         {
-                bool valid = (speed < 60*1000);
+                bool valid = (speed <= 230*1000);
                 if (!valid)
                         r_warn("Invalid shutter speed");
                 return valid;
@@ -204,6 +205,113 @@ namespace romi {
                 if (!valid)
                         r_warn("Invalid colour effect");
                 return valid;
+        }
+
+        bool PiCameraSettings::is_jpeg_quality_valid(uint32_t quality)
+        {
+                bool valid = (quality <= 100);
+                if (!valid)
+                        r_warn("Invalid jpeg quality, %d != [0,100]", (int) quality);
+                return valid;
+        }
+
+        bool PiCameraSettings::set_resolution(size_t width, size_t height)
+        {
+                bool result = false;
+                if (is_resolution_valid(width, height)) {
+                        width_ = width;
+                        height_ = height;
+                        preview_width_ = width;
+                        preview_height_ = height;
+                        result = true;
+                }
+                return result;
+        }
+
+        bool PiCameraSettings::set_exposure_mode(MMAL_PARAM_EXPOSUREMODE_T mode)
+        {
+                exposure_mode_ = mode;
+                return true;
+        }
+
+        bool PiCameraSettings::set_saturation(int32_t saturation)
+        {
+                bool result = false;
+                if (is_saturation_valid(saturation)) {
+                        saturation_ = saturation;
+                        result = true;
+                }
+                return result;
+        }
+        
+        bool PiCameraSettings::set_sharpness(int32_t sharpness)
+        {
+                bool result = false;
+                if (is_sharpness_valid(sharpness)) {
+                        sharpness_ = sharpness;
+                        result = true;
+                }
+                return result;
+        }
+        
+        bool PiCameraSettings::set_contrast(int32_t contrast)
+        {
+                bool result = false;
+                if (is_contrast_valid(contrast)) {
+                        contrast_ = contrast;
+                        result = true;
+                }
+                return result;
+        }
+        
+        bool PiCameraSettings::set_brightness(int32_t brightness)
+        {
+                bool result = false;
+                if (is_brightness_valid(brightness)) {
+                        brightness_ = brightness;
+                        result = true;
+                }
+                return result;
+        }
+        
+        bool PiCameraSettings::set_iso(uint32_t iso)
+        {
+                bool result = false;
+                if (is_iso_valid(iso)) {
+                        iso_ = iso;
+                        result = true;
+                }
+                return result;
+        }
+
+        bool PiCameraSettings::set_jpeg_quality(uint32_t quality)
+        {
+                bool result = false;
+                if (is_jpeg_quality_valid(quality)) {
+                        jpeg_quality_ = quality;
+                        result = true;
+                }
+                return result;
+        }
+
+        bool PiCameraSettings::set_analog_gain(float value)
+        {
+                bool result = false;
+                if (is_analog_gain_valid(value)) {
+                        analog_gain_ = value;
+                        result = true;
+                }
+                return result;
+        }
+        
+        bool PiCameraSettings::set_shutter_speed(uint32_t speed)
+        {
+                bool result = false;
+                if (is_shutter_speed_valid(speed)) {
+                        shutter_speed_ = speed;
+                        result = true;
+                }
+                return result;
         }
 
         V2StillCameraSettings::V2StillCameraSettings(size_t width, size_t height)

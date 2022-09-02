@@ -59,10 +59,10 @@ namespace romi {
                 
                 try {
 
-                        if (method == MethodsWeeder::hoe) {
+                        if (method == MethodsWeeder::kHoe) {
                                 execute_hoe(error);
                         
-                        } else if (method == MethodsWeeder::stop) {
+                        } else if (method == MethodsWeeder::kStop) {
                                 execute_hoe(error);
                         
                         } else if (method == MethodsActivity::activity_pause) {

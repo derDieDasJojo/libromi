@@ -50,13 +50,15 @@ namespace romi {
                 return (error.code == 0);
         }
 
-        bool RemoteStub::execute_with_result(const std::string& method, nlohmann::json& result)
+        bool RemoteStub::execute_with_result(const std::string& method,
+                                             nlohmann::json& result)
         {
                 nlohmann::json params;
                 return execute(method, params, result);
         }
 
-        bool RemoteStub::execute_with_params(const std::string& method, nlohmann::json& params)
+        bool RemoteStub::execute_with_params(const std::string& method,
+                                             nlohmann::json& params)
         {
                 nlohmann::json result;
                 return execute(method, params, result);

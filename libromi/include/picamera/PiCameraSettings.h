@@ -19,6 +19,8 @@ namespace romi {
         static const uint32_t kDefaultBitRate =  17000000;
         static const uint32_t kMaxBitrateMJPEG = 25000000; // 25Mbits/s
         
+        static const uint32_t kDefaultJpegQuality =  85;
+        
         static const int32_t kVariableFrameRate = 0;
         
         struct ColourEffects
@@ -47,6 +49,7 @@ namespace romi {
                 CameraMode mode_;
                 int32_t framerate_;
                 uint32_t bitrate_;
+                uint32_t jpeg_quality_;
                 size_t max_width_;
                 size_t max_height_;
                 size_t width_;
@@ -99,6 +102,18 @@ namespace romi {
                 bool is_analog_gain_valid(float value);
                 bool is_digital_gain_valid(float value);
                 bool is_colour_effects_valid(uint32_t u,  uint32_t v);
+                bool is_jpeg_quality_valid(uint32_t value);
+                
+                bool set_resolution(size_t width, size_t height);
+                bool set_saturation(int32_t saturation);
+                bool set_sharpness(int32_t sharpness);
+                bool set_contrast(int32_t contrast);
+                bool set_brightness(int32_t brightness);
+                bool set_iso(uint32_t iso);
+                bool set_jpeg_quality(uint32_t quality);
+                bool set_exposure_mode(MMAL_PARAM_EXPOSUREMODE_T mode);
+                bool set_shutter_speed(uint32_t speed);
+                bool set_analog_gain(float value);
         };
 
         struct V2StillCameraSettings : public PiCameraSettings {

@@ -27,57 +27,91 @@
 namespace romi {
         
         ImagingDevice::ImagingDevice(std::shared_ptr<ICamera>& camera,
-                                     std::shared_ptr<ICNC>& cnc,
-                                     std::shared_ptr<IGimbal>& gimbal)
+                                     std::shared_ptr<ICameraMount>& mount)
                 : camera_(camera),
-                  cnc_(cnc),
-                  gimbal_(gimbal)
+                  mount_(mount)
         {
+        }
+        
+        bool ImagingDevice::grab(Image &image)
+        {
+                return camera_->grab(image);
+        }
+        
+        rcom::MemBuffer& ImagingDevice::grab_jpeg()
+        {
+                return camera_->grab_jpeg();
+        }
+        
+        bool ImagingDevice::set_value(const std::string& name, double value)
+        {
+                return camera_->set_value(name, value);
+        }
+        
+        bool ImagingDevice::select_option(const std::string& name,
+                                          const std::string& value)
+        {
+                return camera_->select_option(name, value);
+        }
+        
+        bool ImagingDevice::get_range(CNCRange &xyz, IRange &angles)
+        {
+                return mount_->get_range(xyz, angles);
+        }
+        
+        bool ImagingDevice::get_position(v3& xyz, v3& angles)
+        {
+                return mount_->get_position(xyz, angles);
+        }
+        
+        bool ImagingDevice::homing()
+        {
+                return mount_->homing();
+        }
+        
+        bool ImagingDevice::moveto(double x, double y, double z,
+                                   double phi_x, double phi_y, double phi_z,
+                                   double relative_speed)
+        {
+                return mount_->moveto(x, y, z, phi_x, phi_y, phi_z, relative_speed);
         }
 
         bool ImagingDevice::pause_activity()
         {
-                return cnc_->pause_activity()
-                        && gimbal_->pause_activity();
+                return mount_->pause_activity();
         }
         
         bool ImagingDevice::continue_activity()
         {
-                return cnc_->continue_activity()
-                        && gimbal_->continue_activity();
+                return mount_->continue_activity();
         }
         
         bool ImagingDevice::reset_activity()
         {
-                return cnc_->reset_activity()
-                        && gimbal_->reset_activity();
+                return mount_->reset_activity();
         }
 
         bool ImagingDevice::power_up()
         {
                 return camera_->power_up()
-                        && cnc_->power_up()
-                        && gimbal_->power_up();
+                        && mount_->power_up();
         }
         
         bool ImagingDevice::power_down()
         {
                 return camera_->power_down()
-                        && cnc_->power_down()
-                        && gimbal_->power_down();
+                        && mount_->power_down();
         }
         
         bool ImagingDevice::stand_by()
         {
                 return camera_->stand_by()
-                        && cnc_->stand_by()
-                        && gimbal_->stand_by();
+                        && mount_->stand_by();
         }
         
         bool ImagingDevice::wake_up()
         {
                 return camera_->wake_up()
-                        && cnc_->wake_up()
-                        && gimbal_->wake_up();
+                        && mount_->wake_up();
         }
 }

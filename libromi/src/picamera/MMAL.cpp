@@ -27,10 +27,18 @@
 
 namespace romi::arm {
 
+        bool MMAL::status_is_ok(const char *caller_name, MMAL_STATUS_T status)
+        {
+                bool ok = (status == MMAL_SUCCESS);
+                if (!ok) {
+                        r_err("%s failed", caller_name);
+                }
+                return ok;
+        }
+
         void MMAL::assert_status(const char *caller_name, MMAL_STATUS_T status)
         {
-                if (status != MMAL_SUCCESS) {
-                        r_err("%s failed", caller_name);
+                if (!status_is_ok(caller_name, status)) {
                         throw std::runtime_error("Error in CameraComponent");
                 }
         }

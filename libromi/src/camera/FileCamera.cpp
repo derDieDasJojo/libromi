@@ -44,6 +44,21 @@ namespace romi {
         {
                 return ImageIO::load(image_, filename_.c_str());
         }
+
+        bool FileCamera::set_value(const std::string& name, double value)
+        {
+                (void) name;
+                (void) value;
+                return true;
+        }
+        
+        bool FileCamera::select_option(const std::string& name,
+                                       const std::string& value)
+        {
+                (void) name;
+                (void) value;
+                return true;
+        }
         
         bool FileCamera::grab(Image &image)
         {

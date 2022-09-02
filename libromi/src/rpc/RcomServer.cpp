@@ -33,13 +33,16 @@ namespace romi {
         std::unique_ptr<IRPCServer> RcomServer::create(const std::string& topic,
                                                        IRPCHandler &handler)
         {
-             auto webserver_socket_factory = rcom::WebSocketServerFactory::create();
-            std::shared_ptr<rcom::ISocketFactory> socket_factory = std::make_shared<rcom::SocketFactory>();
-             std::shared_ptr<rcom::IMessageListener> listener
+                auto webserver_socket_factory = rcom::WebSocketServerFactory::create();
+                std::shared_ptr<rcom::ISocketFactory> socket_factory
+                        = std::make_shared<rcom::SocketFactory>();
+                std::shared_ptr<rcom::IMessageListener> listener
                         = std::make_shared<RcomMessageHandler>(handler);
-             std::unique_ptr<rcom::IMessageHub> hub
-                        = std::make_unique<rcom::MessageHub>(topic, listener, socket_factory, webserver_socket_factory);
-             return std::make_unique<RcomServer>(hub);
+                std::unique_ptr<rcom::IMessageHub> hub
+                        = std::make_unique<rcom::MessageHub>(topic, listener,
+                                                             socket_factory,
+                                                             webserver_socket_factory);
+                return std::make_unique<RcomServer>(hub);
         }
         
         RcomServer::RcomServer(std::unique_ptr<rcom::IMessageHub>& hub)

@@ -35,13 +35,13 @@ namespace romi {
         bool RemoteWeeder::hoe()
         {
                 r_debug("RemoteWeeder::hoe");
-                return execute_simple_request(MethodsWeeder::hoe);
+                return execute_simple_request(MethodsWeeder::kHoe);
         }
         
         bool RemoteWeeder::stop()
         {
                 r_debug("RemoteWeeder::hoe");
-                return execute_simple_request(MethodsWeeder::stop);
+                return execute_simple_request(MethodsWeeder::kStop);
         }
 
         bool RemoteWeeder::pause_activity()

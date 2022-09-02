@@ -24,6 +24,7 @@
 #include <stdexcept>
 
 #include "picamera/CameraComponent.h"
+#include "camera/ICameraSettings.h"
 
 namespace romi::arm {
 
@@ -536,13 +537,18 @@ namespace romi::arm {
                                       MMAL_PARAMETER_DRAW_BOX_FACES_AND_FOCUS,
                                       value);
         }
-
-        void CameraComponent::set_shutter_speed()
+        
+        void CameraComponent::set_shutter_speed(uint32_t value)
         {
-                set_shutter_speed(shutter_speed_);
+                shutter_speed_ = value;
         }
 
-        void CameraComponent::set_shutter_speed(uint32_t value)
+        void CameraComponent::init_shutter_speed()
+        {
+                init_shutter_speed(shutter_speed_);
+        }
+
+        void CameraComponent::init_shutter_speed(uint32_t value)
         {
                 set_control_parameter("set_shutter_speed",
                                       MMAL_PARAMETER_SHUTTER_SPEED,

@@ -22,24 +22,24 @@
 
  */
 
-#ifndef __ROMI_GIMBAL_ADAPTOR_H
-#define __ROMI_GIMBAL_ADAPTOR_H
+#ifndef __ROMI_CAMERAMOUNTADAPTOR_H
+#define __ROMI_CAMERAMOUNTADAPTOR_H
 
 #include <string>
 #include "rpc/IRPCHandler.h"
-#include "api/IGimbal.h"
+#include "hal/ICameraMount.h"
 
 namespace romi {
 
-        class GimbalAdaptor : public IRPCHandler
+        class CameraMountAdaptor : public IRPCHandler
         {
         protected:
-                IGimbal& gimbal_;
+                ICameraMount& mount_;
                 
                 void execute_moveto(nlohmann::json& params, RPCError &error);
-                void execute_moveat(nlohmann::json& params, RPCError &error);
-                void execute_get_angle(nlohmann::json& result, RPCError &error);
-                void execute_set_angle(nlohmann::json& result, RPCError &error);
+                void execute_get_position(nlohmann::json& result, RPCError &error);
+                void execute_get_range(nlohmann::json& result, RPCError &error);
+                void execute_homing(RPCError &error);
                 
                 void execute_stop(RPCError &error);
                 void execute_pause(RPCError &error);
@@ -51,8 +51,8 @@ namespace romi {
                 void execute_wake_up(RPCError &error);
 
         public:
-                explicit GimbalAdaptor(IGimbal& weeder);
-                ~GimbalAdaptor() override = default;
+                explicit CameraMountAdaptor(ICameraMount& client);
+                ~CameraMountAdaptor() override = default;
 
                 void execute(const std::string& method,
                              nlohmann::json& params,
@@ -65,4 +65,4 @@ namespace romi {
         };
 }
 
-#endif // __ROMI_GIMBAL_ADAPTOR_H
+#endif // __ROMI_CAMERAMOUNTADAPTOR_H

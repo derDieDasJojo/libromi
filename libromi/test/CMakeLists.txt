@@ -338,6 +338,23 @@ add_test(
 
 ##
 
+set(SRCS_CAMERAINFO
+        src/tests_main.cpp
+        src/simpleradialdistortion_tests.cpp
+        src/cameraintrinsics_tests.cpp
+        src/camerasettings_tests.cpp
+        src/camerainfoio_tests.cpp
+  )
+add_executable(libromi_unit_tests_camerainfo ${SRCS_CAMERAINFO})
+target_link_libraries(libromi_unit_tests_camerainfo romi rpp gtest gmock)
+
+add_test(
+    NAME libromi_unit_tests_camerainfo
+    COMMAND libromi_unit_tests_camerainfo
+)
+
+##
+
 Message (${CMAKE_BINARY_DIR})
 
 if(BUILD_COVERAGE)
@@ -366,6 +383,7 @@ if(BUILD_COVERAGE)
                             libromi_unit_tests_brushmotordriver
                             libromi_unit_tests_rcommessagehandler
                             libromi_unit_tests_navigation_control
+                            libromi_unit_tests_camerainfo
     )
 endif()
 

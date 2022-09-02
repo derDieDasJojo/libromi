@@ -27,6 +27,8 @@
 #include "picamera/PiCamera.h"
 #include "hal/BldcGimbal.h"
 #include "hal/FakeGimbal.h"
+#include "hal/CNCAndGimbal.h"
+#include "hal/ICameraMount.h"
 #include "cablebot/CablebotBase.h"
 
 namespace romi {
@@ -58,23 +60,24 @@ namespace romi {
 
                 // Base
                 std::unique_ptr<romiserial::IRomiSerialClient> base_serial;
-                std::shared_ptr<romi::ICNC> base;
-                r_info("Connecting to base at %s", kSerialBase);
                 base_serial = romiserial::RomiSerialClient::create(kSerialBase,
                                                                    "CablebotBase");
-                base = std::make_shared<romi::CablebotBase>(base_serial);
+                //base = std::make_unique<romi::CablebotBase>(base_serial);
 
                 // Gimbal
                 //std::unique_ptr<romiserial::IRomiSerialClient> gimbal_serial;
-                std::shared_ptr<romi::IGimbal> gimbal;
+                //std::unique_ptr<romi::IGimbal> gimbal;
                 
                 // r_info("Connecting to gimbal at %s", kSerialGimbal);
                 // gimbal_serial = romiserial::RomiSerialClient::create(kSerialGimbal,
                 //                                                      "BldcGimbal");
 		//gimbal = std::make_unique<romi::BldcGimbal>(*gimbal_serial);
-		gimbal = std::make_shared<romi::FakeGimbal>();
+		//gimbal = std::make_unique<romi::FakeGimbal>();
 
+                std::shared_ptr<romi::ICameraMount> mount;
+                mount = std::make_shared<romi::CablebotBase>(base_serial);
+                        
                 // Cablebot
-                return std::make_unique<ImagingDevice>(camera, base, gimbal);
+                return std::make_unique<ImagingDevice>(camera, mount);
         }
 }

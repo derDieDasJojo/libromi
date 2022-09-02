@@ -36,6 +36,7 @@ namespace romi {
                 virtual ~IRange() = default;
                 virtual void init(nlohmann::json &range)=0;
                 virtual void init(v3 min, v3 max) = 0;
+                virtual nlohmann::json to_json() = 0;
                 
                 virtual v3 min() const = 0;
                 virtual v3 max() const = 0;

@@ -57,6 +57,25 @@ namespace romi {
                         delete_camera(_camera);
         }
 
+        bool USBCamera::set_value(const std::string& name, double value)
+        {
+                (void) name;
+                (void) value;
+                r_err("USBCamera::set_value::Not implemented");
+                throw std::runtime_error("USBCamera::set_value::Not implemented");
+                return false;
+        }
+        
+        bool USBCamera::select_option(const std::string& name,
+                                      const std::string& value)
+        {
+                (void) name;
+                (void) value;
+                r_err("USBCamera::set_value::Not implemented");
+                throw std::runtime_error("USBCamera::set_value::Not implemented");
+                return false;
+        }
+
         bool USBCamera::open(size_t width, size_t height)
         {
                 bool success = false;

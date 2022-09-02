@@ -56,21 +56,11 @@ namespace romi {
                   thread_(nullptr),
                   quitting_(false)
         {
-                max_angular_speed_ = (2.0 * M_PI
-                                      * (double) steps_per_second
-                                      / steps_per_revolution);
-                update_interval_ = 0.200;
-                last_update_ = rpp::ClockAccessor::GetInstance()->time();
-                
                 if (!enable())
                         throw std::runtime_error("StepperSteering: enable failed");
 
                 if (!homing())
                         throw std::runtime_error("StepperSteering: homing failed");
-
-                // thread_ = std::make_unique<std::thread>([this]() {
-                //                 this->run_target_updates();
-                //         });
         }
 
         StepperSteering::~StepperSteering()

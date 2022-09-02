@@ -25,7 +25,9 @@
 #define _LIBROMI_PICAMERA_H_
 
 #include <memory>
+#include <mutex>
 #include "api/ICamera.h"
+#include "picamera/BaseCamera.h"
 #include "picamera/PiCameraSettings.h"
 
 namespace romi {
@@ -33,12 +35,44 @@ namespace romi {
         class PiCamera : public ICamera
         {
         protected:
-                PiCamera();
+                PiCameraSettings settings_;
+                std::unique_ptr<BaseCamera> impl_;
+                std::mutex mutex_;
+                
+                bool try_create_implementation();
+                void create_implementation();
+                void destroy_implementation();
+                void assert_implementation();
+                bool set_resolution(const std::string& value);
 
         public:                
+                PiCamera(PiCameraSettings& settings);
                 ~PiCamera() override;
 
                 static std::unique_ptr<ICamera> create(PiCameraSettings& settings);
+
+                bool grab(Image &image) override;
+                rcom::MemBuffer& grab_jpeg() override;                
+                bool set_value(const std::string& name, double value) override;
+                bool select_option(const std::string& name,
+                                   const std::string& value) override;
+
+                bool power_up() override;
+                bool power_down() override;
+                bool stand_by() override;
+                bool wake_up() override;
+
+                bool set_saturation(int32_t saturation);
+                bool set_sharpness(int32_t sharpness);
+                bool set_contrast(int32_t contrast);
+                bool set_brightness(int32_t brightness);
+                bool set_iso(uint32_t iso);
+                bool set_resolution(size_t width, size_t height);
+                bool set_jpeg_quality(uint32_t quality);
+                bool set_mode(const std::string& value);
+                bool set_analog_gain(float value);
+                bool set_shutter_speed(uint32_t value);
+                bool set_exposure_mode(const std::string& value);
         };
 }
 

@@ -22,52 +22,23 @@
 
  */
 
-#ifndef __ROMI_CNC_RANGE_H
-#define __ROMI_CNC_RANGE_H
+#ifndef __ROMI_CNCRANGE_H
+#define __ROMI_CNCRANGE_H
 
 #include "json.hpp"
 #include "v3.h"
-#include "IRange.h"
+#include "Range.h"
 
 namespace romi {
 
-        class CNCRange : public IRange
+        class CNCRange : public Range
         {
-            protected:
-                v3 min_;
-                v3 max_;
-
             public:
                 CNCRange();
                 explicit CNCRange(nlohmann::json &range);
                 CNCRange(const double *min, const double *max);
                 CNCRange(v3 min, v3 max);
-
-                void init(nlohmann::json &range) override;
-                void init(v3 min, v3 max) override;
-
-
-                v3 min() const override;
-                v3 max() const override;
-                v3 dimensions() const override;
-
-                bool is_inside(double x, double y, double z) override;
-                bool is_inside(v3 p) override;
-
-                // Computes the distance of a point that lies outside
-                // the range to the border of the range.
-                double error(double x, double y, double z) override;
-                double error(v3 p) override;
-
-                v3 clamp(v3 p) const override;
-                
-                double xmin() const override;
-                double xmax() const override;
-                double ymin() const override;
-                double ymax() const override;
-                double zmin() const override;
-                double zmax() const override;
         };
 }
 
-#endif // __ROMI_CNC_RANGE_H
+#endif // __ROMI_CNCRANGE_H

@@ -44,9 +44,13 @@ namespace romi {
                 nlohmann::json parse_request(rcom::MemBuffer& message, RPCError& error);
                 std::string get_method(nlohmann::json& request, RPCError& error);
 
-                nlohmann::json construct_response(RPCError& error, nlohmann::json& result);
-                nlohmann::json construct_response(RPCError& error);
-                nlohmann::json construct_response(int code, const char *message);
+                nlohmann::json construct_response(const std::string& method,
+                                                  RPCError& error,
+                                                  nlohmann::json& result);
+                nlohmann::json construct_response(const std::string& method,
+                                                  RPCError& error);
+                nlohmann::json construct_response(const std::string& method,
+                                                  int code, const char *message);
                 
         public:
                 explicit RcomMessageHandler(IRPCHandler& handler);

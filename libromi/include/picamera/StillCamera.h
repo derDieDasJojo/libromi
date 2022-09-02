@@ -24,7 +24,8 @@
 #ifndef _LIBROMI_STILL_CAMERA_H_
 #define _LIBROMI_STILL_CAMERA_H_
 
-#include "picamera/PiCamera.h"
+#include "picamera/BaseCamera.h"
+//#include "picamera/PiCamera.h"
 #include "picamera/PiCameraIncludes.h"
 #include "picamera/PiCameraSettings.h"
 #include "picamera/CameraComponent.h"
@@ -33,11 +34,10 @@
 
 namespace romi {
         
-        class StillCamera : public PiCamera {
+        class StillCamera : public BaseCamera {
 
         protected:
 
-                arm::CameraComponent camera_;
                 arm::ImageEncoder encoder_;
                 arm::Connection encoder_connection_;
                 
@@ -46,13 +46,8 @@ namespace romi {
                 ~StillCamera() override;
                 
                 bool grab(Image &image) override;
-                rcom::MemBuffer& grab_jpeg();
-
-                // Power device interface
-                bool power_up() override;
-                bool power_down() override;
-                bool stand_by() override;
-                bool wake_up() override;
+                rcom::MemBuffer& grab_jpeg() override;
+                bool set_jpeg_quality(uint32_t quality) override;
         };
 }
 

@@ -28,7 +28,8 @@
 namespace romi {
         
         StillCamera::StillCamera(PiCameraSettings& settings)
-                : camera_(settings),
+                : //camera_(settings),
+                  BaseCamera(settings),
                   encoder_(),
                   encoder_connection_(camera_.get_still_port(),
                                       encoder_.get_input_port())
@@ -49,30 +50,15 @@ namespace romi {
         rcom::MemBuffer& StillCamera::grab_jpeg()
         {
                 encoder_.prepare_capture();
-                camera_.set_shutter_speed();
+                camera_.init_shutter_speed();
                 camera_.trigger_capture();
                 encoder_.finish_capture();
                 return encoder_.get_buffer();
         }
 
-        bool StillCamera::power_up()
+        bool StillCamera::set_jpeg_quality(uint32_t value)
         {
-                return true;
-        }
-        
-        bool StillCamera::power_down()
-        {
-                return true;
-        }
-        
-        bool StillCamera::stand_by()
-        {
-                return true;
-        }
-        
-        bool StillCamera::wake_up()
-        {
-                return true;
+                return encoder_.set_jpeg_quality(value);
         }
 }
 

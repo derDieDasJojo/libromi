@@ -26,27 +26,42 @@
 
 #include <memory>
 #include "api/ICamera.h"
-#include "api/ICNC.h"
-#include "api/IGimbal.h"
+#include "hal/ICameraMount.h"
 #include "api/IActivity.h"
 #include "api/IPowerDevice.h"
 
 namespace romi {
         
-        class ImagingDevice : public IActivity, public IPowerDevice
+        class ImagingDevice
+                : public ICamera,
+                  public ICameraMount
         {
         public:
 
                 std::shared_ptr<ICamera> camera_;
-                std::shared_ptr<ICNC> cnc_;
-                std::shared_ptr<IGimbal> gimbal_;
+                std::shared_ptr<ICameraMount> mount_;
                 
                 ImagingDevice(std::shared_ptr<ICamera>& camera,
-                              std::shared_ptr<ICNC>& cnc,
-                              std::shared_ptr<IGimbal>& gimbal);
+                              std::shared_ptr<ICameraMount>& mount_);
                 
                 virtual ~ImagingDevice() = default;
 
+                // ICamera
+                bool grab(Image &image) override;
+                rcom::MemBuffer& grab_jpeg() override;
+                
+                bool set_value(const std::string& name, double value) override;
+                bool select_option(const std::string& name,
+                                           const std::string& value) override;
+
+                // ICameraMount
+                bool homing() override; 
+                bool get_range(CNCRange &xyz, IRange &angles) override;
+                bool get_position(v3& xyz, v3& angles) override;
+                bool moveto(double x, double y, double z,
+                            double phi_x, double phi_y, double phi_z,
+                            double relative_speed) override;
+                
                 // IActivity interface
                 bool pause_activity() override;
                 bool continue_activity() override;

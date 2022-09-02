@@ -53,7 +53,9 @@ namespace romi::arm {
                 void enable_output();
                 void disable_output();
                 void send_buffers();
-                                
+                
+                bool set_jpeg_quality(uint32_t value) override;
+                
         protected:
 
                 static void encoder_output_callback(MMAL_PORT_T *port,

@@ -26,121 +26,17 @@
 
 namespace romi {
         
-        CNCRange::CNCRange() : min_(0.0), max_(0.0) {
+        CNCRange::CNCRange() : Range() {
         }
         
         CNCRange::CNCRange(const double *xmin, const double *xmax)
-                : min_(xmin), max_(xmax) {
+                : Range(xmin, xmax) {
         }
         
         CNCRange::CNCRange(v3 xmin, v3 xmax)
-                : min_(xmin), max_(xmax) {
+                : Range(xmin, xmax) {
         }
 
-        CNCRange::CNCRange(nlohmann::json& json) : min_(0.0), max_(0.0) {
-                init(json);
+        CNCRange::CNCRange(nlohmann::json& json) : Range(json) {
         }
-        
-        void CNCRange::init(nlohmann::json& range)
-        {
-                for (size_t i = 0; i < 3; i++) {
-                        min_.set(i, range[i][0]);
-                        max_.set(i, range[i][1]);
-                }
-        }
-
-        void CNCRange::init(v3 min, v3 max)
-        {
-                min_ = min;
-                max_ = max;
-        }
-        
-        v3 CNCRange::min() const
-        {
-                return min_;
-        }
-        
-        v3 CNCRange::max() const
-        {
-                return max_;
-        }
-        
-        v3 CNCRange::dimensions() const
-        {
-                return max_ - min_;
-        }
-        
-        bool CNCRange::is_inside(double x, double y, double z)
-        {
-                return ((x >= min_.x()) && (x <= max_.x())
-                        && (y >= min_.y()) && (y <= max_.y())
-                        && (z >= min_.z()) && (z <= max_.z()));
-        }
-
-        bool CNCRange::is_inside(v3 p)
-        {
-                return is_inside(p.x(), p.y(), p.z());
-        }
-        
-        double CNCRange::error(double x, double y, double z)
-        {
-                double dx[3] = { 0.0, 0.0, 0.0 };
-        
-                if (x < min_.x())
-                        dx[0] = min_.x() - x;
-                else if (x > max_.x())
-                        dx[0] = x - max_.x();
-                
-                if (y < min_.y())
-                        dx[1] = min_.y() - y;
-                else if (y > max_.y())
-                        dx[1] = y - max_.y();
-                
-                if (z < min_.z())
-                        dx[2] = min_.z() - z;
-                else if (z > max_.z())
-                        dx[2] = z - max_.z();
-        
-                return vnorm(dx);
-        }
-
-        double CNCRange::error(v3 v)
-        {
-                return error(v.x(), v.y(), v.z());
-        }
-        
-        v3 CNCRange::clamp(v3 p) const
-        {
-                return p.clamp(min_, max_);
-        }
-
-        double CNCRange::xmin() const
-        {
-                return min_.x();
-        }
-        
-        double CNCRange::xmax() const
-        {
-                return max_.x();
-        }
-        
-        double CNCRange::ymin() const
-        {
-                return min_.y();
-        }
-        
-        double CNCRange::ymax() const
-        {
-                return max_.y();
-        }
-        
-        double CNCRange::zmin() const
-        {
-                return min_.z();
-        }
-        
-        double CNCRange::zmax() const
-        {
-                return max_.z();
-        }        
 }
