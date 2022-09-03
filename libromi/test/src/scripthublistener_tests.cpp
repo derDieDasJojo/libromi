@@ -2,13 +2,13 @@
 #include "ui/ScriptList.h"
 #include "rpc/ScriptHub.h"
 #include "rpc/ScriptHubListener.h"
+#include "util/FileUtils.h"
 #include <test_utility.h>
-#include "WebSocket.mock.h"
-#include <FileUtils.h>
 
 ////
-#include "mock_scriptlist.h"
+#include "WebSocket.mock.h"
 
+#include "mock_scriptlist.h"
 #include "mock_inputdevice.h"
 #include "mock_display.h"
 #include "mock_speedcontroller.h"

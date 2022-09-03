@@ -25,7 +25,6 @@
 #ifndef _ROMI_V3_H_
 #define _ROMI_V3_H_
 
-#include "Logger.h"
 #include <cstddef>
 
 namespace romi {

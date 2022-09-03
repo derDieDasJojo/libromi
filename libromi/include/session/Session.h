@@ -25,7 +25,7 @@
 #define ROMI_ROVER_BUILD_AND_TEST_SESSION_H
 
 #include <filesystem>
-#include "ILinux.h"
+#include <rcom/ILinux.h>
 #include "data_provider/IRomiDeviceData.h"
 #include "data_provider/ISoftwareVersion.h"
 #include "data_provider/ILocationProvider.h"
@@ -37,7 +37,7 @@ namespace romi {
         class Session : public ISession {
         public:
                 Session() = delete;
-        explicit Session(const rpp::ILinux &linux, const std::string &base_directory,
+        explicit Session(const rcom::ILinux &linux, const std::string &base_directory,
                          IRomiDeviceData &device_data, ISoftwareVersion &softwareVersion,
                          std::shared_ptr<ILocationProvider> location);
         ~Session() override = default;
@@ -54,7 +54,7 @@ namespace romi {
         std::filesystem::path create_session_file(const std::string& name) override;
 
         private:
-                const rpp::ILinux& linux_;
+                const rcom::ILinux& linux_;
                 std::filesystem::path base_directory_;
                 std::filesystem::path session_directory_;
                 IRomiDeviceData& device_data_;

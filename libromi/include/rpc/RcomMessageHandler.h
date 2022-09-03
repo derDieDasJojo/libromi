@@ -26,7 +26,7 @@
 #define __ROMI_RCOM_MESSAGE_HANDLER_H
 
 #include <memory>
-#include <IMessageListener.h>
+#include <rcom/IMessageListener.h>
 #include "rpc/IRPCHandler.h"
 
 namespace romi {

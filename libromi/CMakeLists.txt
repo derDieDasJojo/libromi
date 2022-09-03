@@ -294,6 +294,19 @@ set(SOURCES
 
         include/ui/ScriptList.h
 
+        include/util/IThreadsafeQueue.h
+        include/util/ThreadsafeQueue.h
+        include/util/StringUtils.h
+        include/util/ILogWriter.h
+        include/util/LogWriter.h
+        include/util/ILogger.h
+        include/util/Logger.h
+        include/util/FileUtils.h
+        include/util/IClock.h
+        include/util/Clock.h
+        include/util/ClockAccessor.h
+        include/util/RomiSerialLog.h
+        
         src/api/Range.cpp
         src/api/CNCRange.cpp
         src/api/GimbalRange.cpp
@@ -355,6 +368,14 @@ set(SOURCES
         src/rpc/WeederAdaptor.cpp
 
         src/ui/ScriptList.cpp
+
+        src/util/StringUtils.cpp
+        src/util/Logger.cpp
+        src/util/LogWriter.cpp
+        src/util/FileUtils.cpp
+        src/util/Clock.cpp
+        src/util/ClockAccessor.cpp
+        src/util/RomiSerialLog.cpp
         
         src/v3.cpp
         )
@@ -402,10 +423,10 @@ target_include_directories(romi
 
 target_link_libraries(romi
         romiserial
-        rpp
         rcom
         fluidsynth
         ortools
+        stdc++fs
         ${PI_CAMERA_LIB})
 
 add_subdirectory(test/mock)

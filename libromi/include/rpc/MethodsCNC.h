@@ -24,7 +24,6 @@
 #ifndef __ROMI_METHODS_CNC_H
 #define __ROMI_METHODS_CNC_H
 
-
 namespace romi {
         
         class MethodsCNC

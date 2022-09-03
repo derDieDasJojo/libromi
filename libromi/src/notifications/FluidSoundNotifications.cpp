@@ -24,8 +24,8 @@
 
 #include <string>
 #include <stdexcept>
-#include <Logger.h>
 #include <iostream>
+#include "util/Logger.h"
 #include "notifications/FluidSoundNotifications.h"
 
 #if (FLUIDSYNTH_VERSION_MAJOR == 1)

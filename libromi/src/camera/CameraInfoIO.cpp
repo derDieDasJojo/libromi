@@ -23,7 +23,7 @@
  */
 
 #include <stdexcept>
-#include <r.h>
+#include "util/Logger.h"
 #include "camera/CameraInfoIO.h"
 #include "camera/CameraInfo.h"
 #include "camera/CameraIntrinsics.h"

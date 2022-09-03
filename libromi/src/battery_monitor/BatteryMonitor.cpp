@@ -1,8 +1,8 @@
-#include "battery_monitor/BatteryMonitor.h"
-#include "Logger.h"
 #include <atomic>
 #include <utility>
 #include <iostream>
+#include "battery_monitor/BatteryMonitor.h"
+#include "util/Logger.h"
 
 namespace romi
 {

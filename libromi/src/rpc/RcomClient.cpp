@@ -22,9 +22,9 @@
 
  */
 #include <stdexcept>
-#include <MessageLink.h>
-#include <WebSocketServer.h>
-#include <Logger.h>
+#include <rcom/MessageLink.h>
+#include <rcom/WebSocketServer.h>
+#include "util/Logger.h"
 #include "rpc/RcomClient.h"
 
 namespace romi {

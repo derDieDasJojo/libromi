@@ -1,7 +1,7 @@
 #include "gtest/gtest.h"
 #include "gmock/gmock.h"
 
-#include "Logger.h"
+#include "util/Logger.h"
 #include "rover/L1NavigationController.h"
 
 using namespace std;

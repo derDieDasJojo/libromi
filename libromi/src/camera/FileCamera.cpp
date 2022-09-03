@@ -22,8 +22,8 @@
 
  */
 
-#include <FileUtils.h>
-#include <Logger.h>
+#include "util/FileUtils.h"
+#include "util/Logger.h"
 #include "camera/FileCamera.h"
 
 namespace romi {

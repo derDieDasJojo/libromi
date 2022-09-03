@@ -3,7 +3,7 @@
 
 #include <filesystem>
 #include <string>
-#include <MemBuffer.h>
+#include <rcom/MemBuffer.h>
 #include "cv/Image.h"
 #include "api/Path.h"
 

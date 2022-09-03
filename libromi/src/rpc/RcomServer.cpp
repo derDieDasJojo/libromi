@@ -24,8 +24,8 @@
 
 #include <stdexcept>
 #include <string.h>
-#include <MessageHub.h>
-#include <WebSocketServerFactory.h>
+#include <rcom/MessageHub.h>
+#include <rcom/WebSocketServerFactory.h>
 #include "rpc/RcomServer.h"
 
 namespace romi {

@@ -23,7 +23,7 @@
  */
 
 #include <stdexcept>
-#include <r.h>
+#include "util/Logger.h"
 #include "camera/SimpleRadialDistortion.h"
 
 namespace romi {

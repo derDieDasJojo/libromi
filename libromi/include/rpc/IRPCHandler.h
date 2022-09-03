@@ -25,8 +25,8 @@
 #define __ROMI_I_RPC_HANDLER_H
 
 #include <string>
-#include <json.hpp>
-#include <MemBuffer.h>
+#include <rcom/json.hpp>
+#include <rcom/MemBuffer.h>
 #include "rpc/RPCError.h"
 
 namespace romi {

@@ -4,8 +4,8 @@
 #include "gtest/gtest.h"
 #include "gmock/gmock.h"
 
-#include "FileUtils.h"
-#include "ClockAccessor.h"
+#include "util/FileUtils.h"
+#include "util/ClockAccessor.h"
 #include "data_provider/JsonFieldNames.h"
 #include "data_provider/RoverIdentityProvider.h"
 #include "data_provider/GpsLocationProvider.h"
@@ -13,7 +13,6 @@
 
 #include "mock_romidevicedata.h"
 #include "mock_softwareversion.h"
-#include "mock_linux.h"
 #include "mock_clock.h"
 #include "mock_gps.h"
 
@@ -29,10 +28,15 @@ class metafolder_tests : public ::testing::Test
 {
 protected:
         
-	metafolder_tests() : mockClock_(std::make_shared<rpp::MockClock>()), mockGps_(),
-                         mockLocationProvider_(), deviceData_(), softwareVersion_(),
-                         versionCurrent_("V1.0.1"), versionAlternate_("V1.0.1"), devicetype_("Rover"), devicID_("DEAD-BEEF"),
-                         session_path_("./session")
+	metafolder_tests() : mockClock_(std::make_shared<romi::MockClock>()), mockGps_(),
+                             mockLocationProvider_(),
+                             deviceData_(),
+                             softwareVersion_(),
+                             versionCurrent_("V1.0.1"),
+                             versionAlternate_("V1.0.1"),
+                             devicetype_("Rover"),
+                             devicID_("DEAD-BEEF"),
+                             session_path_("./session")
 	{
         }
 
@@ -43,39 +47,38 @@ protected:
                         .WillRepeatedly(DoAll(testing::SetArgReferee<0>(0.1),
                                               testing::SetArgReferee<1>(0.2)));
                 
-                rpp::ClockAccessor::SetInstance(mockClock_);
-                mockLocationProvider_ = std::make_shared<romi::GpsLocationProvider>(mockGps_);
-                if (fs::is_directory(session_path_))
-                {
+                romi::ClockAccessor::SetInstance(mockClock_);
+                mockLocationProvider_
+                        = std::make_shared<romi::GpsLocationProvider>(mockGps_);
+                if (fs::is_directory(session_path_)) {
                         fs::remove_all(session_path_);
                 }
-
         }
 
 	void TearDown() override {
-                rpp::ClockAccessor::SetInstance(nullptr);
+                romi::ClockAccessor::SetInstance(nullptr);
 	}
 
-	void SetDeviceIDDataExpectations(const std::string& deviceType, const std::string& deviceId, int times)
-        {
+	void SetDeviceIDDataExpectations(const std::string& deviceType,
+                                         const std::string& deviceId, int times) {
                 EXPECT_CALL(deviceData_, RomiDeviceType)
-                                .Times(times)
-                                .WillRepeatedly(Return(deviceType));
+                        .Times(times)
+                        .WillRepeatedly(Return(deviceType));
                 EXPECT_CALL(deviceData_, RomiDeviceHardwareId)
-                                .Times(times)
-                                .WillRepeatedly(Return(deviceId));
+                        .Times(times)
+                        .WillRepeatedly(Return(deviceId));
         }
 
-        void SetSoftwareVersionDDataExpectations(const std::string& versionCurrent, const std::string& versionAlternate)
-        {
+        void SetSoftwareVersionDDataExpectations(const std::string& versionCurrent,
+                                                 const std::string& versionAlternate) {
                 EXPECT_CALL(softwareVersion_, SoftwareVersionCurrent)
-                            .WillOnce(Return(versionCurrent));
+                        .WillOnce(Return(versionCurrent));
                 EXPECT_CALL(softwareVersion_, SoftwareVersionAlternate)
-                    .WillOnce(Return(versionAlternate));
+                        .WillOnce(Return(versionAlternate));
         }
 
 
-        std::shared_ptr<rpp::MockClock> mockClock_;
+        std::shared_ptr<romi::MockClock> mockClock_;
         MockGps mockGps_;
         std::shared_ptr<romi::ILocationProvider> mockLocationProvider_;
         MockRomiDeviceData deviceData_;
@@ -95,7 +98,10 @@ TEST_F(metafolder_tests, construct_throws_when_roveridentity_null)
 
       // Act
       // Assert
-      ASSERT_THROW(romi::MetaFolder meta_folder(roverIdentity, mockLocationProvider_, session_path_), std::invalid_argument);
+      ASSERT_THROW(romi::MetaFolder meta_folder(roverIdentity,
+                                                mockLocationProvider_,
+                                                session_path_),
+                   std::invalid_argument);
 }
 
 TEST_F(metafolder_tests, construct_throws_when_locationprovider_null)
@@ -105,11 +111,15 @@ TEST_F(metafolder_tests, construct_throws_when_locationprovider_null)
         SetSoftwareVersionDDataExpectations(versionCurrent_, versionAlternate_);
 
         std::shared_ptr<romi::GpsLocationProvider> mockLocationProvider_;
-        auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_, softwareVersion_);
+        auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_,
+                                                                           softwareVersion_);
 
         // Act
         // Assert
-        ASSERT_THROW(romi::MetaFolder meta_folder(roverIdentity, mockLocationProvider_, session_path_), std::invalid_argument);
+        ASSERT_THROW(romi::MetaFolder meta_folder(roverIdentity,
+                                                  mockLocationProvider_,
+                                                  session_path_),
+                     std::invalid_argument);
 }
 
 TEST_F(metafolder_tests, can_construct)
@@ -119,11 +129,14 @@ TEST_F(metafolder_tests, can_construct)
         SetSoftwareVersionDDataExpectations(versionCurrent_, versionAlternate_);
 
         auto mockLocationProvider_ = std::make_shared<romi::GpsLocationProvider>(mockGps_);
-        auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_, softwareVersion_);
+        auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_,
+                                                                           softwareVersion_);
 
         // Act
         // Assert
-        ASSERT_NO_THROW(romi::MetaFolder meta_folder(roverIdentity, mockLocationProvider_, session_path_));
+        ASSERT_NO_THROW(romi::MetaFolder meta_folder(roverIdentity,
+                                                     mockLocationProvider_,
+                                                     session_path_));
 }
 
 TEST_F(metafolder_tests, construct_creates_folder)
@@ -133,11 +146,14 @@ TEST_F(metafolder_tests, construct_creates_folder)
         SetSoftwareVersionDDataExpectations(versionCurrent_, versionAlternate_);
 
         auto mockLocationProvider_ = std::make_shared<romi::GpsLocationProvider>(mockGps_);
-        auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_, softwareVersion_);
+        auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_,
+                                                                           softwareVersion_);
 
         // Act
         // Assert
-        ASSERT_NO_THROW(romi::MetaFolder meta_folder(roverIdentity, mockLocationProvider_, session_path_));
+        ASSERT_NO_THROW(romi::MetaFolder meta_folder(roverIdentity,
+                                                     mockLocationProvider_,
+                                                     session_path_));
         ASSERT_TRUE(fs::is_directory(session_path_));
 }
 
@@ -149,11 +165,15 @@ TEST_F(metafolder_tests, construct_throws_on_fail_create)
         fs::path rootPath("/\\");
 
         auto mockLocationProvider_ = std::make_shared<romi::GpsLocationProvider>(mockGps_);
-        auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_, softwareVersion_);
+        auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_,
+                                                                           softwareVersion_);
 
         // Act
         // Assert
-        ASSERT_THROW(romi::MetaFolder meta_folder(roverIdentity, mockLocationProvider_, rootPath), std::runtime_error);
+        ASSERT_THROW(romi::MetaFolder meta_folder(roverIdentity,
+                                                  mockLocationProvider_,
+                                                  rootPath),
+                     std::runtime_error);
         ASSERT_FALSE(fs::is_directory(session_path_));
 }
 
@@ -164,11 +184,14 @@ TEST_F(metafolder_tests, construct_creates_metadata_file)
         SetSoftwareVersionDDataExpectations(versionCurrent_, versionAlternate_);
 
         auto mockLocationProvider_ = std::make_shared<romi::GpsLocationProvider>(mockGps_);
-        auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_, softwareVersion_);
+        auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_,
+                                                                           softwareVersion_);
 
         // Act
         // Assert
-        ASSERT_NO_THROW(romi::MetaFolder meta_folder(roverIdentity, mockLocationProvider_, session_path_));
+        ASSERT_NO_THROW(romi::MetaFolder meta_folder(roverIdentity,
+                                                     mockLocationProvider_,
+                                                     session_path_));
         ASSERT_TRUE(fs::is_directory(session_path_));
         ASSERT_TRUE(fs::exists(session_path_ / romi::MetaFolder::meta_data_filename_));
 }
@@ -180,7 +203,8 @@ TEST_F(metafolder_tests, construct_basic_metadata_file_contain_correct_data)
         SetSoftwareVersionDDataExpectations(versionCurrent_, versionAlternate_);
 
         auto mockLocationProvider_ = std::make_shared<romi::GpsLocationProvider>(mockGps_);
-        auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_, softwareVersion_);
+        auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_,
+                                                                           softwareVersion_);
         fs::path meta_data_filename = session_path_ / romi::MetaFolder::meta_data_filename_;
 
         // Act
@@ -199,7 +223,8 @@ TEST_F(metafolder_tests, construct_basic_metadata_file_contain_correct_data)
         ASSERT_TRUE(identityJson.contains(JsonFieldNames::software_version_current));
         ASSERT_EQ(identityJson[JsonFieldNames::software_version_current], versionCurrent_);
         ASSERT_TRUE(identityJson.contains(JsonFieldNames::software_version_alternate));
-        ASSERT_EQ(identityJson[JsonFieldNames::software_version_alternate], versionAlternate_);
+        ASSERT_EQ(identityJson[JsonFieldNames::software_version_alternate],
+                  versionAlternate_);
 }
 
 TEST_F(metafolder_tests, construct_multiple_times_does_not_leak)
@@ -209,36 +234,54 @@ TEST_F(metafolder_tests, construct_multiple_times_does_not_leak)
         SetSoftwareVersionDDataExpectations(versionCurrent_, versionAlternate_);
 
         auto mockLocationProvider_ = std::make_shared<romi::GpsLocationProvider>(mockGps_);
-        auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_, softwareVersion_);
+        auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_,
+                                                                           softwareVersion_);
 
         std::filesystem::path session_2 = session_path_ / "multitest";
 
         // Act
         // Assert
-        ASSERT_NO_THROW(romi::MetaFolder meta_folder(roverIdentity, mockLocationProvider_, session_2));
-        ASSERT_NO_THROW(romi::MetaFolder meta_folder(roverIdentity, mockLocationProvider_, session_2 += "1"));
-        ASSERT_NO_THROW(romi::MetaFolder meta_folder(roverIdentity, mockLocationProvider_, session_2 += "2"));
-        ASSERT_NO_THROW(romi::MetaFolder meta_folder(roverIdentity, mockLocationProvider_, session_2 += "3"));
+        ASSERT_NO_THROW(romi::MetaFolder meta_folder(roverIdentity,
+                                                     mockLocationProvider_,
+                                                     session_2));
+        ASSERT_NO_THROW(romi::MetaFolder meta_folder(roverIdentity,
+                                                     mockLocationProvider_,
+                                                     session_2 += "1"));
+        ASSERT_NO_THROW(romi::MetaFolder meta_folder(roverIdentity,
+                                                     mockLocationProvider_,
+                                                     session_2 += "2"));
+        ASSERT_NO_THROW(romi::MetaFolder meta_folder(roverIdentity,
+                                                     mockLocationProvider_,
+                                                     session_2 += "3"));
 }
 
 TEST_F(metafolder_tests, construct_multiple_times_does_not_stack_folders)
 {
-    // Arrange
-    SetDeviceIDDataExpectations(devicetype_, devicID_, 1);
-    SetSoftwareVersionDDataExpectations(versionCurrent_, versionAlternate_);
+        // Arrange
+        SetDeviceIDDataExpectations(devicetype_, devicID_, 1);
+        SetSoftwareVersionDDataExpectations(versionCurrent_, versionAlternate_);
 
-    auto mockLocationProvider_ = std::make_shared<romi::GpsLocationProvider>(mockGps_);
-    auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_, softwareVersion_);
+        auto mockLocationProvider_ = std::make_shared<romi::GpsLocationProvider>(mockGps_);
+        auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_,
+                                                                           softwareVersion_);
 
-    std::filesystem::path session_2 = session_path_ / "multitest";
+        std::filesystem::path session_2 = session_path_ / "multitest";
 
-    // Act
-    // Assert
-    ASSERT_NO_THROW(romi::MetaFolder meta_folder(roverIdentity, mockLocationProvider_, session_2));
-    ASSERT_NO_THROW(romi::MetaFolder meta_folder(roverIdentity, mockLocationProvider_, session_2 += "1"));
-    ASSERT_NO_THROW(romi::MetaFolder meta_folder(roverIdentity, mockLocationProvider_, session_2 += "2"));
-    ASSERT_NO_THROW(romi::MetaFolder meta_folder(roverIdentity, mockLocationProvider_, session_2 += "3"));
-    ASSERT_TRUE(fs::is_directory(session_2));
+        // Act
+        // Assert
+        ASSERT_NO_THROW(romi::MetaFolder meta_folder(roverIdentity,
+                                                     mockLocationProvider_,
+                                                     session_2));
+        ASSERT_NO_THROW(romi::MetaFolder meta_folder(roverIdentity,
+                                                     mockLocationProvider_,
+                                                     session_2 += "1"));
+        ASSERT_NO_THROW(romi::MetaFolder meta_folder(roverIdentity,
+                                                     mockLocationProvider_,
+                                                     session_2 += "2"));
+        ASSERT_NO_THROW(romi::MetaFolder meta_folder(roverIdentity,
+                                                     mockLocationProvider_,
+                                                     session_2 += "3"));
+        ASSERT_TRUE(fs::is_directory(session_2));
 }
 
 TEST_F(metafolder_tests, store_jpg_no_extension_creates_extension)
@@ -249,13 +292,14 @@ TEST_F(metafolder_tests, store_jpg_no_extension_creates_extension)
         SetSoftwareVersionDDataExpectations(versionCurrent_, versionAlternate_);
 
         auto mockLocationProvider_ = std::make_shared<romi::GpsLocationProvider>(mockGps_);
-        auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_, softwareVersion_);
+        auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_,
+                                                                           softwareVersion_);
         romi::MetaFolder meta_folder(roverIdentity, mockLocationProvider_, session_path_);
         fs::path meta_data_filename = session_path_ / romi::MetaFolder::meta_data_filename_;
 
         EXPECT_CALL(*mockClock_, datetime_compact_string)
-                        .WillOnce(Return(expected));
-
+                .WillOnce(Return(expected));
+        
         romi::Image image(romi::Image::RGB, red_test_image, 4, 4);
         std::string filename("file1");
         std::string filename_jpg("file1.jpg");
@@ -281,12 +325,13 @@ TEST_F(metafolder_tests, store_jpg_wrong_extension_changes_extension)
         SetSoftwareVersionDDataExpectations(versionCurrent_, versionAlternate_);
 
         auto mockLocationProvider_ = std::make_shared<romi::GpsLocationProvider>(mockGps_);
-        auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_, softwareVersion_);
+        auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_,
+                                                                           softwareVersion_);
         romi::MetaFolder meta_folder(roverIdentity, mockLocationProvider_, session_path_);
         fs::path meta_data_filename = session_path_ / romi::MetaFolder::meta_data_filename_;
 
         EXPECT_CALL(*mockClock_, datetime_compact_string)
-                        .WillOnce(Return(expected));
+                .WillOnce(Return(expected));
 
         romi::Image image(romi::Image::RGB, red_test_image, 4, 4);
         std::string filename("file1.xxx");
@@ -314,15 +359,16 @@ TEST_F(metafolder_tests, store_jpg_same_file_rewrites_metadata)
         SetSoftwareVersionDDataExpectations(versionCurrent_, versionAlternate_);
 
         auto mockLocationProvider_ = std::make_shared<romi::GpsLocationProvider>(mockGps_);
-        auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_, softwareVersion_);
+        auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_,
+                                                                           softwareVersion_);
         romi::MetaFolder meta_folder(roverIdentity, mockLocationProvider_, session_path_);
         fs::path meta_data_filename = session_path_ / romi::MetaFolder::meta_data_filename_;
 
         EXPECT_CALL(*mockClock_, datetime_compact_string)
-                        .Times(number_files)
-                        .WillOnce(Return(std::string("10:25:02-25/01/2020")))
-                        .WillOnce(Return(expected));
-
+                .Times(number_files)
+                .WillOnce(Return(std::string("10:25:02-25/01/2020")))
+                .WillOnce(Return(expected));
+        
         romi::Image image(romi::Image::RGB, red_test_image, 4, 4);
         std::string filename("file1.jpg");
         std::string observation("observe");
@@ -356,7 +402,8 @@ TEST_F(metafolder_tests, store_jpg_write_error_does_not_write_metadata)
         std::string observation("observe");
 
         // Act
-        ASSERT_THROW(meta_folder.try_store_jpg(filename, image, observation), std::runtime_error);
+        ASSERT_THROW(meta_folder.try_store_jpg(filename, image, observation),
+                     std::runtime_error);
 
         // Assert
         std::ifstream ifs(meta_data_filename);
@@ -372,7 +419,8 @@ TEST_F(metafolder_tests, store_jpg_creates_files_and_correct_meta_data)
         SetSoftwareVersionDDataExpectations(versionCurrent_, versionAlternate_);
 
         auto mockLocationProvider_ = std::make_shared<romi::GpsLocationProvider>(mockGps_);
-        auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_, softwareVersion_);
+        auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_,
+                                                                           softwareVersion_);
         romi::MetaFolder meta_folder(roverIdentity, mockLocationProvider_, session_path_);
         fs::path meta_data_filename = session_path_ / romi::MetaFolder::meta_data_filename_;
 
@@ -412,7 +460,8 @@ TEST_F(metafolder_tests, store_jpg_empty_image_throws)
         SetSoftwareVersionDDataExpectations(versionCurrent_, versionAlternate_);
 
         auto mockLocationProvider_ = std::make_shared<romi::GpsLocationProvider>(mockGps_);
-        auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_, softwareVersion_);
+        auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_,
+                                                                           softwareVersion_);
         romi::MetaFolder meta_folder(roverIdentity, mockLocationProvider_, session_path_);
         fs::path meta_data_filename = session_path_ / romi::MetaFolder::meta_data_filename_;
 
@@ -422,7 +471,8 @@ TEST_F(metafolder_tests, store_jpg_empty_image_throws)
 
         // Act
         // Assert
-        ASSERT_THROW(meta_folder.try_store_jpg(filename1, image, observation), std::runtime_error);
+        ASSERT_THROW(meta_folder.try_store_jpg(filename1, image, observation),
+                     std::runtime_error);
 }
 
 ///////////////////////////////////////////////////
@@ -435,7 +485,8 @@ TEST_F(metafolder_tests, store_png_before_create_throws)
         SetSoftwareVersionDDataExpectations(versionCurrent_, versionAlternate_);
 
         auto mockLocationProvider_ = std::make_shared<romi::GpsLocationProvider>(mockGps_);
-        auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_, softwareVersion_);
+        auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_,
+                                                                           softwareVersion_);
         romi::MetaFolder meta_folder(roverIdentity, mockLocationProvider_, session_path_);
 
         romi::Image image;
@@ -444,7 +495,8 @@ TEST_F(metafolder_tests, store_png_before_create_throws)
 
         // Act
         // Assert
-        ASSERT_THROW(meta_folder.try_store_png(filename, image, observation), std::runtime_error);
+        ASSERT_THROW(meta_folder.try_store_png(filename, image, observation),
+                     std::runtime_error);
 
 }
 
@@ -456,7 +508,8 @@ TEST_F(metafolder_tests, store_png_no_extension_creates_extension)
         SetSoftwareVersionDDataExpectations(versionCurrent_, versionAlternate_);
 
         auto mockLocationProvider_ = std::make_shared<romi::GpsLocationProvider>(mockGps_);
-        auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_, softwareVersion_);
+        auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_,
+                                                                           softwareVersion_);
         romi::MetaFolder meta_folder(roverIdentity, mockLocationProvider_, session_path_);
         fs::path meta_data_filename = session_path_ / romi::MetaFolder::meta_data_filename_;
 
@@ -488,12 +541,13 @@ TEST_F(metafolder_tests, store_png_wrong_extension_changes_extension)
         SetSoftwareVersionDDataExpectations(versionCurrent_, versionAlternate_);
 
         auto mockLocationProvider_ = std::make_shared<romi::GpsLocationProvider>(mockGps_);
-        auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_, softwareVersion_);
+        auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_,
+                                                                           softwareVersion_);
         romi::MetaFolder meta_folder(roverIdentity, mockLocationProvider_, session_path_);
         fs::path meta_data_filename = session_path_ / romi::MetaFolder::meta_data_filename_;
 
         EXPECT_CALL(*mockClock_, datetime_compact_string)
-                        .WillOnce(Return(expected));
+                .WillOnce(Return(expected));
 
         romi::Image image(romi::Image::RGB, red_test_image, 4, 4);
         std::string filename("file1.xxx");
@@ -522,14 +576,15 @@ TEST_F(metafolder_tests, store_png_same_file_rewrites_metadata)
         SetSoftwareVersionDDataExpectations(versionCurrent_, versionAlternate_);
 
         auto mockLocationProvider_ = std::make_shared<romi::GpsLocationProvider>(mockGps_);
-        auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_, softwareVersion_);
+        auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_,
+                                                                           softwareVersion_);
         romi::MetaFolder meta_folder(roverIdentity, mockLocationProvider_, session_path_);
         fs::path meta_data_filename = session_path_ / romi::MetaFolder::meta_data_filename_;
 
         EXPECT_CALL(*mockClock_, datetime_compact_string)
-                        .Times(number_files)
-                        .WillOnce(Return(std::string("10:25:02-25/01/2020")))
-                        .WillOnce(Return(expected));
+                .Times(number_files)
+                .WillOnce(Return(std::string("10:25:02-25/01/2020")))
+                .WillOnce(Return(expected));
 
         romi::Image image(romi::Image::RGB, red_test_image, 4, 4);
         std::string filename("file1.png");
@@ -555,7 +610,8 @@ TEST_F(metafolder_tests, store_png_write_error_does_not_write_metadata)
         SetSoftwareVersionDDataExpectations(versionCurrent_, versionAlternate_);
 
         auto mockLocationProvider_ = std::make_shared<romi::GpsLocationProvider>(mockGps_);
-        auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_, softwareVersion_);
+        auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_,
+                                                                           softwareVersion_);
         romi::MetaFolder meta_folder(roverIdentity, mockLocationProvider_, session_path_);
         fs::path meta_data_filename = session_path_ / romi::MetaFolder::meta_data_filename_;
 
@@ -564,7 +620,8 @@ TEST_F(metafolder_tests, store_png_write_error_does_not_write_metadata)
         std::string observation("observe");
 
         // Act
-        ASSERT_THROW(meta_folder.try_store_png(filename, image, observation), std::runtime_error);
+        ASSERT_THROW(meta_folder.try_store_png(filename, image, observation),
+                     std::runtime_error);
 
         // Assert
         std::ifstream ifs(meta_data_filename);
@@ -580,15 +637,16 @@ TEST_F(metafolder_tests, store_png_creates_files_and_correct_meta_data)
         SetSoftwareVersionDDataExpectations(versionCurrent_, versionAlternate_);
 
         auto mockLocationProvider_ = std::make_shared<romi::GpsLocationProvider>(mockGps_);
-        auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_, softwareVersion_);
+        auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_,
+                                                                           softwareVersion_);
         romi::MetaFolder meta_folder(roverIdentity, mockLocationProvider_, session_path_);
         fs::path meta_data_filename = session_path_ / romi::MetaFolder::meta_data_filename_;
 
         EXPECT_CALL(*mockClock_, datetime_compact_string)
-                        .Times(number_files)
-                        .WillOnce(Return(std::string("10:25:02-25/01/2020")))
-                        .WillOnce(Return(std::string("10:25:13-25/01/2020")))
-                        .WillOnce(Return(std::string("10:25:24-25/01/2020")));
+                .Times(number_files)
+                .WillOnce(Return(std::string("10:25:02-25/01/2020")))
+                .WillOnce(Return(std::string("10:25:13-25/01/2020")))
+                .WillOnce(Return(std::string("10:25:24-25/01/2020")));
 
         romi::Image image(romi::Image::RGB, red_test_image, 4, 4);
         std::string filename1("file1.png");
@@ -619,7 +677,8 @@ TEST_F(metafolder_tests, store_png_empty_image_throws)
         SetSoftwareVersionDDataExpectations(versionCurrent_, versionAlternate_);
 
         auto mockLocationProvider_ = std::make_shared<romi::GpsLocationProvider>(mockGps_);
-        auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_, softwareVersion_);
+        auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_,
+                                                                           softwareVersion_);
         romi::MetaFolder meta_folder(roverIdentity, mockLocationProvider_, session_path_);
         fs::path meta_data_filename = session_path_ / romi::MetaFolder::meta_data_filename_;
 
@@ -629,7 +688,8 @@ TEST_F(metafolder_tests, store_png_empty_image_throws)
 
         // Act
         // Assert
-        ASSERT_THROW(meta_folder.try_store_png(filename1, image, observation), std::runtime_error);
+        ASSERT_THROW(meta_folder.try_store_png(filename1, image, observation),
+                     std::runtime_error);
 }
 
 ///////////////////////////////////////////////////
@@ -642,7 +702,8 @@ TEST_F(metafolder_tests, store_svg_no_extension_creates_extension)
         SetSoftwareVersionDDataExpectations(versionCurrent_, versionAlternate_);
 
         auto mockLocationProvider_ = std::make_shared<romi::GpsLocationProvider>(mockGps_);
-        auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_, softwareVersion_);
+        auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_,
+                                                                           softwareVersion_);
         romi::MetaFolder meta_folder(roverIdentity, mockLocationProvider_, session_path_);
         fs::path meta_data_filename = session_path_ / romi::MetaFolder::meta_data_filename_;
 
@@ -673,7 +734,8 @@ TEST_F(metafolder_tests, store_svg_wrong_extension_changes_extension)
         SetSoftwareVersionDDataExpectations(versionCurrent_, versionAlternate_);
 
         auto mockLocationProvider_ = std::make_shared<romi::GpsLocationProvider>(mockGps_);
-        auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_, softwareVersion_);
+        auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_,
+                                                                           softwareVersion_);
         romi::MetaFolder meta_folder(roverIdentity, mockLocationProvider_, session_path_);
         fs::path meta_data_filename = session_path_ / romi::MetaFolder::meta_data_filename_;
 
@@ -706,7 +768,8 @@ TEST_F(metafolder_tests, store_svg_same_file_rewrites_metadata)
         SetSoftwareVersionDDataExpectations(versionCurrent_, versionAlternate_);
 
         auto mockLocationProvider_ = std::make_shared<romi::GpsLocationProvider>(mockGps_);
-        auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_, softwareVersion_);
+        auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_,
+                                                                           softwareVersion_);
         romi::MetaFolder meta_folder(roverIdentity, mockLocationProvider_, session_path_);
         fs::path meta_data_filename = session_path_ / romi::MetaFolder::meta_data_filename_;
 
@@ -739,7 +802,8 @@ TEST_F(metafolder_tests, store_svg_write_error_does_not_write_metadata)
         SetSoftwareVersionDDataExpectations(versionCurrent_, versionAlternate_);
 
         auto mockLocationProvider_ = std::make_shared<romi::GpsLocationProvider>(mockGps_);
-        auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_, softwareVersion_);
+        auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_,
+                                                                           softwareVersion_);
         romi::MetaFolder meta_folder(roverIdentity, mockLocationProvider_, session_path_);
         fs::path meta_data_filename = session_path_ / romi::MetaFolder::meta_data_filename_;
 
@@ -765,15 +829,16 @@ TEST_F(metafolder_tests, store_svg_creates_files_and_correct_meta_data)
         SetSoftwareVersionDDataExpectations(versionCurrent_, versionAlternate_);
 
         auto mockLocationProvider_ = std::make_shared<romi::GpsLocationProvider>(mockGps_);
-        auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_, softwareVersion_);
+        auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_,
+                                                                           softwareVersion_);
         romi::MetaFolder meta_folder(roverIdentity, mockLocationProvider_, session_path_);
         fs::path meta_data_filename = session_path_ / romi::MetaFolder::meta_data_filename_;
 
         EXPECT_CALL(*mockClock_, datetime_compact_string)
-                        .Times(number_files)
-                        .WillOnce(Return(std::string("10:25:02-25/01/2020")))
-                        .WillOnce(Return(std::string("10:25:13-25/01/2020")))
-                        .WillOnce(Return(std::string("10:25:24-25/01/2020")));
+                .Times(number_files)
+                .WillOnce(Return(std::string("10:25:02-25/01/2020")))
+                .WillOnce(Return(std::string("10:25:13-25/01/2020")))
+                .WillOnce(Return(std::string("10:25:24-25/01/2020")));
 
         romi::Image image(romi::Image::RGB, red_test_image, 4, 4);
         std::string filename1("file1.svg");
@@ -798,6 +863,7 @@ TEST_F(metafolder_tests, store_svg_creates_files_and_correct_meta_data)
         ASSERT_TRUE(fs::exists(session_path_ / filename2));
         ASSERT_TRUE(fs::exists(session_path_ / filename3));
 }
+
 TEST_F(metafolder_tests, store_svg_empty_image_throws)
 {
         // Arrange
@@ -805,7 +871,9 @@ TEST_F(metafolder_tests, store_svg_empty_image_throws)
         SetSoftwareVersionDDataExpectations(versionCurrent_, versionAlternate_);
 
         auto mockLocationProvider_ = std::make_shared<romi::GpsLocationProvider>(mockGps_);
-        auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_, softwareVersion_);
+        auto roverIdentity
+                = std::make_shared<romi::RoverIdentityProvider>(deviceData_,
+                                                                softwareVersion_);
         romi::MetaFolder meta_folder(roverIdentity, mockLocationProvider_, session_path_);
         fs::path meta_data_filename = session_path_ / romi::MetaFolder::meta_data_filename_;
 
@@ -816,7 +884,8 @@ TEST_F(metafolder_tests, store_svg_empty_image_throws)
 
         // Act
         // Assert
-        ASSERT_THROW(meta_folder.try_store_svg(filename1, svg_body, observation), std::runtime_error);
+        ASSERT_THROW(meta_folder.try_store_svg(filename1, svg_body, observation),
+                     std::runtime_error);
 }
 
 ///////////////////////////////////////////////////
@@ -829,7 +898,8 @@ TEST_F(metafolder_tests, store_txt_no_extension_creates_extension)
         SetSoftwareVersionDDataExpectations(versionCurrent_, versionAlternate_);
 
         auto mockLocationProvider_ = std::make_shared<romi::GpsLocationProvider>(mockGps_);
-        auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_, softwareVersion_);
+        auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_,
+                                                                           softwareVersion_);
         romi::MetaFolder meta_folder(roverIdentity, mockLocationProvider_, session_path_);
         fs::path meta_data_filename = session_path_ / romi::MetaFolder::meta_data_filename_;
 
@@ -860,7 +930,8 @@ TEST_F(metafolder_tests, store_txt_wrong_extension_changes_extension)
         SetSoftwareVersionDDataExpectations(versionCurrent_, versionAlternate_);
 
         auto mockLocationProvider_ = std::make_shared<romi::GpsLocationProvider>(mockGps_);
-        auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_, softwareVersion_);
+        auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_,
+                                                                           softwareVersion_);
         romi::MetaFolder meta_folder(roverIdentity, mockLocationProvider_, session_path_);
         fs::path meta_data_filename = session_path_ / romi::MetaFolder::meta_data_filename_;
 
@@ -893,14 +964,15 @@ TEST_F(metafolder_tests, store_txt_same_file_rewrites_metadata)
         SetSoftwareVersionDDataExpectations(versionCurrent_, versionAlternate_);
 
         auto mockLocationProvider_ = std::make_shared<romi::GpsLocationProvider>(mockGps_);
-        auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_, softwareVersion_);
+        auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_,
+                                                                           softwareVersion_);
         romi::MetaFolder meta_folder(roverIdentity, mockLocationProvider_, session_path_);
         fs::path meta_data_filename = session_path_ / romi::MetaFolder::meta_data_filename_;
 
         EXPECT_CALL(*mockClock_, datetime_compact_string)
-                        .Times(number_files)
-                        .WillOnce(Return(std::string("10:25:02-25/01/2020")))
-                        .WillOnce(Return(expected));
+                .Times(number_files)
+                .WillOnce(Return(std::string("10:25:02-25/01/2020")))
+                .WillOnce(Return(expected));
 
         std::string filename("file1.txt");
         std::string observation("observe");
@@ -926,7 +998,8 @@ TEST_F(metafolder_tests, store_txt_write_error_does_not_write_metadata)
         SetSoftwareVersionDDataExpectations(versionCurrent_, versionAlternate_);
 
         auto mockLocationProvider_ = std::make_shared<romi::GpsLocationProvider>(mockGps_);
-        auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_, softwareVersion_);
+        auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_,
+                                                                           softwareVersion_);
         romi::MetaFolder meta_folder(roverIdentity, mockLocationProvider_, session_path_);
         fs::path meta_data_filename = session_path_ / romi::MetaFolder::meta_data_filename_;
 
@@ -936,7 +1009,8 @@ TEST_F(metafolder_tests, store_txt_write_error_does_not_write_metadata)
         std::string txt_body("body");
 
         // Act
-        ASSERT_THROW(meta_folder.try_store_txt(filename, txt_body, observation), std::runtime_error);
+        ASSERT_THROW(meta_folder.try_store_txt(filename, txt_body, observation),
+                     std::runtime_error);
 
         // Assert
         std::ifstream ifs(meta_data_filename);
@@ -952,16 +1026,17 @@ TEST_F(metafolder_tests, store_txt_creates_files_and_correct_meta_data)
         SetSoftwareVersionDDataExpectations(versionCurrent_, versionAlternate_);
 
         auto mockLocationProvider_ = std::make_shared<romi::GpsLocationProvider>(mockGps_);
-        auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_, softwareVersion_);
+        auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_,
+                                                                           softwareVersion_);
         romi::MetaFolder meta_folder(roverIdentity, mockLocationProvider_, session_path_);
         fs::path meta_data_filename = session_path_ / romi::MetaFolder::meta_data_filename_;
 
         EXPECT_CALL(*mockClock_, datetime_compact_string)
-                        .Times(number_files)
-                        .WillOnce(Return(std::string("10:25:02-25/01/2020")))
-                        .WillOnce(Return(std::string("10:25:13-25/01/2020")))
-                        .WillOnce(Return(std::string("10:25:24-25/01/2020")));
-
+                .Times(number_files)
+                .WillOnce(Return(std::string("10:25:02-25/01/2020")))
+                .WillOnce(Return(std::string("10:25:13-25/01/2020")))
+                .WillOnce(Return(std::string("10:25:24-25/01/2020")));
+        
         romi::Image image(romi::Image::RGB, red_test_image, 4, 4);
         std::string filename1("file1.txt");
         std::string filename2("file2.txt");
@@ -995,7 +1070,8 @@ TEST_F(metafolder_tests, store_txt_empty_string_doesnt_throw)
                 .WillOnce(Return(std::string("10:25:24-25/01/2020")));
 
         auto mockLocationProvider_ = std::make_shared<romi::GpsLocationProvider>(mockGps_);
-        auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_, softwareVersion_);
+        auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_,
+                                                                           softwareVersion_);
         romi::MetaFolder meta_folder(roverIdentity, mockLocationProvider_, session_path_);
         fs::path meta_data_filename = session_path_ / romi::MetaFolder::meta_data_filename_;
 
@@ -1023,7 +1099,8 @@ TEST_F(metafolder_tests, store_path_no_extension_creates_extension)
         SetSoftwareVersionDDataExpectations(versionCurrent_, versionAlternate_);
 
         auto mockLocationProvider_ = std::make_shared<romi::GpsLocationProvider>(mockGps_);
-        auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_, softwareVersion_);
+        auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_,
+                                                                           softwareVersion_);
         romi::MetaFolder meta_folder(roverIdentity, mockLocationProvider_, session_path_);
         fs::path meta_data_filename = session_path_ / romi::MetaFolder::meta_data_filename_;
 
@@ -1172,10 +1249,10 @@ TEST_F(metafolder_tests, store_path_creates_files_and_correct_meta_data)
         fs::path meta_data_filename = session_path_ / romi::MetaFolder::meta_data_filename_;
 
         EXPECT_CALL(*mockClock_, datetime_compact_string)
-                        .Times(number_files)
-                        .WillOnce(Return(std::string("10:25:02-25/01/2020")))
-                        .WillOnce(Return(std::string("10:25:13-25/01/2020")))
-                        .WillOnce(Return(std::string("10:25:24-25/01/2020")));
+                .Times(number_files)
+                .WillOnce(Return(std::string("10:25:02-25/01/2020")))
+                .WillOnce(Return(std::string("10:25:13-25/01/2020")))
+                .WillOnce(Return(std::string("10:25:24-25/01/2020")));
 
         romi::Image image(romi::Image::RGB, red_test_image, 4, 4);
         std::string filename1("file1.path");
@@ -1212,14 +1289,15 @@ TEST_F(metafolder_tests, store_empty_path_doesnt_throw)
 {
         // Arrange
         EXPECT_CALL(*mockClock_, datetime_compact_string)
-                        .Times(AnyNumber())
-                        .WillRepeatedly(Return(std::string("10:25:02-25/01/2020")));
+                .Times(AnyNumber())
+                .WillRepeatedly(Return(std::string("10:25:02-25/01/2020")));
         
         SetDeviceIDDataExpectations(devicetype_, devicID_, 1);
         SetSoftwareVersionDDataExpectations(versionCurrent_, versionAlternate_);
 
         auto mockLocationProvider_ = std::make_shared<romi::GpsLocationProvider>(mockGps_);
-        auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_, softwareVersion_);
+        auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_,
+                                                                           softwareVersion_);
         romi::MetaFolder meta_folder(roverIdentity, mockLocationProvider_, session_path_);
         fs::path meta_data_filename = session_path_ / romi::MetaFolder::meta_data_filename_;
 
@@ -1245,20 +1323,21 @@ int Write_multiple_thread_png(romi::MetaFolder& MetaFolder, romi::Image& image)
         int file_index = 0;
         std::string filename("file");
         std::string observation_id("png_observer");
-        for (file_index = 0; file_index < 20; file_index++)
-        {
-                MetaFolder.try_store_png((filename + to_string(file_index)), image, observation_id);
+        for (file_index = 0; file_index < 20; file_index++) {
+                MetaFolder.try_store_png((filename + to_string(file_index)),
+                                         image, observation_id);
         }
         return 0;
 }
+
 int Write_multiple_thread_jpg(romi::MetaFolder& MetaFolder, romi::Image& image)
 {
         int file_index = 0;
         std::string filename("file");
         std::string observation_id("jpg_observer");
-        for (file_index = 0; file_index < 20; file_index++)
-        {
-                MetaFolder.try_store_jpg((filename + to_string(file_index)), image, observation_id);
+        for (file_index = 0; file_index < 20; file_index++) {
+                MetaFolder.try_store_jpg((filename + to_string(file_index)),
+                                         image, observation_id);
         }
         return 0;
 }
@@ -1270,7 +1349,8 @@ TEST_F(metafolder_tests, store_multiple_threads_does_not_corrupt_metafolder)
         SetSoftwareVersionDDataExpectations(versionCurrent_, versionAlternate_);
 
         auto mockLocationProvider_ = std::make_shared<romi::GpsLocationProvider>(mockGps_);
-        auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_, softwareVersion_);
+        auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_,
+                                                                           softwareVersion_);
         romi::MetaFolder meta_folder(roverIdentity, mockLocationProvider_, session_path_);
         fs::path meta_data_filename = session_path_ / romi::MetaFolder::meta_data_filename_;
 
@@ -1280,8 +1360,10 @@ TEST_F(metafolder_tests, store_multiple_threads_does_not_corrupt_metafolder)
 
         romi::Image image(romi::Image::RGB, red_test_image, 4, 4);
 
-        auto png_future = std::thread(Write_multiple_thread_png, std::ref(meta_folder), std::ref(image));
-        auto jpg_future = std::thread(Write_multiple_thread_jpg, std::ref(meta_folder), std::ref(image));
+        auto png_future = std::thread(Write_multiple_thread_png, std::ref(meta_folder),
+                                      std::ref(image));
+        auto jpg_future = std::thread(Write_multiple_thread_jpg, std::ref(meta_folder),
+                                      std::ref(image));
 
         // Act
         jpg_future.join();

@@ -32,6 +32,7 @@
 #include <IRomiSerialClient.h>
 #include <IInputStream.h>
 #include <IOutputStream.h>
+#include <ILog.h>
 #include <EnvelopeParser.h>
 #include <RomiSerialErrors.h>
 
@@ -47,15 +48,17 @@ namespace romiserial {
         static const uint32_t kDefaultBaudRate = 115200;
 
         using SynchronizedCodeBlock = std::lock_guard<std::mutex>;
+        
         class RomiSerialClient : public IRomiSerialClient
         {
         protected:
-                std::shared_ptr<IInputStream> _in;
-                std::shared_ptr<IOutputStream> _out;
-                std::mutex _mutex;
-                uint8_t _id; 
-                bool _debug;
-                EnvelopeParser _parser;
+                std::shared_ptr<IInputStream> in_;
+                std::shared_ptr<IOutputStream> out_;
+                std::shared_ptr<ILog> log_;
+                std::mutex mutex_;
+                uint8_t id_; 
+                bool debug_;
+                EnvelopeParser parser_;
                 nlohmann::json default_response_;
                 double timeout_;
                 const std::string client_name_;
@@ -76,29 +79,25 @@ namespace romiserial {
 
         public:
         
-                static std::unique_ptr<IRomiSerialClient> create(const std::string& device, const std::string& client_name);
+                static std::unique_ptr<IRomiSerialClient>
+                        create(const std::string& device,
+                               const std::string& client_name,
+                               std::shared_ptr<ILog> log);
+                
                 static uint8_t any_id();
                 
                 explicit RomiSerialClient(std::shared_ptr<IInputStream> in,
                                           std::shared_ptr<IOutputStream> out,
+                                          std::shared_ptr<ILog> log,
                                           uint8_t start_id,
                                           const std::string& client_name);
                 RomiSerialClient(const RomiSerialClient&) = delete;
                 RomiSerialClient& operator=(const RomiSerialClient&) = delete;
                 ~RomiSerialClient() override;
 
-                uint8_t id() {
-                        return _id;
-                }
-        
-                void send(const char *command, nlohmann::json& response) override;
-        
-                /* bool read(uint8_t *data, size_t length) override; */
-                /* bool write(const uint8_t *data, size_t length) override; */
-        
-                void set_debug(bool value) override {
-                        _debug = value;
-                }
+                uint8_t id();
+                void send(const char *command, nlohmann::json& response) override;        
+                void set_debug(bool value) override;
         
                 static const char *get_error_message(int code);        
         };

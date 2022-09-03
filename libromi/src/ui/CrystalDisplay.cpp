@@ -22,8 +22,8 @@
 
  */
 
-#include "Logger.h"
-#include "StringUtils.h"
+#include "util/Logger.h"
+#include "util/StringUtils.h"
 #include "ui/CrystalDisplay.h"
 
 namespace romi {

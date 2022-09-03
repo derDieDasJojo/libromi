@@ -27,6 +27,14 @@ set(SOURCES
   RomiSerial/Reader.cpp
   RomiSerial/RomiSerialUtil.h
   RomiSerial/RomiSerialUtil.cpp
+  RomiSerial/rtime.h
+  RomiSerial/rtime.cpp
+  RomiSerial/ILog.h
+  RomiSerial/Log.h
+  RomiSerial/Console.h
+  RomiSerial/Console.cpp
+  RomiSerial/UnoLog.h
+  RomiSerial/UnoLog.cpp
 )
 
 add_library(romiserial SHARED ${SOURCES})
@@ -36,7 +44,7 @@ target_include_directories(romiserial
         "${CMAKE_CURRENT_SOURCE_DIR}/RomiSerial"
         )
 
-target_link_libraries(romiserial rpp)
+#target_link_libraries(romiserial)
 
 if (${BUILD_ARDUINO})
     add_custom_command(OUTPUT ${ROMISERIAL_ARDUINO_LIB} POST_BUILD

@@ -26,8 +26,8 @@
 
 #include <stdexcept>
 #include <memory>
+#include <RomiSerialClient.h>
 #include "hal/ICameraMount.h"
-#include "RomiSerialClient.h"
 
 namespace romi {
         

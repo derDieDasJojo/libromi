@@ -22,7 +22,7 @@
 
  */
 
-#include <log.h>
+#include "util/Logger.h"
 #include "rpc/CameraMountAdaptor.h"
 #include "rpc/MethodsCameraMount.h"
 #include "rpc/MethodsPowerDevice.h"

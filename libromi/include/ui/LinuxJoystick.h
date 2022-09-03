@@ -26,7 +26,7 @@
 
 #include <string>
 #include <vector>
-#include <ILinux.h>
+#include <rcom/ILinux.h>
 #include "api/IJoystick.h"
 
 namespace romi {
@@ -34,7 +34,7 @@ namespace romi {
         class LinuxJoystick : public IJoystick
         {
         protected:
-                rpp::ILinux &_linux;
+                rcom::ILinux &_linux;
                 int _fd;
                 bool _debug;
                 JoystickEvent _event;
@@ -63,7 +63,7 @@ namespace romi {
                 
         public:
                 
-                LinuxJoystick(rpp::ILinux &linux, const std::string& device);
+                LinuxJoystick(rcom::ILinux &linux, const std::string& device);
                 ~LinuxJoystick() override;
                 
                 JoystickEvent& get_next_event() override;

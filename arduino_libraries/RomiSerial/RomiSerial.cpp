@@ -261,3 +261,4 @@ namespace romiserial {
                 printer.print(":xxxx\r\n");
         }
 }
+

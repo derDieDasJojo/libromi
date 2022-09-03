@@ -2,7 +2,7 @@
 #include "gmock/gmock.h"
 #include "cv/cv.h"
 #include "cv/ImageIO.h"
-#include "FileUtils.h"
+#include "util/FileUtils.h"
 #include "test_utility.h"
 
 

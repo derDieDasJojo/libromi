@@ -22,7 +22,7 @@
 
 */
 #include <cmath>
-#include <Logger.h>
+#include "util/Logger.h"
 #include "hal/BldcGimbal.h"
 
 namespace romi {

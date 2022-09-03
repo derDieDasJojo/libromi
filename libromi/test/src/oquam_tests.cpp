@@ -4,8 +4,9 @@
 #include "mock_clock.h"
 #include "oquam/Oquam.h"
 
-#include <ClockAccessor.h>
-#include "Linux.h"
+#include <rcom/Linux.h>
+
+#include "util/ClockAccessor.h"
 #include "data_provider/RomiDeviceData.h"
 #include "data_provider/SoftwareVersion.h"
 #include "session/Session.h"
@@ -47,7 +48,7 @@ protected:
                   locationPrivider(),
                   session_directory("./session-directory"),
                   observation_id("observation_id"),
-                  mockClock_(std::make_shared<rpp::MockClock>()) {
+                  mockClock_(std::make_shared<romi::MockClock>()) {
                 locationPrivider  = std::make_unique<GpsLocationProvider>(gps);
         }
 
@@ -57,7 +58,7 @@ protected:
                 position[0] = 0;
                 position[1] = 0;
                 position[2] = 0;
-                rpp::ClockAccessor::SetInstance(mockClock_);
+                romi::ClockAccessor::SetInstance(mockClock_);
                 std::string date_time("01012025");
                 EXPECT_CALL(*mockClock_, datetime_compact_string)
                                 .Times(AtLeast(1))
@@ -65,7 +66,7 @@ protected:
         }
 
 	void TearDown() override {
-                rpp::ClockAccessor::SetInstance(nullptr);
+                romi::ClockAccessor::SetInstance(nullptr);
 	}
 
     void HomingTestsSetUp() {
@@ -106,14 +107,14 @@ public:
                 return true;
         }
 
-        rpp::Linux linux;
+        rcom::Linux linux;
         RomiDeviceData romiDeviceData;
         SoftwareVersion softwareVersion;
         romi::Gps gps;
         std::unique_ptr<ILocationProvider> locationPrivider;
         const std::string session_directory;
         const std::string observation_id;
-        std::shared_ptr<rpp::MockClock> mockClock_;
+        std::shared_ptr<romi::MockClock> mockClock_;
 };
 
 TEST_F(oquam_tests, constructor_calls_configure_homing)

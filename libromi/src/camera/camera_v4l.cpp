@@ -93,8 +93,8 @@
 #include <asm/types.h>
 #include <linux/videodev2.h>
 #include <malloc.h>
+#include "util/Logger.h"
 #include "camera_v4l.h"
-#include "Logger.h"
 
 
 #define CLEAR(x) memset (&(x), 0, sizeof (x))

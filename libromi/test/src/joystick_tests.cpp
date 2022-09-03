@@ -3,7 +3,7 @@
 #include "gmock/gmock.h"
 #include "ui/LinuxJoystick.h"
 
-#include "mock_linux.h"
+#include "Linux.mock.h"
 
 using namespace std;
 using namespace testing;
@@ -12,7 +12,7 @@ using namespace romi;
 class joystick_tests : public ::testing::Test
 {
 protected:
-        rpp::MockLinux linux;
+        MockLinux linux;
         
 	joystick_tests() : linux() {
 	}

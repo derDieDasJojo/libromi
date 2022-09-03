@@ -22,10 +22,10 @@
 
  */
 #include <stdexcept>
+#include <rcom/json.hpp>
 #include "data_provider/JsonFieldNames.h"
 #include "data_provider/CameraMountLocationProvider.h"
-#include <json.hpp>
-#include <log.h>
+#include "util/Logger.h"
 
 namespace romi {
 

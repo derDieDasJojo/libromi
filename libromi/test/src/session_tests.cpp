@@ -1,16 +1,18 @@
-#include <ClockAccessor.h>
-#include <data_provider/GpsLocationProvider.h>
-#include <Logger.h>
-#include "Linux.h"
-#include "FileUtils.h"
 #include "gtest/gtest.h"
 #include "gmock/gmock.h"
+#include <rcom/Linux.h>
+
+#include "data_provider/GpsLocationProvider.h"
+#include "util/Logger.h"
+#include "util/ClockAccessor.h"
+#include "util/FileUtils.h"
 #include "session/Session.h"
+
 #include "mock_romidevicedata.h"
 #include "mock_softwareversion.h"
-#include "mock_linux.h"
 #include "mock_clock.h"
 #include "mock_gps.h"
+#include "Linux.mock.h"
 
 using namespace std;
 using namespace testing;
@@ -25,7 +27,7 @@ class weedersession : public ::testing::Test
 protected:
         
 	weedersession() :
-                mockClock_(std::make_shared<rpp::MockClock>()), mockGps_(),
+                mockClock_(std::make_shared<romi::MockClock>()), mockGps_(),
                 mockLocationProvider_(),
                 deviceData_(),
                 softwareVersion_(),
@@ -45,14 +47,14 @@ protected:
                         .WillRepeatedly(DoAll(testing::SetArgReferee<0>(0.1),
                                               testing::SetArgReferee<1>(0.2)));
                 
-                rpp::ClockAccessor::SetInstance(mockClock_);
+                romi::ClockAccessor::SetInstance(mockClock_);
                 mockLocationProvider_ = std::make_unique<romi::GpsLocationProvider>(mockGps_);
                 currentdir_ = std::filesystem::current_path().string();
                 
         }
 
 	void TearDown() override {
-                rpp::ClockAccessor::SetInstance(nullptr);
+                romi::ClockAccessor::SetInstance(nullptr);
                 log_cleanup();
 	}
 
@@ -96,7 +98,7 @@ protected:
 	        return path;
         }
 
-        std::shared_ptr<rpp::MockClock> mockClock_;
+        std::shared_ptr<romi::MockClock> mockClock_;
         MockGps mockGps_;
         std::unique_ptr<romi::ILocationProvider> mockLocationProvider_;
         MockRomiDeviceData deviceData_;
@@ -112,7 +114,7 @@ protected:
 TEST_F(weedersession, can_construct_with_valid_directory)
 {
         // Arrange
-        rpp::Linux linux;
+        rcom::Linux linux;
         std::string session_dir = "weedersession_test";
         std::string date_time("01012025");
         EXPECT_CALL(*mockClock_, datetime_compact_string)
@@ -121,13 +123,15 @@ TEST_F(weedersession, can_construct_with_valid_directory)
         SetDeviceIDDataExpectations(devicetype_, devicID_, 1);
         SetSoftwareVersionDDataExpectations(versionCurrent_, versionAlternate_);
 
-        auto weeder_session_dir = FileUtils::TryGetHomeDirectory(linux);
-        weeder_session_dir /= session_dir;
-        std::filesystem::remove_all(weeder_session_dir);
+        // auto weeder_session_dir = FileUtils::TryGetHomeDirectory(linux);
+        // weeder_session_dir /= session_dir;
+        // std::filesystem::remove_all(weeder_session_dir);
 
         // Act
         // Assert
-        ASSERT_NO_THROW(romi::Session session(linux, session_dir, deviceData_, softwareVersion_, std::move(mockLocationProvider_)));
+        ASSERT_NO_THROW(romi::Session session(linux, session_dir, deviceData_,
+                                              softwareVersion_,
+                                              std::move(mockLocationProvider_)));
 }
 
 TEST_F(weedersession, can_construct_when_directory_exists)
@@ -136,7 +140,7 @@ TEST_F(weedersession, can_construct_when_directory_exists)
         std::string date_time("01012030");
         EXPECT_CALL(*mockClock_, datetime_compact_string)
                 .WillOnce(Return(date_time));
-        rpp::MockLinux mock_linux;
+        MockLinux mock_linux;
 
         SetDeviceIDDataExpectations(devicetype_, devicID_, 1);
         SetSoftwareVersionDDataExpectations(versionCurrent_, versionAlternate_);
@@ -149,69 +153,74 @@ TEST_F(weedersession, can_construct_when_directory_exists)
 
         // Act
         // Assert
-        ASSERT_NO_THROW(romi::Session session(mock_linux, session_dir, deviceData_, softwareVersion_, std::move(mockLocationProvider_)));
+        ASSERT_NO_THROW(romi::Session session(mock_linux, session_dir,
+                                              deviceData_, softwareVersion_,
+                                              std::move(mockLocationProvider_)));
         ASSERT_TRUE(create);
 }
 
 TEST_F(weedersession, logger_set_to_basdirectory_on_construct_when_logger_not_set)
 {
-    // Arrange
-    rpp::Linux linux;
-    std::string session_dir = "weedersession_test";
-    std::string date_time("01012030");
-    EXPECT_CALL(*mockClock_, datetime_compact_string)
-            .WillOnce(Return(date_time));
+        // Arrange
+        rcom::Linux linux;
+        std::string session_dir = "weedersession_test";
+        std::string date_time("01012030");
+        EXPECT_CALL(*mockClock_, datetime_compact_string)
+                .WillOnce(Return(date_time));
 
-    SetDeviceIDDataExpectations(devicetype_, devicID_, 1);
-    SetSoftwareVersionDDataExpectations(versionCurrent_, versionAlternate_);
+        SetDeviceIDDataExpectations(devicetype_, devicID_, 1);
+        SetSoftwareVersionDDataExpectations(versionCurrent_, versionAlternate_);
 
-    auto weeder_session_dir = FileUtils::TryGetHomeDirectory(linux);
-    weeder_session_dir /= session_dir;
-    std::filesystem::remove_all(weeder_session_dir);
+        // auto weeder_session_dir = FileUtils::TryGetHomeDirectory(linux);
+        // weeder_session_dir /= session_dir;
+        // std::filesystem::remove_all(weeder_session_dir);
 
-    // Act
-    romi::Session session(linux, session_dir , deviceData_, softwareVersion_, std::move(mockLocationProvider_));
-    std::filesystem::path log_dir(log_get_file());
-    std::filesystem::path session_path(session.base_directory());
+        // Act
+        romi::Session session(linux, session_dir , deviceData_,
+                              softwareVersion_, std::move(mockLocationProvider_));
+        std::filesystem::path log_dir(log_get_file());
+        std::filesystem::path session_path(session.base_directory());
 
-    // Assert
-    ASSERT_EQ(session_path, log_dir.parent_path());
+        // Assert
+        ASSERT_EQ(session_path, log_dir.parent_path());
 }
 
 TEST_F(weedersession, logger_set_to_basdirectory_on_construct_when_logger_set)
 {
-    // Arrange
-    rpp::Linux linux;
-    std::string session_dir = "weedersession_test";
-    std::string date_time("01012025");
-    EXPECT_CALL(*mockClock_, datetime_compact_string)
-            .Times(2)
-            .WillRepeatedly(Return(date_time));
+        // Arrange
+        rcom::Linux linux;
+        std::string session_dir = "weedersession_test";
+        std::string date_time("01012025");
+        EXPECT_CALL(*mockClock_, datetime_compact_string)
+                .Times(2)
+                .WillRepeatedly(Return(date_time));
 
-    SetDeviceIDDataExpectations(devicetype_, devicID_, 1);
-    SetSoftwareVersionDDataExpectations(versionCurrent_, versionAlternate_);
+        SetDeviceIDDataExpectations(devicetype_, devicID_, 1);
+        SetSoftwareVersionDDataExpectations(versionCurrent_, versionAlternate_);
 
-    auto weeder_session_dir = FileUtils::TryGetHomeDirectory(linux);
-    weeder_session_dir /= session_dir;
-    std::filesystem::remove_all(weeder_session_dir);
+        // auto weeder_session_dir = FileUtils::TryGetHomeDirectory(linux);
+        // weeder_session_dir /= session_dir;
+        // std::filesystem::remove_all(weeder_session_dir);
 
-    std::string original_log_path("./log.txt");
-    log_init();
-    log_set_file(original_log_path.c_str());
+        std::string original_log_path("./log.txt");
+        log_init();
+        log_set_file(original_log_path.c_str());
 
-    // Act
-    romi::Session session(linux, session_dir, deviceData_, softwareVersion_, std::move(mockLocationProvider_));
-    std::filesystem::path log_dir(log_get_file());
-    std::filesystem::path session_path(session.base_directory());
+        // Act
+        romi::Session session(linux, session_dir, deviceData_,
+                              softwareVersion_,
+                              std::move(mockLocationProvider_));
+        std::filesystem::path log_dir(log_get_file());
+        std::filesystem::path session_path(session.base_directory());
 
-    // Assert
-    ASSERT_EQ(session_path, log_dir.parent_path());
+        // Assert
+        ASSERT_EQ(session_path, log_dir.parent_path());
 }
 
 TEST_F(weedersession, fail_construct_when_fails_to_create_directory)
 {
         // Arrange
-        rpp::MockLinux mock_linux;
+        MockLinux mock_linux;
 
         SetDeviceIDDataExpectations(devicetype_, devicID_, 1);
         SetSoftwareVersionDDataExpectations(versionCurrent_, versionAlternate_);
@@ -221,9 +230,11 @@ TEST_F(weedersession, fail_construct_when_fails_to_create_directory)
 
         // Act
         try {
-                romi::Session session(mock_linux, session_dir, deviceData_, softwareVersion_, std::move(mockLocationProvider_));
-        }
-        catch(std::runtime_error& e){
+                romi::Session session(mock_linux, session_dir,
+                                      deviceData_,
+                                      softwareVersion_,
+                                      std::move(mockLocationProvider_));
+        } catch(std::runtime_error& e){
                 std::cout << e.what();
                 exception_thrown = true;
         }
@@ -235,7 +246,7 @@ TEST_F(weedersession, fail_construct_when_fails_to_create_directory)
 TEST_F(weedersession, start_creates_correct_directory)
 {
         // Arrange
-        rpp::MockLinux mock_linux;
+        MockLinux mock_linux;
 
         SetDeviceIDDataExpectations(devicetype_, devicID_, 2);
         SetSoftwareVersionDDataExpectations(versionCurrent_, versionAlternate_);
@@ -247,19 +258,21 @@ TEST_F(weedersession, start_creates_correct_directory)
 
         std::string observation_id("obs_id_1");
 
-        std::filesystem::path session_dir = BuildSessionDirName(devicetype_, devicID_, date_time);
+        std::filesystem::path session_dir = BuildSessionDirName(devicetype_,
+                                                                devicID_,
+                                                                date_time);
 
-        if (fs::is_directory(session_dir))
-        {
+        if (fs::is_directory(session_dir)) {
                 fs::remove_all(session_dir);
         }
 
         // Act
         try {
-                romi::Session session(mock_linux, sessions_basedir_, deviceData_, softwareVersion_, std::move(mockLocationProvider_));
+                romi::Session session(mock_linux, sessions_basedir_, deviceData_,
+                                      softwareVersion_,
+                                      std::move(mockLocationProvider_));
                 session.start(observation_id);
-        }
-        catch(std::runtime_error& e){
+        } catch(std::runtime_error& e){
                 std::cout << e.what();
         }
 
@@ -270,7 +283,7 @@ TEST_F(weedersession, start_creates_correct_directory)
 TEST_F(weedersession, current_directory_correct)
 {
         // Arrange
-        rpp::MockLinux mock_linux;
+        MockLinux mock_linux;
 
         SetDeviceIDDataExpectations(devicetype_, devicID_, 2);
         SetSoftwareVersionDDataExpectations(versionCurrent_, versionAlternate_);
@@ -282,17 +295,20 @@ TEST_F(weedersession, current_directory_correct)
 
         std::string observation_id("obs_id_1");
 
-        std::filesystem::path session_dir = BuildSessionDirName(devicetype_, devicID_, date_time);
+        std::filesystem::path session_dir = BuildSessionDirName(devicetype_,
+                                                                devicID_,
+                                                                date_time);
         fs::remove_all(session_dir);
         std::filesystem::path current_path;
         // Act
         try {
-                romi::Session session(mock_linux, sessions_basedir_, deviceData_, softwareVersion_, std::move(mockLocationProvider_));
+                romi::Session session(mock_linux, sessions_basedir_,
+                                      deviceData_, softwareVersion_,
+                                      std::move(mockLocationProvider_));
                 session.start(observation_id);
                 current_path = session.current_path();
 
-        }
-        catch(std::runtime_error& e){
+        } catch(std::runtime_error& e){
                 std::cout << e.what();
         }
 
@@ -304,7 +320,7 @@ TEST_F(weedersession, current_directory_correct)
 TEST_F(weedersession, store_functions_store_files)
 {
         // Arrange
-        rpp::MockLinux mock_linux;
+        MockLinux mock_linux;
 
         SetDeviceIDDataExpectations(devicetype_, devicID_, 2);
         SetSoftwareVersionDDataExpectations(versionCurrent_, versionAlternate_);
@@ -314,7 +330,9 @@ TEST_F(weedersession, store_functions_store_files)
                         .WillRepeatedly(Return(date_time));
 
         std::string observation_id("obs_id_1");
-        std::filesystem::path session_dir = BuildSessionDirName(devicetype_, devicID_, date_time);
+        std::filesystem::path session_dir = BuildSessionDirName(devicetype_,
+                                                                devicID_,
+                                                                date_time);
         fs::remove_all(session_dir);
         romi::Image image(romi::Image::RGB, red_image, 4, 4);
         std::string svg_body("svg_body");
@@ -326,7 +344,9 @@ TEST_F(weedersession, store_functions_store_files)
                 testPath.emplace_back(romi::v3(data, data, 0.0));
         }
         // Act
-        romi::Session session(mock_linux, sessions_basedir_, deviceData_, softwareVersion_, std::move(mockLocationProvider_));
+        romi::Session session(mock_linux, sessions_basedir_,
+                              deviceData_, softwareVersion_,
+                              std::move(mockLocationProvider_));
         session.start(observation_id);
         session.store_jpg("file", image);
         session.store_png("file", image);
@@ -349,7 +369,7 @@ TEST_F(weedersession, store_functions_store_files)
 TEST_F(weedersession, store_functions_throw_on_failure)
 {
         // Arrange
-        rpp::MockLinux mock_linux;
+        MockLinux mock_linux;
 
         SetDeviceIDDataExpectations(devicetype_, devicID_, 2);
         SetSoftwareVersionDDataExpectations(versionCurrent_, versionAlternate_);
@@ -359,7 +379,9 @@ TEST_F(weedersession, store_functions_throw_on_failure)
                         .WillRepeatedly(Return(date_time));
 
         std::string observation_id("obs_id_1");
-        std::filesystem::path session_dir = BuildSessionDirName(devicetype_, devicID_, date_time);
+        std::filesystem::path session_dir = BuildSessionDirName(devicetype_,
+                                                                devicID_,
+                                                                date_time);
         fs::remove_all(session_dir);
         romi::Image image(romi::Image::RGB, red_image, 4, 4);
         std::string svg_body("svg_body");
@@ -398,7 +420,7 @@ TEST_F(weedersession, create_correct_session_file_path)
         EXPECT_CALL(deviceData_, RomiDeviceHardwareId)
                 .WillOnce(Return(std::string("ID1")));
 
-        rpp::MockLinux mock_linux;
+        MockLinux mock_linux;
 
         SetSoftwareVersionDDataExpectations(versionCurrent_, versionAlternate_);
 

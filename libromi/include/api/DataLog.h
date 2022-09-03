@@ -33,8 +33,8 @@
 #include <mutex>
 #include <atomic>
 #include <filesystem>
-#include <MessageHub.h>
-#include <IMessageListener.h>
+#include <rcom/MessageHub.h>
+#include <rcom/IMessageListener.h>
 #include "api/IDataLog.h"
 
 namespace romi {

@@ -22,8 +22,8 @@
 
  */
 
-#include <Logger.h>
-#include <ClockAccessor.h>
+#include "util/Logger.h"
+#include "util/ClockAccessor.h"
 #include "rover/PythonTrackFollower.h"
 
 namespace romi {
@@ -75,7 +75,7 @@ namespace romi {
         
         void PythonTrackFollower::try_update()
         {
-                auto clock = rpp::ClockAccessor::GetInstance();
+                auto clock = romi::ClockAccessor::GetInstance();
                 double start_time = clock->time();
 
                 auto filename = get_image_name();

@@ -22,12 +22,12 @@
 
  */
 #include <stdexcept>
-#include <json.hpp>
-#include <RomiSerialErrors.h>
-#include <ClockAccessor.h>
-#include "Logger.h"
-#include "oquam/StepperController.h"
 #include <iostream>
+#include <rcom/json.hpp>
+#include <RomiSerialErrors.h>
+#include "util/ClockAccessor.h"
+#include "util/Logger.h"
+#include "oquam/StepperController.h"
 
 namespace romi {
 
@@ -44,7 +44,7 @@ namespace romi {
         {
                 int r = -1;
                 nlohmann::json response;
-                auto clock = rpp::ClockAccessor::GetInstance();
+                auto clock = romi::ClockAccessor::GetInstance();
 
                 /* The number of loops is a bit random but it avoids
                  * an infinite loop. The loop will take at the most 10
@@ -189,7 +189,7 @@ namespace romi {
 
         bool StepperController::synchronize(double timeout)
         {
-                auto clock = rpp::ClockAccessor::GetInstance();
+                auto clock = romi::ClockAccessor::GetInstance();
                 bool success = false;
                 double start_time = clock->time();
                 

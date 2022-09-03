@@ -14,7 +14,7 @@
 #include "rover/Rover.h"
 #include "rover/RoverScriptEngine.h"
 #include "ui/ScriptList.h"
-#include <ClockAccessor.h>
+#include "util/ClockAccessor.h"
 
 using namespace std;
 using namespace testing;
@@ -98,7 +98,7 @@ TEST_F(roverscriptengine_tests, calls_move)
                 .WillOnce(Return(true));
         
         script_engine.execute_script(rover, 0);
-        rpp::ClockAccessor::GetInstance()->sleep(0.050); // OK?
+        romi::ClockAccessor::GetInstance()->sleep(0.050); // OK?
         
         ASSERT_EQ(1, script_engine.get_next_event());
 }
@@ -123,7 +123,7 @@ TEST_F(roverscriptengine_tests, calls_hoe)
                 .WillOnce(Return(true));
         
         script_engine.execute_script(rover, 1);
-        rpp::ClockAccessor::GetInstance()->sleep(0.050); // OK?
+        romi::ClockAccessor::GetInstance()->sleep(0.050); // OK?
         
         ASSERT_EQ(1, script_engine.get_next_event());
 }
@@ -149,7 +149,7 @@ TEST_F(roverscriptengine_tests, returns_error_event_on_failed_script_1)
                 .WillOnce(Return(false));
         
         script_engine.execute_script(rover, 0);
-        rpp::ClockAccessor::GetInstance()->sleep(0.050); // OK?
+        romi::ClockAccessor::GetInstance()->sleep(0.050); // OK?
         
         ASSERT_EQ(2, script_engine.get_next_event());
 }
@@ -175,7 +175,7 @@ TEST_F(roverscriptengine_tests, returns_error_event_on_failed_script_2)
                 .WillOnce(Return(false));
         
         script_engine.execute_script(rover, 1);
-        rpp::ClockAccessor::GetInstance()->sleep(0.050); // OK?
+        romi::ClockAccessor::GetInstance()->sleep(0.050); // OK?
         
         ASSERT_EQ(2, script_engine.get_next_event());
 }

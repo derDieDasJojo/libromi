@@ -23,20 +23,21 @@
  */
 
 #include <algorithm>
-#include <Logger.h>
-#include <ClockAccessor.h>
+
+#include <RomiSerialClient.h>
+#include <RSerial.h>
+
+#include "util/Logger.h"
+#include "util/ClockAccessor.h"
 #include "rover/WheelOdometry.h"
 #include "rover/Navigation.h"
 #include "rover/ZeroNavigationController.h"
 #include "rover/L1NavigationController.h"
 #include "rover/PythonTrackFollower.h"
 #include "api/DataLogAccessor.h"
+#include "oquam/StepperController.h"
+#include "oquam/StepperSettings.h"
 
-
-#include <RomiSerialClient.h>
-#include <RSerial.h>
-#include <oquam/StepperController.h>
-#include <oquam/StepperSettings.h>
 
 namespace romi {
 
@@ -139,7 +140,7 @@ namespace romi {
         // TODO: Spin off a seperate thread so the main event loop can continue?
         bool Navigation::try_travel(double speed, double distance, double timeout)
         {
-                auto clock = rpp::ClockAccessor::GetInstance();
+                auto clock = romi::ClockAccessor::GetInstance();
                 double start_time = clock->time();
                 v3 start_location;
                 bool success = false;

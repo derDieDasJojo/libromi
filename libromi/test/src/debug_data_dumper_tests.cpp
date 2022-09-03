@@ -1,14 +1,15 @@
 #include "gtest/gtest.h"
 #include "gmock/gmock.h"
 #include "debug_tools/debug_data_dumper.h"
-#include "FileUtils.h"
+#include "util/FileUtils.h"
 
 using namespace std;
 using namespace testing;
+using namespace romi;
 
 // These tests are now obsolete as they were used to compare the old dump code with the new templated code.
 // They will now always pass (in debug mode)
-// They are not included as part of the normak test run but are left here for reference.
+// They are not included as part of the normal test run but are left here for reference.
 class debug_data_dumper_tests : public ::testing::Test
 {
 protected:

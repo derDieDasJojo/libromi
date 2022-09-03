@@ -25,7 +25,7 @@
 #define __ROMI_RCOM_CLIENT_H
 
 #include <memory>
-#include <IMessageLink.h>
+#include <rcom/IMessageLink.h>
 #include "rpc/IRPCClient.h"
 
 namespace romi {

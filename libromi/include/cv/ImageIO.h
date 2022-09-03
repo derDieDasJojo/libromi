@@ -27,7 +27,7 @@
 
 #include <vector>
 
-#include "FileUtils.h"
+#include "util/FileUtils.h"
 #include "cv/Image.h"
 
 namespace romi {

@@ -23,8 +23,8 @@
  */
 
 #include <functional>
-#include <ClockAccessor.h>
-#include <Logger.h>
+#include "util/ClockAccessor.h"
+#include "util/Logger.h"
 #include "camera/Imager.h"
 
 namespace romi {
@@ -101,7 +101,7 @@ namespace romi {
         }
         void Imager::grab_loop()
         {
-                double start_time = rpp::ClockAccessor::GetInstance()->time();
+                double start_time = romi::ClockAccessor::GetInstance()->time();
                 
                 while (recording_) {
 
@@ -116,7 +116,7 @@ namespace romi {
                                 recording_ = false;
                         }
                         
-                        double now = rpp::ClockAccessor::GetInstance()->time();
+                        double now = romi::ClockAccessor::GetInstance()->time();
                         if (now - start_time > max_duration_) {
                                 r_warn("Imager::grab_loop: reach maximum duration "
                                        "before stop was called");

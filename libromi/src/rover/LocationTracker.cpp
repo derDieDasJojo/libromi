@@ -23,7 +23,8 @@
  */
 #include <math.h>
 
-#include <ClockAccessor.h>
+#include "util/Logger.h"
+#include "util/ClockAccessor.h"
 #include "rover/LocationTracker.h"
 
 namespace romi {
@@ -93,7 +94,7 @@ namespace romi {
 
         bool LocationTracker::update_perhaps()
         {
-                auto clock = rpp::ClockAccessor::GetInstance();
+                auto clock = romi::ClockAccessor::GetInstance();
                 double now = clock->time();
                 bool success = true;
                 if (now - last_time_ >= kMinimumUpdateInterval) {

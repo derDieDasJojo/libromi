@@ -2,8 +2,7 @@
 #include <iostream>
 #include "data_provider/JsonFieldNames.h"
 #include "session/MetaFolder.h"
-#include "ClockAccessor.h"
-
+#include "util/ClockAccessor.h"
 
 namespace romi {
         MetaFolder::MetaFolder(std::shared_ptr<IIdentityProvider> identityProvider,
@@ -48,7 +47,7 @@ namespace romi {
                 nlohmann::json newFile;
                 newFile[JsonFieldNames::observation_id] = observationId;
                 newFile[JsonFieldNames::location] = locationProvider_->location();
-                newFile[JsonFieldNames::date_time] = rpp::ClockAccessor::GetInstance()->datetime_compact_string();
+                newFile[JsonFieldNames::date_time] = romi::ClockAccessor::GetInstance()->datetime_compact_string();
                 (*meta_data_)[filename] = newFile;
                 SaveMetaData();
         }

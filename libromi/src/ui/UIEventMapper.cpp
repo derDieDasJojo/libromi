@@ -23,7 +23,7 @@
  */
 
 
-#include "Logger.h"
+#include "util/Logger.h"
 #include "ui/UIEventMapper.h"
 
 namespace romi {

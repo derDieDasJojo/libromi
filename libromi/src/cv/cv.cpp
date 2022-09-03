@@ -25,8 +25,8 @@
 #include <math.h>
 #include <iostream>
 #include <map>
-#include "Logger.h"
 
+#include "util/Logger.h"
 #include "cv/cv.h"
 #include "cv/slic.h"
 #include "cv/connected.h"

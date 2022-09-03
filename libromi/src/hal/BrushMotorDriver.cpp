@@ -22,11 +22,10 @@
 
 */
 #include <functional>
-#include <Logger.h>
-#include <util.h>
-#include <ClockAccessor.h>
-#include "StringUtils.h"
-#include <api/DataLogAccessor.h>
+#include "util/Logger.h"
+#include "util/ClockAccessor.h"
+#include "util/StringUtils.h"
+#include "api/DataLogAccessor.h"
 #include "hal/BrushMotorDriver.h"
 
 namespace romi {
@@ -204,7 +203,7 @@ static const std::string kDriverRightMeasuredSpeedName = "driver-right-measured-
 
         void BrushMotorDriver::record_speeds_main()
         {
-                auto clock = rpp::ClockAccessor::GetInstance();
+                auto clock = romi::ClockAccessor::GetInstance();
                 while (recording_speeds_) {
                         log_speeds();
                         clock->sleep(0.020);
@@ -213,7 +212,7 @@ static const std::string kDriverRightMeasuredSpeedName = "driver-right-measured-
         
         void BrushMotorDriver::log_speeds()
         {
-                auto clock = rpp::ClockAccessor::GetInstance();
+                auto clock = romi::ClockAccessor::GetInstance();
                 double now;
                 double left_target;
                 double right_target;

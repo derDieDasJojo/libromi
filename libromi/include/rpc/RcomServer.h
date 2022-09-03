@@ -26,7 +26,7 @@
 #define __ROMI_RCOM_SERVER_H
 
 #include <memory>
-#include <IMessageHub.h>
+#include <rcom/IMessageHub.h>
 #include "rpc/IRPCServer.h"
 #include "rpc/IRPCHandler.h"
 #include "rpc/RcomMessageHandler.h"

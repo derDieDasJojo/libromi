@@ -22,10 +22,10 @@
 
  */
 #include <thread>
-#include <ClockAccessor.h>
-#include <WebSocketServerFactory.h>
+#include <rcom/WebSocketServerFactory.h>
+#include "util/ClockAccessor.h"
 #include "api/DataLog.h"
-#include "Logger.h"
+#include "util/Logger.h"
 
 namespace romi {
 
@@ -83,7 +83,7 @@ namespace romi {
         
         void DataLog::store(const std::string& name, double value)
         {
-                auto clock = rpp::ClockAccessor::GetInstance();
+                auto clock = romi::ClockAccessor::GetInstance();
                 store(clock->time(), name, value);
         }
         
@@ -128,7 +128,7 @@ namespace romi {
         
         void DataLog::write_entries_to_storage_in_background()
         {
-                auto clock = rpp::ClockAccessor::GetInstance();
+                auto clock = romi::ClockAccessor::GetInstance();
                 
                 while (!quitting_) {
                         try_writing_entries_to_storage();

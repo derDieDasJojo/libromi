@@ -23,10 +23,10 @@
  */
 #include <math.h>
 #include <algorithm>
-#include <ClockAccessor.h>
+#include "util/ClockAccessor.h"
+#include "util/Logger.h"
 #include "rover/StepperSteering.h"
 #include "api/DataLogAccessor.h"
-#include <Logger.h>
 
 namespace romi {
 

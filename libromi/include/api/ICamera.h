@@ -26,8 +26,8 @@
 #define __ROMI_ICAMERA_H
 
 #include "cv/Image.h"
-#include "json.hpp"
-#include "MemBuffer.h"
+#include <rcom/json.hpp>
+#include <rcom/MemBuffer.h>
 #include "api/IPowerDevice.h"
 
 namespace romi {

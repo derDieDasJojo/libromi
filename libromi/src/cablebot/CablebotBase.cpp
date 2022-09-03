@@ -25,10 +25,12 @@
 #include <math.h>
 #include <limits.h>
 #include <stdexcept>
-#include <Logger.h>
-#include <ClockAccessor.h>
+
+#include <rcom/json.hpp>
+
+#include "util/Logger.h"
+#include "util/ClockAccessor.h"
 #include "cablebot/CablebotBase.h"
-#include <json.hpp>
 
 namespace romi {
         
@@ -164,7 +166,7 @@ namespace romi {
         
         void CablebotBase::synchronize_with_base(double timeout)
         {
-                auto clock = rpp::ClockAccessor::GetInstance();
+                auto clock = romi::ClockAccessor::GetInstance();
                 double start_time = clock->time();
                 
                 while (true) {

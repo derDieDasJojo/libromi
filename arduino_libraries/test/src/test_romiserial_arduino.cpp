@@ -1,5 +1,6 @@
 #include "gtest/gtest.h"
 #include "gmock/gmock.h"
+#include <Console.h>
 #include <RSerial.h>
 #include <RomiSerialClient.h>
 #include <RomiSerialErrors.h>
@@ -10,12 +11,15 @@ class romiserial_arduino_tests : public ::testing::Test
 {
 protected:
         std::string controller_name;
+        std::shared_ptr<ILog> log;
         std::shared_ptr<RSerial> serial;
         RomiSerialClient romiserial;
 
 	romiserial_arduino_tests()
-                : controller_name("romiserial_arduino_tests"), serial(std::make_shared<RSerial>("/dev/ttyACM0", 115200, 1)),
-                  romiserial(serial, serial, 255, controller_name) {
+                : controller_name("romiserial_arduino_tests"),
+                  log(std::make_shared<Console>()),
+                  serial(std::make_shared<RSerial>("/dev/ttyACM0", 115200, 1, log)),
+                  romiserial(serial, serial, log, 255, controller_name) {
                 //romiserial.set_debug(true);
 	}
         

@@ -23,10 +23,10 @@
  */
 
 #include <stdexcept>
-#include <Logger.h>
 #include <algorithm>
 #include <fstream>
 #include <iostream>
+#include "util/Logger.h"
 #include "ui/ScriptList.h"
 
 namespace romi {

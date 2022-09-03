@@ -25,7 +25,7 @@
 #ifndef _OQUAM_PRINT_H_
 #define _OQUAM_PRINT_H_
 
-#include "MemBuffer.h"
+#include <rcom/MemBuffer.h>
 #include "oquam/SmoothPath.h"
 
 namespace romi {

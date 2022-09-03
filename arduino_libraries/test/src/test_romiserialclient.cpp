@@ -5,6 +5,7 @@
 //
 #include <RomiSerialClient.h>
 #include <RomiSerialErrors.h>
+#include <Console.h>
 #include "../mock/mock_inputstream.h"
 #include "../mock/mock_outputstream.h"
 
@@ -16,7 +17,8 @@ class romiserialclient_tests : public ::testing::Test
 {
 protected:
         std::shared_ptr<MockInputStream> in;
-        std::shared_ptr<MockOutputStream> out;
+        std::shared_ptr<MockOutputStream> out; 
+        std::shared_ptr<Console> log; 
 
         string output_message;
         string expected_message;
@@ -24,6 +26,7 @@ protected:
 	romiserialclient_tests()
                 : in(std::make_shared<MockInputStream>()),
                   out(std::make_shared<MockOutputStream>()),
+                  log(std::make_shared<Console>()),
                   output_message(),
                   expected_message() {
         }
@@ -80,7 +83,7 @@ TEST_F(romiserialclient_tests, message_without_args)
         // Arrange
         std::string client_name("romiserialclient_tests");
         EXPECT_CALL(*in, set_timeout(_));
-        RomiSerialClient client(in, out, 255, client_name);
+        RomiSerialClient client(in, out, log, 255, client_name);
         setExpectedOutput("#a:008e\r\n");
         initInput("#a[0]:00e7\r\n");
 
@@ -101,7 +104,7 @@ TEST_F(romiserialclient_tests, message_with_args)
 
         EXPECT_CALL(*in, set_timeout(_));
         std::string client_name("romiserialclient_tests");
-        RomiSerialClient client(in, out, 255, client_name);
+        RomiSerialClient client(in, out, log, 255, client_name);
         setExpectedOutput("#a[1,2,3]:00dd\r\n");
         initInput("#a[0]:00e7\r\n");
 
@@ -121,7 +124,7 @@ TEST_F(romiserialclient_tests, error_reponse)
         // Arrange
         EXPECT_CALL(*in, set_timeout(_));
         std::string client_name("romiserialclient_tests");
-        RomiSerialClient client(in, out, 255, client_name);
+        RomiSerialClient client(in, out, log, 255, client_name);
         setExpectedOutput("#a:008e\r\n");
         initInput("#a[1,\"Went to bed early\"]:00f2\r\n");
 
@@ -143,7 +146,7 @@ TEST_F(romiserialclient_tests, error_reponse_without_message)
         // Arrange
         EXPECT_CALL(*in, set_timeout(_));
         std::string client_name("romiserialclient_tests");
-        RomiSerialClient client(in, out, 255, client_name);
+        RomiSerialClient client(in, out, log, 255, client_name);
         setExpectedOutput("#a:008e\r\n");
         initInput("#a[1]:0085\r\n");
 
@@ -171,7 +174,7 @@ TEST_F(romiserialclient_tests, log_message)
         // Arrange
         EXPECT_CALL(*in, set_timeout(_));
         std::string client_name("romiserialclient_tests");
-        RomiSerialClient client(in, out, 255, client_name);
+        RomiSerialClient client(in, out, log, 255, client_name);
         setExpectedOutput("#a:008e\r\n");
         initInput("#!LOG MESSAGE:008e\r\n#a[0]:00e7\r\n");
 
@@ -191,7 +194,7 @@ TEST_F(romiserialclient_tests, message_too_long)
         // Arrange
         EXPECT_CALL(*in, set_timeout(_));
         std::string client_name("romiserialclient_tests");
-        RomiSerialClient client(in, out, 255, client_name);
+        RomiSerialClient client(in, out, log, 255, client_name);
 
         // Act
         nlohmann::json response;
