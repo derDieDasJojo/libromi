@@ -29,7 +29,7 @@
 namespace romi {
 
         PythonTrackFollower::PythonTrackFollower(ICamera& camera,
-                                                 std::unique_ptr<romi::IRPCClient>& rpc,
+                                                 std::unique_ptr<rcom::IRPCClient>& rpc,
                                                  const std::string& function_name,
                                                  double pixels_per_meter,
                                                  ISession& session)
@@ -126,7 +126,7 @@ namespace romi {
         nlohmann::json PythonTrackFollower::send_python_request(const std::string& path)
         {
                 nlohmann::json response;
-                romi::RPCError error;
+                rcom::RPCError error;
                 
                 nlohmann::json params;
                 params["path"] = path;

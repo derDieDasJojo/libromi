@@ -39,19 +39,19 @@ namespace romi {
         void CameraMountAdaptor::execute(const std::string& method,
                                     nlohmann::json &params,
                                     rcom::MemBuffer& result,
-                                    RPCError &error)
+                                    rcom::RPCError &error)
         {
                 (void) method;
                 (void) params;
                 (void) result;
-                error.code = RPCError::kMethodNotFound;
+                error.code = rcom::RPCError::kMethodNotFound;
                 error.message = "Unknown method";
         }
         
         void CameraMountAdaptor::execute(const std::string& method,
                                          nlohmann::json& params,
                                          nlohmann::json& result,
-                                         RPCError &error)
+                                         rcom::RPCError &error)
         {
                 r_debug("CameraMountAdaptor::execute");
                 
@@ -93,17 +93,17 @@ namespace romi {
                                 execute_wake_up(error);
                                 
                         } else {
-                                error.code = RPCError::kMethodNotFound;
+                                error.code = rcom::RPCError::kMethodNotFound;
                                 error.message = "Unknown method";
                         }
                         
                 } catch (std::exception &e) {
-                        error.code = RPCError::kInternalError;
+                        error.code = rcom::RPCError::kInternalError;
                         error.message = e.what();
                 }
         }
 
-        void CameraMountAdaptor::execute_moveto(nlohmann::json& params, RPCError &error)
+        void CameraMountAdaptor::execute_moveto(nlohmann::json& params, rcom::RPCError &error)
         {
                 r_debug("CameraMountAdaptor::execute_moveto");
                 double x = params[MethodsCameraMount::kXParam];
@@ -120,7 +120,7 @@ namespace romi {
                 }
         }
 
-        void CameraMountAdaptor::execute_get_position(nlohmann::json& result, RPCError &error)
+        void CameraMountAdaptor::execute_get_position(nlohmann::json& result, rcom::RPCError &error)
         {
                 r_debug("CameraMountAdaptor::get_position");
                 v3 xyz;
@@ -140,7 +140,7 @@ namespace romi {
         }
 
         void CameraMountAdaptor::execute_get_range(nlohmann::json& result,
-                                                   RPCError &error)
+                                                   rcom::RPCError &error)
         {
                 r_debug("CameraMountAdaptor::get_range");
                 CNCRange xyz_range;
@@ -157,7 +157,7 @@ namespace romi {
                 }
         }
         
-        void CameraMountAdaptor::execute_homing(RPCError &error)
+        void CameraMountAdaptor::execute_homing(rcom::RPCError &error)
         {
                 r_debug("CameraMountAdaptor::execute_homing");
                 
@@ -167,7 +167,7 @@ namespace romi {
                 }
         }
 
-        void CameraMountAdaptor::execute_pause(RPCError &error)
+        void CameraMountAdaptor::execute_pause(rcom::RPCError &error)
         {
                 r_debug("CameraMountAdaptor::execute_pause");
                 if (!mount_.pause_activity()) {
@@ -177,7 +177,7 @@ namespace romi {
                 }
         }
 
-        void CameraMountAdaptor::execute_continue(RPCError &error)
+        void CameraMountAdaptor::execute_continue(rcom::RPCError &error)
         {
                 r_debug("CameraMountAdaptor::execute_continue");
                 if (!mount_.continue_activity()) {
@@ -187,7 +187,7 @@ namespace romi {
                 }
         }
 
-        void CameraMountAdaptor::execute_reset(RPCError &error)
+        void CameraMountAdaptor::execute_reset(rcom::RPCError &error)
         {
                 r_debug("CameraMountAdaptor::execute_reset");
                 if (!mount_.reset_activity()) {
@@ -197,7 +197,7 @@ namespace romi {
                 }
         }
 
-        void CameraMountAdaptor::execute_power_up(RPCError &error)
+        void CameraMountAdaptor::execute_power_up(rcom::RPCError &error)
         {
                 r_debug("CameraMountAdaptor::power_up");
                 if (!mount_.power_up()) {
@@ -207,7 +207,7 @@ namespace romi {
                 }
         }
         
-        void CameraMountAdaptor::execute_power_down(RPCError &error)
+        void CameraMountAdaptor::execute_power_down(rcom::RPCError &error)
         {
                 r_debug("CameraMountAdaptor::power_down");
                 if (!mount_.power_down()) {
@@ -217,7 +217,7 @@ namespace romi {
                 }
         }
         
-        void CameraMountAdaptor::execute_stand_by(RPCError &error)
+        void CameraMountAdaptor::execute_stand_by(rcom::RPCError &error)
         {
                 r_debug("CameraMountAdaptor::stand_by");
                 if (!mount_.stand_by()) {
@@ -227,7 +227,7 @@ namespace romi {
                 }
         }
         
-        void CameraMountAdaptor::execute_wake_up(RPCError &error)
+        void CameraMountAdaptor::execute_wake_up(rcom::RPCError &error)
         {
                 r_debug("CameraMountAdaptor::wake_up");
                 if (!mount_.wake_up()) {

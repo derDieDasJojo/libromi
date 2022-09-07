@@ -36,17 +36,17 @@ namespace romi {
         void CNCAdaptor::execute(const std::string& method,
                                  nlohmann::json &params,
                                  rcom::MemBuffer& result,
-                                 RPCError &error)
+                                 rcom::RPCError &error)
         {
                 (void) method;
                 (void) params;
                 (void) result;
-                error.code = RPCError::kMethodNotFound;
+                error.code = rcom::RPCError::kMethodNotFound;
                 error.message = "Unknown method";
         }
 
         void CNCAdaptor::execute(const std::string& method, nlohmann::json& params,
-                                 nlohmann::json& result, RPCError &error)
+                                 nlohmann::json& result, rcom::RPCError &error)
         {
                 r_debug("CNCAdaptor::execute");
 
@@ -55,7 +55,7 @@ namespace romi {
                 try {
 
                         if (method.empty()) {
-                                error.code = RPCError::kMethodNotFound;
+                                error.code = rcom::RPCError::kMethodNotFound;
                                 error.message = "No method specified";
                                 
                         } else if (method == MethodsCNC::homing) {
@@ -102,19 +102,19 @@ namespace romi {
                         } else {
                                 r_err("CNCAdaptor::execute: method not found: %s",
                                       method.c_str());
-                                error.code = RPCError::kMethodNotFound;
+                                error.code = rcom::RPCError::kMethodNotFound;
                                 error.message = "Unknown method";
                         }
 
                 } catch (std::exception &e) {
-                        error.code = RPCError::kInternalError;
+                        error.code = rcom::RPCError::kInternalError;
                         error.message = e.what();
                 }
         }
 
         void CNCAdaptor::execute_get_range(nlohmann::json& params,
                                            nlohmann::json& result,
-                                           RPCError &error)
+                                           rcom::RPCError &error)
         {
                 (void) params;
                 r_debug("CNCAdaptor::execute_get_range");
@@ -137,7 +137,7 @@ namespace romi {
 
         void CNCAdaptor::execute_get_position(nlohmann::json& params,
                                               nlohmann::json& result,
-                                              RPCError &error)
+                                              rcom::RPCError &error)
         {
             (void) params;
             r_debug("CNCAdaptor::execute_get_position");
@@ -159,7 +159,7 @@ namespace romi {
 
         void CNCAdaptor::execute_moveto(nlohmann::json& params,
                                         nlohmann::json& result,
-                                        RPCError &error)
+                                        rcom::RPCError &error)
         {
                 (void) result;
                 r_debug("CNCAdaptor::execute_moveto");
@@ -171,7 +171,7 @@ namespace romi {
                     && !params.contains(MethodsCNC::kMoveYParam)
                     && !params.contains(MethodsCNC::kMoveZParam)) {
                         r_err("CNCAdaptor::execute_moveto failed: missing parameters");
-                        error.code = RPCError::kInvalidParams;
+                        error.code = rcom::RPCError::kInvalidParams;
                         error.message = "missing x, y, or z parameters";
                         
                 } else {
@@ -191,7 +191,7 @@ namespace romi {
 
         void CNCAdaptor::execute_spindle(nlohmann::json& params,
                                          nlohmann::json& result,
-                                        RPCError &error)
+                                        rcom::RPCError &error)
         {
                 (void) result;
                 r_debug("CNCAdaptor::execute_spindle");
@@ -206,14 +206,14 @@ namespace romi {
 
                 } catch (nlohmann::json::exception & je) {
                         r_err("CNCAdaptor::execute_spindle failed: %s", je.what());
-                        error.code = RPCError::kInvalidParams;
+                        error.code = rcom::RPCError::kInvalidParams;
                         error.message = je.what();
                 }
         }
 
         void CNCAdaptor::execute_travel(nlohmann::json& params,
                                         nlohmann::json& result,
-                                        RPCError &error)
+                                        rcom::RPCError &error)
         {
                 (void) result;
                 r_debug("CNCAdaptor::execute_travel");
@@ -233,14 +233,14 @@ namespace romi {
 
                 } catch (nlohmann::json::exception& je) {
                         r_err("CNCAdaptor::execute_travel failed: %s", je.what());
-                        error.code = RPCError::kInvalidParams;
+                        error.code = rcom::RPCError::kInvalidParams;
                         error.message = je.what();
                 }
         }
         
         void CNCAdaptor::execute_helix(nlohmann::json& params,
                                        nlohmann::json& result,
-                                       RPCError &error)
+                                       rcom::RPCError &error)
         {
                 (void) result;
                 r_debug("CNCAdaptor::execute_helix");
@@ -259,12 +259,12 @@ namespace romi {
 
                 } catch (nlohmann::json::exception& je) {
                         r_err("CNCAdaptor::execute_helix failed: %s", je.what());
-                        error.code = RPCError::kInvalidParams;
+                        error.code = rcom::RPCError::kInvalidParams;
                         error.message = je.what();
                 }
         }
         
-        void CNCAdaptor::execute_homing(RPCError &error)
+        void CNCAdaptor::execute_homing(rcom::RPCError &error)
         {
                 r_debug("CNCAdaptor::execute_homing");
                 
@@ -274,7 +274,7 @@ namespace romi {
                 }
         }
 
-        void CNCAdaptor::execute_pause(RPCError &error)
+        void CNCAdaptor::execute_pause(rcom::RPCError &error)
         {
                 r_debug("CNCAdaptor::execute_pause");
                 if (!cnc_.pause_activity()) {
@@ -283,7 +283,7 @@ namespace romi {
                 }
         }
 
-        void CNCAdaptor::execute_continue(RPCError &error)
+        void CNCAdaptor::execute_continue(rcom::RPCError &error)
         {
                 r_debug("CNCAdaptor::execute_continue");
                 if (!cnc_.continue_activity()) {
@@ -292,7 +292,7 @@ namespace romi {
                 }
         }
 
-        void CNCAdaptor::execute_reset(RPCError &error)
+        void CNCAdaptor::execute_reset(rcom::RPCError &error)
         {
                 r_debug("CNCAdaptor::execute_reset");
                 if (!cnc_.reset_activity()) {
@@ -301,7 +301,7 @@ namespace romi {
                 }
         }
 
-        void CNCAdaptor::execute_power_up(RPCError &error)
+        void CNCAdaptor::execute_power_up(rcom::RPCError &error)
         {
                 r_debug("CNCAdaptor::power_up");
                 if (!cnc_.power_up()) {
@@ -310,7 +310,7 @@ namespace romi {
                 }
         }
         
-        void CNCAdaptor::execute_power_down(RPCError &error)
+        void CNCAdaptor::execute_power_down(rcom::RPCError &error)
         {
                 r_debug("CNCAdaptor::power_down");
                 if (!cnc_.power_down()) {
@@ -319,7 +319,7 @@ namespace romi {
                 }
         }
         
-        void CNCAdaptor::execute_stand_by(RPCError &error)
+        void CNCAdaptor::execute_stand_by(rcom::RPCError &error)
         {
                 r_debug("CNCAdaptor::stand_by");
                 if (!cnc_.stand_by()) {
@@ -328,7 +328,7 @@ namespace romi {
                 }
         }
         
-        void CNCAdaptor::execute_wake_up(RPCError &error)
+        void CNCAdaptor::execute_wake_up(rcom::RPCError &error)
         {
                 r_debug("CNCAdaptor::wake_up");
                 if (!cnc_.wake_up()) {

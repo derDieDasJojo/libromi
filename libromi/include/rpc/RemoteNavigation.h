@@ -21,23 +21,23 @@
   <http://www.gnu.org/licenses/>.
 
  */
-#ifndef __ROMI_REMOTE_NAVIGATION_H
-#define __ROMI_REMOTE_NAVIGATION_H
+#ifndef __ROMI_REMOTENAVIGATION_H
+#define __ROMI_REMOTENAVIGATION_H
 
 #include "api/INavigation.h"
-#include "rpc/RemoteStub.h"
+#include <rcom/RemoteStub.h>
 
 namespace romi {
         
-        class RemoteNavigation : public INavigation, public RemoteStub
+        class RemoteNavigation : public INavigation, public rcom::RemoteStub
         {
         public:
                 static constexpr const char *ClassName = "remote-navigation";
                 
         public:
                 
-                explicit RemoteNavigation(std::unique_ptr<IRPCClient>& client)
-                        : RemoteStub(client) {}
+                explicit RemoteNavigation(std::unique_ptr<rcom::IRPCClient>& client,
+                                          const std::shared_ptr<rcom::ILog>& log);
                 ~RemoteNavigation() override = default;
 
                 bool moveat(double left, double right) override;

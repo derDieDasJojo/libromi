@@ -21,25 +21,25 @@
   <http://www.gnu.org/licenses/>.
 
  */
-#ifndef __ROMI_NAVIGATION_ADAPTOR_H
-#define __ROMI_NAVIGATION_ADAPTOR_H
+#ifndef __ROMI_NAVIGATIONADAPTOR_H
+#define __ROMI_NAVIGATIONADAPTOR_H
 
-#include "rpc/IRPCHandler.h"
+#include <rcom/IRPCHandler.h>
 #include "api/INavigation.h"
 
 namespace romi {
         
-        class NavigationAdaptor : public IRPCHandler
+        class NavigationAdaptor : public rcom::IRPCHandler
         {
         protected:
                 INavigation &navigation_;
                 
-                void execute_moveat(nlohmann::json& params, RPCError &error);
-                void execute_move(nlohmann::json& params, RPCError &error);
-                void execute_stop(RPCError &error);
-                void execute_pause(RPCError &error);
-                void execute_continue(RPCError &error);
-                void execute_reset(RPCError &error);
+                void execute_moveat(nlohmann::json& params, rcom::RPCError &error);
+                void execute_move(nlohmann::json& params, rcom::RPCError &error);
+                void execute_stop(rcom::RPCError &error);
+                void execute_pause(rcom::RPCError &error);
+                void execute_continue(rcom::RPCError &error);
+                void execute_reset(rcom::RPCError &error);
                 
         public:
                 explicit NavigationAdaptor(INavigation &navigation);
@@ -48,12 +48,12 @@ namespace romi {
                 void execute(const std::string& method,
                              nlohmann::json& params,
                              nlohmann::json& result,
-                             RPCError &error) override;
+                             rcom::RPCError &error) override;
                 void execute(const std::string& method,
                              nlohmann::json &params,
                              rcom::MemBuffer& result,
-                             RPCError &status) override;
+                             rcom::RPCError &status) override;
         };
 }
 
-#endif // __ROMI_NAVIGATION_ADAPTOR_H
+#endif // __ROMI_NAVIGATIONADAPTOR_H

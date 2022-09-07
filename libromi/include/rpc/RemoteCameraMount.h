@@ -25,16 +25,17 @@
 #define _ROMI_REMOTECAMERAMOUNT_H_
 
 #include "hal/ICameraMount.h"
-#include "rpc/RemoteStub.h"
+#include <rcom/RemoteStub.h>
 
 namespace romi {
         
-        class RemoteCameraMount : public ICameraMount, public RemoteStub
+        class RemoteCameraMount : public ICameraMount, public rcom::RemoteStub
         {
         public:
                 static constexpr const char *ClassName = "remote-gimbal";
                 
-                explicit RemoteCameraMount(std::unique_ptr<IRPCClient>& client);
+                explicit RemoteCameraMount(std::unique_ptr<rcom::IRPCClient>& client,
+                                           const std::shared_ptr<rcom::ILog>& log);
                 ~RemoteCameraMount() override = default;
 
                 bool homing() override; 

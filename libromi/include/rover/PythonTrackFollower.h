@@ -22,11 +22,11 @@
 
  */
 
-#ifndef __ROMI_PYTHON_TRACK_FOLLOWER_H
-#define __ROMI_PYTHON_TRACK_FOLLOWER_H
+#ifndef __ROMI_PYTHONTRACKFOLLOWER_H
+#define __ROMI_PYTHONTRACKFOLLOWER_H
 
 #include <string> 
-#include <rpc/RcomClient.h>
+#include <rcom/IRPCClient.h>
 #include "api/ICamera.h"
 #include "session/ISession.h"
 #include "rover/ITrackFollower.h"
@@ -40,7 +40,7 @@ namespace romi {
                 static constexpr const char *kImageName = "navigation-image";
 
                 ICamera& camera_;
-                std::unique_ptr<romi::IRPCClient> rpc_;
+                std::unique_ptr<rcom::IRPCClient> rpc_;
                 std::string function_name_;
                 double pixels_per_meter_;
                 ISession& session_;
@@ -58,7 +58,7 @@ namespace romi {
                 
         public:
                 PythonTrackFollower(ICamera& camera,
-                                    std::unique_ptr<romi::IRPCClient>& rpc,
+                                    std::unique_ptr<rcom::IRPCClient>& rpc,
                                     const std::string& function_name,
                                     double pixels_per_meter,
                                     ISession& session);
@@ -71,4 +71,4 @@ namespace romi {
         };
 }
 
-#endif // __ROMI_PYTHON_TRACK_FOLLOWER_H
+#endif // __ROMI_PYTHONTRACKFOLLOWER_H

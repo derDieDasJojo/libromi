@@ -1,8 +1,9 @@
 #include "gtest/gtest.h"
 #include "gmock/gmock.h"
 
+#include "RPCClient.mock.h"
+
 #include "../mock/mock_camera.h"
-#include "../mock/mock_rpcclient.h"
 #include "../mock/mock_session.h"
 #include "rover/PythonTrackFollower.h"
 
@@ -21,7 +22,7 @@ protected:
                 : camera_(),
                   rpc_(),
                   session_() {
-                std::unique_ptr<romi::IRPCClient> rpc_;
+                std::unique_ptr<rcom::IRPCClient> rpc_;
 
 	}
 
@@ -38,7 +39,7 @@ TEST_F(pythontrackfollower_tests, constructor_with_good_values_succeeds)
 {
         // Arrange
         std::unique_ptr<MockRPCClient> mock_rpc = std::make_unique<MockRPCClient>();
-        std::unique_ptr<romi::IRPCClient> rpc = std::move(mock_rpc);
+        std::unique_ptr<rcom::IRPCClient> rpc = std::move(mock_rpc);
 
         // Act
         PythonTrackFollower follower(camera_, rpc, "toto", 1.0, session_);
@@ -60,7 +61,7 @@ TEST_F(pythontrackfollower_tests, update_error_estimate_fails_when_camera_fails)
         EXPECT_CALL(camera_, grab_jpeg)
                 .WillOnce(throw_grab_jpeg_exception());
 
-        std::unique_ptr<romi::IRPCClient> rpc = std::move(mock_rpc);
+        std::unique_ptr<rcom::IRPCClient> rpc = std::move(mock_rpc);
         
         PythonTrackFollower follower(camera_, rpc, "toto", 1.0, session_);
 

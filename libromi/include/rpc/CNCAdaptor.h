@@ -21,39 +21,39 @@
   <http://www.gnu.org/licenses/>.
 
  */
-#ifndef __ROMI_CNC_ADAPTER_H
-#define __ROMI_CNC_ADAPTER_H
+#ifndef __ROMI_CNCADAPTER_H
+#define __ROMI_CNCADAPTER_H
 
-#include "rpc/IRPCHandler.h"
+#include <rcom/IRPCHandler.h>
 #include "api/ICNC.h"
 
 namespace romi {
         
-        class CNCAdaptor : public IRPCHandler
+        class CNCAdaptor : public rcom::IRPCHandler
         {
         protected:
                 ICNC &cnc_;
                 
                 void execute_get_range(nlohmann::json& params, nlohmann::json& result,
-                                       RPCError &error);
+                                       rcom::RPCError &error);
                 void execute_get_position(nlohmann::json& params, nlohmann::json& result,
-                                          RPCError &error);
+                                          rcom::RPCError &error);
                 void execute_moveto(nlohmann::json& params, nlohmann::json& result,
-                                    RPCError &error);
+                                    rcom::RPCError &error);
                 void execute_spindle(nlohmann::json& params, nlohmann::json& result,
-                                     RPCError &error);
+                                     rcom::RPCError &error);
                 void execute_travel(nlohmann::json& params, nlohmann::json& result,
-                                    RPCError &error);
+                                    rcom::RPCError &error);
                 void execute_helix(nlohmann::json&, nlohmann::json& result,
-                                   RPCError &error);
-                void execute_homing(RPCError &error);
-                void execute_pause(RPCError &error);
-                void execute_continue(RPCError &error);
-                void execute_reset(RPCError &error);
-                void execute_power_up(RPCError &error);
-                void execute_power_down(RPCError &error);
-                void execute_stand_by(RPCError &error);
-                void execute_wake_up(RPCError &error);
+                                   rcom::RPCError &error);
+                void execute_homing(rcom::RPCError &error);
+                void execute_pause(rcom::RPCError &error);
+                void execute_continue(rcom::RPCError &error);
+                void execute_reset(rcom::RPCError &error);
+                void execute_power_up(rcom::RPCError &error);
+                void execute_power_down(rcom::RPCError &error);
+                void execute_stand_by(rcom::RPCError &error);
+                void execute_wake_up(rcom::RPCError &error);
 
 
         public:
@@ -63,12 +63,12 @@ namespace romi {
                 void execute(const std::string& method,
                              nlohmann::json& params,
                              nlohmann::json& result,
-                             RPCError &error) override;
+                             rcom::RPCError &error) override;
                 void execute(const std::string& method,
                              nlohmann::json &params,
                              rcom::MemBuffer& result,
-                             RPCError &status) override;
+                             rcom::RPCError &status) override;
         };
 }
 
-#endif // __ROMI_CNC_ADAPTER_H
+#endif // __ROMI_CNCADAPTER_H

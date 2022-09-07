@@ -233,7 +233,6 @@ set(SRCS_SCRIPT
         src/tests_main.cpp
         src/scriptlist_tests.cpp
         src/scripthublistener_tests.cpp
-        src/scripthub_tests.cpp
         support/test_utility.cpp
   )
 
@@ -340,21 +339,6 @@ add_test(
 
 ##
   
-set(SRCS_RCOMMESSAGEHANDLER 
-        src/tests_main.cpp
-        src/rcommessagehandler_tests.cpp
-  )
-
-add_executable(libromi_unit_tests_rcommessagehandler ${SRCS_RCOMMESSAGEHANDLER})
-target_link_libraries(libromi_unit_tests_rcommessagehandler romi romiserial rcom rcommocks gtest gmock)
-
-add_test(
-    NAME libromi_unit_tests_rcommessagehandler
-    COMMAND libromi_unit_tests_rcommessagehandler
-)
-
-##
-  
 set(SRCS_NAVIGATIONCONTROL 
         src/tests_main.cpp
         src/l1_navigationcontroller_tests.cpp
@@ -416,7 +400,6 @@ if(BUILD_COVERAGE)
                             libromi_unit_tests_steppersettings
                             libromi_unit_tests_oquam
                             libromi_unit_tests_brushmotordriver
-                            libromi_unit_tests_rcommessagehandler
                             libromi_unit_tests_navigation_control
                             libromi_unit_tests_camerainfo
     )

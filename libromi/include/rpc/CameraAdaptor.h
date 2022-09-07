@@ -21,29 +21,29 @@
   <http://www.gnu.org/licenses/>.
 
  */
-#ifndef __ROMI_CAMERA_HANDLER_H
-#define __ROMI_CAMERA_HANDLER_H
+#ifndef __ROMI_CAMERAHANDLER_H
+#define __ROMI_CAMERAHANDLER_H
 
-#include "rpc/IRPCHandler.h"
+#include <rcom/IRPCHandler.h>
 #include "api/ICamera.h"
 
 namespace romi {
 
-        class CameraAdaptor : public IRPCHandler
+        class CameraAdaptor : public rcom::IRPCHandler
         {
         protected:
                 ICamera& camera_;
 
-                void execute_power_up(RPCError& error);
-                void execute_power_down(RPCError& error);
-                void execute_stand_by(RPCError& error);
-                void execute_wake_up(RPCError& error);
+                void execute_power_up(rcom::RPCError& error);
+                void execute_power_down(rcom::RPCError& error);
+                void execute_stand_by(rcom::RPCError& error);
+                void execute_wake_up(rcom::RPCError& error);
                 void execute_set_value(nlohmann::json& params,
                                        nlohmann::json& result,
-                                       RPCError& error);
+                                       rcom::RPCError& error);
                 void execute_select_option(nlohmann::json& params,
                                            nlohmann::json& result,
-                                           RPCError& error);
+                                           rcom::RPCError& error);
                 
         public:
                 CameraAdaptor(ICamera& camera);
@@ -52,12 +52,12 @@ namespace romi {
                 void execute(const std::string& method,
                              nlohmann::json& params,
                              nlohmann::json& result,
-                             RPCError& status) override;
+                             rcom::RPCError& status) override;
                 void execute(const std::string& method,
-                             nlohmann::json &params,
+                             nlohmann::json& params,
                              rcom::MemBuffer& result,
-                             RPCError &status) override;
+                             rcom::RPCError &status) override;
         };
 }
 
-#endif // __ROMI_CAMERA_HANDLER_H
+#endif // __ROMI_CAMERAHANDLER_H

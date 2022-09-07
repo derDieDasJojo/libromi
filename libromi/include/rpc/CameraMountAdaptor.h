@@ -26,29 +26,29 @@
 #define __ROMI_CAMERAMOUNTADAPTOR_H
 
 #include <string>
-#include "rpc/IRPCHandler.h"
+#include <rcom/IRPCHandler.h>
 #include "hal/ICameraMount.h"
 
 namespace romi {
 
-        class CameraMountAdaptor : public IRPCHandler
+        class CameraMountAdaptor : public rcom::IRPCHandler
         {
         protected:
                 ICameraMount& mount_;
                 
-                void execute_moveto(nlohmann::json& params, RPCError &error);
-                void execute_get_position(nlohmann::json& result, RPCError &error);
-                void execute_get_range(nlohmann::json& result, RPCError &error);
-                void execute_homing(RPCError &error);
+                void execute_moveto(nlohmann::json& params, rcom::RPCError &error);
+                void execute_get_position(nlohmann::json& result, rcom::RPCError &error);
+                void execute_get_range(nlohmann::json& result, rcom::RPCError &error);
+                void execute_homing(rcom::RPCError &error);
                 
-                void execute_stop(RPCError &error);
-                void execute_pause(RPCError &error);
-                void execute_continue(RPCError &error);
-                void execute_reset(RPCError &error);
-                void execute_power_up(RPCError &error);
-                void execute_power_down(RPCError &error);
-                void execute_stand_by(RPCError &error);
-                void execute_wake_up(RPCError &error);
+                void execute_stop(rcom::RPCError &error);
+                void execute_pause(rcom::RPCError &error);
+                void execute_continue(rcom::RPCError &error);
+                void execute_reset(rcom::RPCError &error);
+                void execute_power_up(rcom::RPCError &error);
+                void execute_power_down(rcom::RPCError &error);
+                void execute_stand_by(rcom::RPCError &error);
+                void execute_wake_up(rcom::RPCError &error);
 
         public:
                 explicit CameraMountAdaptor(ICameraMount& client);
@@ -57,11 +57,11 @@ namespace romi {
                 void execute(const std::string& method,
                              nlohmann::json& params,
                              nlohmann::json& result,
-                             RPCError &error) override;
+                             rcom::RPCError &error) override;
                 void execute(const std::string& method,
                              nlohmann::json &params,
                              rcom::MemBuffer& result,
-                             RPCError &status) override;
+                             rcom::RPCError &status) override;
         };
 }
 

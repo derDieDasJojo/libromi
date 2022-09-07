@@ -31,12 +31,12 @@ TEST_F(cncadaptor_tests, retuns_error_on_unknown_method)
 {
         nlohmann::json params;
         nlohmann::json result;
-        RPCError error;
+        rcom::RPCError error;
 
         CNCAdaptor adaptor(cnc);
         adaptor.execute("foo", params, result, error);
 
-        ASSERT_EQ(error.code, RPCError::kMethodNotFound);
+        ASSERT_EQ(error.code, rcom::RPCError::kMethodNotFound);
         ASSERT_NE(error.message.length(), 0);
 }
 
@@ -44,7 +44,7 @@ TEST_F(cncadaptor_tests, get_range_retuns_no_error_on_success)
 {
         nlohmann::json params;
         nlohmann::json result;
-        RPCError error;
+        rcom::RPCError error;
         
         EXPECT_CALL(cnc, get_range(_))
                 .WillOnce(Return(true));
@@ -60,7 +60,7 @@ TEST_F(cncadaptor_tests, get_range_sets_error_on_failure)
 {
         nlohmann::json params;
         nlohmann::json result;
-        RPCError error;
+        rcom::RPCError error;
         
         EXPECT_CALL(cnc, get_range(_))
                 .WillOnce(Return(false));
@@ -76,7 +76,7 @@ TEST_F(cncadaptor_tests, homing_retuns_no_error_on_success)
 {
         nlohmann::json params;
         nlohmann::json result;
-        RPCError error;
+        rcom::RPCError error;
         
         EXPECT_CALL(cnc, homing())
                 .WillOnce(Return(true));
@@ -92,7 +92,7 @@ TEST_F(cncadaptor_tests, homing_sets_error_on_failure)
 {
         nlohmann::json params;
         nlohmann::json result;
-        RPCError error;
+        rcom::RPCError error;
         
         EXPECT_CALL(cnc, homing())
                 .WillOnce(Return(false));
@@ -108,7 +108,7 @@ TEST_F(cncadaptor_tests, stop_retuns_no_error_on_success)
 {
         nlohmann::json params;
         nlohmann::json result;
-        RPCError error;
+        rcom::RPCError error;
         
         EXPECT_CALL(cnc, pause_activity())
                 .WillOnce(Return(true));
@@ -124,7 +124,7 @@ TEST_F(cncadaptor_tests, stop_sets_error_on_failure)
 {
         nlohmann::json params;
         nlohmann::json result;
-        RPCError error;
+        rcom::RPCError error;
         
         EXPECT_CALL(cnc, pause_activity())
                 .WillOnce(Return(false));
@@ -140,7 +140,7 @@ TEST_F(cncadaptor_tests, continue_retuns_no_error_on_success)
 {
         nlohmann::json params;
         nlohmann::json result;
-        RPCError error;
+        rcom::RPCError error;
         
         EXPECT_CALL(cnc, continue_activity())
                 .WillOnce(Return(true));
@@ -156,7 +156,7 @@ TEST_F(cncadaptor_tests, continue_sets_error_on_failure)
 {
         nlohmann::json params;
         nlohmann::json result;
-        RPCError error;
+        rcom::RPCError error;
         
         EXPECT_CALL(cnc, continue_activity())
                 .WillOnce(Return(false));
@@ -172,7 +172,7 @@ TEST_F(cncadaptor_tests, reset_retuns_no_error_on_success)
 {
         nlohmann::json params;
         nlohmann::json result;
-        RPCError error;
+        rcom::RPCError error;
         
         EXPECT_CALL(cnc, reset_activity())
                 .WillOnce(Return(true));
@@ -188,7 +188,7 @@ TEST_F(cncadaptor_tests, reset_sets_error_on_failure)
 {
         nlohmann::json params;
         nlohmann::json result;
-        RPCError error;
+        rcom::RPCError error;
         
         EXPECT_CALL(cnc, reset_activity())
                 .WillOnce(Return(false));
@@ -207,7 +207,7 @@ TEST_F(cncadaptor_tests, spindle_retuns_no_error_on_success)
         };
 
         nlohmann::json result;
-        RPCError error;
+        rcom::RPCError error;
         
         EXPECT_CALL(cnc, spindle(0))
                 .WillOnce(Return(true));
@@ -225,7 +225,7 @@ TEST_F(cncadaptor_tests, spindle_sets_error_on_failure)
             {"speed", 0}
     };
         nlohmann::json result;
-        RPCError error;
+        rcom::RPCError error;
         
         EXPECT_CALL(cnc, spindle(0))
                 .WillOnce(Return(false));
@@ -241,12 +241,12 @@ TEST_F(cncadaptor_tests, spindle_sets_error_on_missing_param)
 {
         nlohmann::json params{{}};
         nlohmann::json result;
-        RPCError error;
+        rcom::RPCError error;
 
         CNCAdaptor adaptor(cnc);
         adaptor.execute(MethodsCNC::spindle, params, result, error);
 
-        ASSERT_EQ(error.code, RPCError::kInvalidParams);
+        ASSERT_EQ(error.code, rcom::RPCError::kInvalidParams);
         ASSERT_NE(error.message.length(), 0);
 }
 
@@ -257,7 +257,7 @@ TEST_F(cncadaptor_tests, moveto_retuns_no_error_on_success)
         };
 
         nlohmann::json result;
-        RPCError error;
+        rcom::RPCError error;
         
         EXPECT_CALL(cnc, moveto(1,2,3,4))
                 .WillOnce(Return(true));
@@ -275,7 +275,7 @@ TEST_F(cncadaptor_tests, moveto_sets_error_on_failure)
                 {"x",1}, {"y", 2}, {"z", 3}, {"speed", 4}
         };
         nlohmann::json result;
-        RPCError error;
+        rcom::RPCError error;
         
         EXPECT_CALL(cnc, moveto(1,2,3,4))
                 .WillOnce(Return(false));
@@ -291,12 +291,12 @@ TEST_F(cncadaptor_tests, moveto_sets_error_on_missing_params)
 {
         nlohmann::json params; // = nlohmann::json::parse("{}");
         nlohmann::json result;
-        RPCError error;
+        rcom::RPCError error;
 
         CNCAdaptor adaptor(cnc);
         adaptor.execute(MethodsCNC::moveto, params, result, error);
 
-        ASSERT_EQ(error.code, RPCError::kInvalidParams);
+        ASSERT_EQ(error.code, rcom::RPCError::kInvalidParams);
         ASSERT_NE(error.message.length(), 0);
 }
 
@@ -304,7 +304,7 @@ TEST_F(cncadaptor_tests, travel_retuns_no_error_on_success)
 {
         nlohmann::json params = nlohmann::json::parse(R"({"path": [[1,2,3]]})");
         nlohmann::json result;
-        RPCError error;
+        rcom::RPCError error;
         
         EXPECT_CALL(cnc, travel(_,_))
                 .WillOnce(Return(true));
@@ -320,7 +320,7 @@ TEST_F(cncadaptor_tests, travel_sets_error_on_failure)
 {
         nlohmann::json params = nlohmann::json::parse(R"({"path": []})");
         nlohmann::json result;
-        RPCError error;
+        rcom::RPCError error;
         
         EXPECT_CALL(cnc, travel(_,_))
                 .WillOnce(Return(false));
@@ -336,12 +336,12 @@ TEST_F(cncadaptor_tests, travel_sets_error_on_missing_params_1)
 {
         nlohmann::json params;
         nlohmann::json result;
-        RPCError error;
+        rcom::RPCError error;
 
         CNCAdaptor adaptor(cnc);
         adaptor.execute(MethodsCNC::travel, params, result, error);
 
-        ASSERT_EQ(error.code, RPCError::kInvalidParams);
+        ASSERT_EQ(error.code, rcom::RPCError::kInvalidParams);
         ASSERT_NE(error.message.length(), 0);
 }
 
@@ -349,11 +349,11 @@ TEST_F(cncadaptor_tests, travel_sets_error_on_missing_params_2)
 {
         nlohmann::json params = nlohmann::json::parse(R"({"path": [[0,1]]})");
         nlohmann::json result;
-        RPCError error;
+        rcom::RPCError error;
 
         CNCAdaptor adaptor(cnc);
         adaptor.execute(MethodsCNC::travel, params, result, error);
 
-        ASSERT_EQ(error.code, RPCError::kInvalidParams);
+        ASSERT_EQ(error.code, rcom::RPCError::kInvalidParams);
         ASSERT_NE(error.message.length(), 0);
 }

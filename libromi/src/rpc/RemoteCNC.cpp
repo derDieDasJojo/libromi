@@ -27,6 +27,12 @@
 
 namespace romi {
 
+        RemoteCNC::RemoteCNC(std::unique_ptr<rcom::IRPCClient>& rpc_client,
+                             const std::shared_ptr<rcom::ILog>& log)
+                : RemoteStub(rpc_client, log)
+        {
+        }
+
         bool RemoteCNC::get_range(CNCRange &range)
         {
                 r_debug("RemoteCNC::get_range");

@@ -21,20 +21,21 @@
   <http://www.gnu.org/licenses/>.
 
  */
-#ifndef _ROMI_REMOTE_WEEDER_H_
-#define _ROMI_REMOTE_WEEDER_H_
+#ifndef _ROMI_REMOTEWEEDER_H_
+#define _ROMI_REMOTEWEEDER_H_
 
 #include "api/IWeeder.h"
-#include "rpc/RemoteStub.h"
+#include <rcom/RemoteStub.h>
 
 namespace romi {
         
-        class RemoteWeeder : public IWeeder, public RemoteStub
+        class RemoteWeeder : public IWeeder, public rcom::RemoteStub
         {
         public:
                 static constexpr const char *ClassName = "remote-weeder";
                 
-                explicit RemoteWeeder(std::unique_ptr<IRPCClient>& client);
+                explicit RemoteWeeder(std::unique_ptr<rcom::IRPCClient>& client,
+                                      const std::shared_ptr<rcom::ILog>& log);
                 ~RemoteWeeder() override = default;
 
                 bool hoe() override;
@@ -51,4 +52,4 @@ namespace romi {
         };
 }
 
-#endif // _ROMI_REMOTE_WEEDER_H_
+#endif // _ROMI_REMOTEWEEDER_H_

@@ -30,8 +30,9 @@
 
 namespace romi {
         
-        RemoteCamera::RemoteCamera(std::unique_ptr<IRPCClient>& client)
-                : RemoteStub(client), output_()
+        RemoteCamera::RemoteCamera(std::unique_ptr<rcom::IRPCClient>& client,
+                                   const std::shared_ptr<rcom::ILog>& log)
+                : RemoteStub(client, log), output_()
         {
         }
         
@@ -65,7 +66,7 @@ namespace romi {
         rcom::MemBuffer& RemoteCamera::grab_jpeg()
         {
                 nlohmann::json params;
-                RPCError error;
+                rcom::RPCError error;
 
                 output_.clear();
                 

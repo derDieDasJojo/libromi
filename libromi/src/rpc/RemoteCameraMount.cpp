@@ -30,8 +30,9 @@
 
 namespace romi {
         
-        RemoteCameraMount::RemoteCameraMount(std::unique_ptr<IRPCClient> &client)
-                : RemoteStub(client)
+        RemoteCameraMount::RemoteCameraMount(std::unique_ptr<rcom::IRPCClient> &client,
+                                             const std::shared_ptr<rcom::ILog>& log)
+                : RemoteStub(client, log)
         {
         }
         

@@ -12,7 +12,8 @@ namespace romi {
 
         }
 
-        void ScriptHubListener::onmessage(rcom::IWebSocket &link,
+        void ScriptHubListener::onmessage(rcom::IWebSocketServer&,
+                                          rcom::IWebSocket &link,
                                           rcom::MemBuffer &message,
                                           rcom::MessageType type)
         {
@@ -21,7 +22,8 @@ namespace romi {
                         auto reply = handle_message(message);
                         link.send(reply, rcom::kTextMessage);
                 } else {
-                        throw std::runtime_error("ScriptHubListener::onmessage - invalid binary message received.");
+                        throw std::runtime_error("ScriptHubListener::onmessage: "
+                                                 "invalid binary message received.");
                 }
         }
 
@@ -37,7 +39,8 @@ namespace romi {
                 } else if (request == "execute") {
                         response = handle_execute_remote_request(json_msg);
                 } else {
-                        response.printf(R"({"success":false, "message":"%s"})", "unknown request type");
+                        response.printf(R"({"success":false, "message":"%s"})",
+                                        "unknown request type");
                 }
                 return response;
         }
@@ -46,7 +49,7 @@ namespace romi {
         {
                 rcom::MemBuffer response;
                 auto json_scripts = rover_.script_engine.scriptList().json_scripts();
-                response.append_string(json_scripts.c_str());
+                response.append(json_scripts);
                 return response;
         }
 
@@ -64,12 +67,13 @@ namespace romi {
                         reply = handle_execute_remote_state_change(id);
                 }
 
-                response.append_string(reply.c_str());
+                response.append(reply);
                 return response;
         }
 
         std::string
-        ScriptHubListener::handle_execute_remote_script(const romi::ScriptList &scriptlist, long index)
+        ScriptHubListener::handle_execute_remote_script(const romi::ScriptList &scriptlist,
+                                                        long index)
         {
                 rover_.remote_state_input_device_.set_next_script_index(index);
                 rover_.remote_state_input_device_.set_next_event(romi::event_run_script_remote_request);

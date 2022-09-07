@@ -22,7 +22,6 @@
 
  */
 #include <thread>
-#include <rcom/WebSocketServerFactory.h>
 #include "util/ClockAccessor.h"
 #include "api/DataLog.h"
 #include "util/Logger.h"
@@ -71,9 +70,7 @@ namespace romi {
         void DataLog::try_create_hub()
         {
                 try {
-                        auto webserver_socket_factory = rcom::WebSocketServerFactory::create(); // REFACTOR IOC.
-                        std::shared_ptr<rcom::ISocketFactory> socket_factory = std::make_shared<rcom::SocketFactory>(); // REFACTOR
-                        hub_ = std::make_unique<rcom::MessageHub>("datalog", socket_factory, webserver_socket_factory);
+                        hub_ = rcom::MessageHub::create("datalog");
 
                 } catch (const std::runtime_error& re) {
                         r_err("Failed to create the message hub: %s", re.what());

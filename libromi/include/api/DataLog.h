@@ -64,7 +64,7 @@ namespace romi {
                 FILE *fp_;
                 std::unique_ptr<std::thread> thread_;
                 std::atomic<bool> quitting_;
-                std::unique_ptr<rcom::MessageHub> hub_;
+                std::unique_ptr<rcom::IMessageHub> hub_;
                 rcom::MemBuffer message_;
                 double last_handle_events_;
                 

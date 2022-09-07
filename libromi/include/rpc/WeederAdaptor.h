@@ -26,25 +26,25 @@
 #define __ROMI_WEEDER_ADAPTOR_H
 
 #include <string>
-#include "rpc/IRPCHandler.h"
+#include <rcom/IRPCHandler.h>
 #include "api/IWeeder.h"
 
 namespace romi {
 
-        class WeederAdaptor : public IRPCHandler
+        class WeederAdaptor : public rcom::IRPCHandler
         {
         protected:
                 IWeeder& _weeder;
                 
-                void execute_hoe(RPCError &error);
-                void execute_stop(RPCError &error);
-                void execute_pause(RPCError &error);
-                void execute_continue(RPCError &error);
-                void execute_reset(RPCError &error);
-                void execute_power_up(RPCError &error);
-                void execute_power_down(RPCError &error);
-                void execute_stand_by(RPCError &error);
-                void execute_wake_up(RPCError &error);
+                void execute_hoe(rcom::RPCError &error);
+                void execute_stop(rcom::RPCError &error);
+                void execute_pause(rcom::RPCError &error);
+                void execute_continue(rcom::RPCError &error);
+                void execute_reset(rcom::RPCError &error);
+                void execute_power_up(rcom::RPCError &error);
+                void execute_power_down(rcom::RPCError &error);
+                void execute_stand_by(rcom::RPCError &error);
+                void execute_wake_up(rcom::RPCError &error);
 
         public:
                 explicit WeederAdaptor(IWeeder& weeder);
@@ -53,11 +53,11 @@ namespace romi {
                 void execute(const std::string& method,
                              nlohmann::json& params,
                              nlohmann::json& result,
-                             RPCError &error) override;
+                             rcom::RPCError &error) override;
                 void execute(const std::string& method,
                              nlohmann::json &params,
                              rcom::MemBuffer& result,
-                             RPCError &status) override;
+                             rcom::RPCError &status) override;
         };
 }
 

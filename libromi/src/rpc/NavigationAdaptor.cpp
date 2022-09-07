@@ -35,17 +35,17 @@ namespace romi {
         void NavigationAdaptor::execute(const std::string& method,
                                         nlohmann::json &params,
                                         rcom::MemBuffer& result,
-                                        RPCError &error)
+                                        rcom::RPCError &error)
         {
                 (void) method;
                 (void) params;
                 (void) result;
-                error.code = RPCError::kMethodNotFound;
+                error.code = rcom::RPCError::kMethodNotFound;
                 error.message = "NavigationAdaptor::execute(binary): Unknown method";
         }
         
         void NavigationAdaptor::execute(const std::string& method, nlohmann::json &params,
-                                        nlohmann::json &result, RPCError &error)
+                                        nlohmann::json &result, rcom::RPCError &error)
         {
                 r_debug("NavigationAdaptor::execute(text): %s", method.c_str());
                 (void) result;
@@ -72,19 +72,19 @@ namespace romi {
                                 execute_reset(error);
                                 
                         } else {
-                                error.code = RPCError::kMethodNotFound;
+                                error.code = rcom::RPCError::kMethodNotFound;
                                 error.message = "Unknown command";
                         }
                         
                 } catch (std::exception &e) {
                         r_err("NavigationAdaptor::execute: caught exception: %s",
                               e.what());
-                        error.code = RPCError::kInternalError;
+                        error.code = rcom::RPCError::kInternalError;
                         error.message = e.what();
                 }
         }
 
-        void NavigationAdaptor::execute_moveat(nlohmann::json &params, RPCError &error)
+        void NavigationAdaptor::execute_moveat(nlohmann::json &params, rcom::RPCError &error)
         {
                 r_debug("NavigationAdaptor::execute_moveat");
                 try {
@@ -99,12 +99,12 @@ namespace romi {
                 } catch (nlohmann::json::exception& je) {
                         r_debug("NavigationAdaptor::execute_moveat: %s",
                                 je.what());
-                        error.code = RPCError::kParseError;
+                        error.code = rcom::RPCError::kParseError;
                         error.message = "Invalid json";
                 }
         }
 
-        void NavigationAdaptor::execute_move(nlohmann::json &params, RPCError &error)
+        void NavigationAdaptor::execute_move(nlohmann::json &params, rcom::RPCError &error)
         {
                 r_debug("NavigationAdaptor::execute_move");
                 
@@ -119,12 +119,12 @@ namespace romi {
                         
                 } catch (nlohmann::json::exception& je) {
                         r_debug("NavigationAdaptor::execute_move: %s", je.what());
-                        error.code = RPCError::kParseError;
+                        error.code = rcom::RPCError::kParseError;
                         error.message = "Invalid json";
                 }
         }
 
-        void NavigationAdaptor::execute_stop(RPCError &error)
+        void NavigationAdaptor::execute_stop(rcom::RPCError &error)
         {
                 r_debug("NavigationAdaptor::execute_stop");
                 
@@ -134,7 +134,7 @@ namespace romi {
                 }
         }
 
-        void NavigationAdaptor::execute_pause(RPCError &error)
+        void NavigationAdaptor::execute_pause(rcom::RPCError &error)
         {
                 r_debug("NavigationAdaptor::execute_pause");
                 if (!navigation_.pause_activity()) {
@@ -143,7 +143,7 @@ namespace romi {
                 }
         }
 
-        void NavigationAdaptor::execute_continue(RPCError &error)
+        void NavigationAdaptor::execute_continue(rcom::RPCError &error)
         {
                 r_debug("NavigationAdaptor::execute_continue");
                 if (!navigation_.continue_activity()) {
@@ -152,7 +152,7 @@ namespace romi {
                 }
         }
 
-        void NavigationAdaptor::execute_reset(RPCError &error)
+        void NavigationAdaptor::execute_reset(rcom::RPCError &error)
         {
                 r_debug("NavigationAdaptor::execute_reset");
                 if (!navigation_.reset_activity()) {

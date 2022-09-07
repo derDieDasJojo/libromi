@@ -36,19 +36,19 @@ namespace romi {
         void WeederAdaptor::execute(const std::string& method,
                                     nlohmann::json &params,
                                     rcom::MemBuffer& result,
-                                    RPCError &error)
+                                    rcom::RPCError &error)
         {
                 (void) method;
                 (void) params;
                 (void) result;
-                error.code = RPCError::kMethodNotFound;
+                error.code = rcom::RPCError::kMethodNotFound;
                 error.message = "Unknown method";
         }
         
         void WeederAdaptor::execute(const std::string& method,
                                     nlohmann::json& params,
                                     nlohmann::json& result,
-                                    RPCError &error)
+                                    rcom::RPCError &error)
         {
                 (void) params;
                 (void) result;
@@ -87,17 +87,17 @@ namespace romi {
                                 execute_wake_up(error);
                                 
                         } else {
-                                error.code = RPCError::kMethodNotFound;
+                                error.code = rcom::RPCError::kMethodNotFound;
                                 error.message = "Unknown method";
                         }
                         
                 } catch (std::exception &e) {
-                        error.code = RPCError::kInternalError;
+                        error.code = rcom::RPCError::kInternalError;
                         error.message = e.what();
                 }
         }
 
-        void WeederAdaptor::execute_hoe(RPCError &error)
+        void WeederAdaptor::execute_hoe(rcom::RPCError &error)
         {
                 r_debug("WeederAdaptor::execute_hoe");
                 if (!_weeder.hoe()) {
@@ -106,7 +106,7 @@ namespace romi {
                 }
         }
 
-        void WeederAdaptor::execute_stop(RPCError &error)
+        void WeederAdaptor::execute_stop(rcom::RPCError &error)
         {
                 r_debug("WeederAdaptor::execute_stop");
                 if (!_weeder.stop()) {
@@ -115,7 +115,7 @@ namespace romi {
                 }
         }
 
-        void WeederAdaptor::execute_pause(RPCError &error)
+        void WeederAdaptor::execute_pause(rcom::RPCError &error)
         {
                 r_debug("WeederAdaptor::execute_pause");
                 if (!_weeder.pause_activity()) {
@@ -124,7 +124,7 @@ namespace romi {
                 }
         }
 
-        void WeederAdaptor::execute_continue(RPCError &error)
+        void WeederAdaptor::execute_continue(rcom::RPCError &error)
         {
                 r_debug("WeederAdaptor::execute_continue");
                 if (!_weeder.continue_activity()) {
@@ -133,7 +133,7 @@ namespace romi {
                 }
         }
 
-        void WeederAdaptor::execute_reset(RPCError &error)
+        void WeederAdaptor::execute_reset(rcom::RPCError &error)
         {
                 r_debug("WeederAdaptor::execute_reset");
                 if (!_weeder.reset_activity()) {
@@ -142,7 +142,7 @@ namespace romi {
                 }
         }
 
-        void WeederAdaptor::execute_power_up(RPCError &error)
+        void WeederAdaptor::execute_power_up(rcom::RPCError &error)
         {
                 r_debug("WeederAdaptor::power_up");
                 if (!_weeder.power_up()) {
@@ -151,7 +151,7 @@ namespace romi {
                 }
         }
         
-        void WeederAdaptor::execute_power_down(RPCError &error)
+        void WeederAdaptor::execute_power_down(rcom::RPCError &error)
         {
                 r_debug("WeederAdaptor::power_down");
                 if (!_weeder.power_down()) {
@@ -160,7 +160,7 @@ namespace romi {
                 }
         }
         
-        void WeederAdaptor::execute_stand_by(RPCError &error)
+        void WeederAdaptor::execute_stand_by(rcom::RPCError &error)
         {
                 r_debug("WeederAdaptor::stand_by");
                 if (!_weeder.stand_by()) {
@@ -169,7 +169,7 @@ namespace romi {
                 }
         }
         
-        void WeederAdaptor::execute_wake_up(RPCError &error)
+        void WeederAdaptor::execute_wake_up(rcom::RPCError &error)
         {
                 r_debug("WeederAdaptor::wake_up");
                 if (!_weeder.wake_up()) {

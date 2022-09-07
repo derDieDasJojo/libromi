@@ -27,6 +27,12 @@
 
 namespace romi {
 
+        RemoteNavigation::RemoteNavigation(std::unique_ptr<rcom::IRPCClient>& client,
+                                           const std::shared_ptr<rcom::ILog>& log)
+                : RemoteStub(client, log)
+        {
+        }
+
         bool RemoteNavigation::moveat(double left, double right)
         {
                 nlohmann::json params{

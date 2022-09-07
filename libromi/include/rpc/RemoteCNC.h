@@ -21,23 +21,23 @@
   <http://www.gnu.org/licenses/>.
 
  */
-#ifndef __ROMI_REMOTE_CNC_H
-#define __ROMI_REMOTE_CNC_H
+#ifndef __ROMI_REMOTECNC_H
+#define __ROMI_REMOTECNC_H
 
 #include <memory>
-#include "rpc/RemoteStub.h"
+#include <rcom/RemoteStub.h>
 #include "api/ICNC.h"
 
 namespace romi {
 
-        class RemoteCNC : public ICNC, public RemoteStub
+        class RemoteCNC : public ICNC, public rcom::RemoteStub
         {
         public:
                 static constexpr const char *ClassName = "remote-cnc";
                 
         public:
-                explicit RemoteCNC(std::unique_ptr<IRPCClient>& rpc_client)
-                        : RemoteStub(rpc_client) {}
+                explicit RemoteCNC(std::unique_ptr<rcom::IRPCClient>& rpc_client,
+                                   const std::shared_ptr<rcom::ILog>& log);
                 ~RemoteCNC() override = default;
 
                 bool get_range(CNCRange &range) override;
@@ -62,4 +62,4 @@ namespace romi {
         };
 }
 
-#endif // __ROMI_REMOTE_CNC_H
+#endif // __ROMI_REMOTECNC_H

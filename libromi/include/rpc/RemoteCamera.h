@@ -21,16 +21,16 @@
   <http://www.gnu.org/licenses/>.
 
  */
-#ifndef __ROMI_REMOTE_CAMERA_H
-#define __ROMI_REMOTE_CAMERA_H
+#ifndef __ROMI_REMOTECAMERA_H
+#define __ROMI_REMOTECAMERA_H
 
 #include <memory>
-#include "rpc/RemoteStub.h"
+#include <rcom/RemoteStub.h>
 #include "api/ICamera.h"
 
 namespace romi {
 
-        class RemoteCamera : public ICamera, public RemoteStub
+        class RemoteCamera : public ICamera, public rcom::RemoteStub
         {
         public:
                 static constexpr const char *ClassName = "remote-camera";
@@ -40,7 +40,8 @@ namespace romi {
                 rcom::MemBuffer output_;
 
         public:
-                RemoteCamera(std::unique_ptr<IRPCClient>& client);
+                RemoteCamera(std::unique_ptr<rcom::IRPCClient>& client,
+                             const std::shared_ptr<rcom::ILog>& log);
                 ~RemoteCamera() override = default;
 
                 bool grab(Image &image) override;
@@ -58,4 +59,4 @@ namespace romi {
         };
 }
 
-#endif // __ROMI_REMOTE_CAMERA_H
+#endif // __ROMI_REMOTECAMERA_H
