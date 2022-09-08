@@ -36,8 +36,7 @@ namespace romi {
                 static constexpr const char *ClassName = "remote-cnc";
                 
         public:
-                explicit RemoteCNC(std::unique_ptr<rcom::IRPCClient>& rpc_client,
-                                   const std::shared_ptr<rcom::ILog>& log);
+                explicit RemoteCNC(std::unique_ptr<rcom::IRPCClient>& rpc_client);
                 ~RemoteCNC() override = default;
 
                 bool get_range(CNCRange &range) override;

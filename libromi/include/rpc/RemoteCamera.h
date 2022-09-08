@@ -40,8 +40,7 @@ namespace romi {
                 rcom::MemBuffer output_;
 
         public:
-                RemoteCamera(std::unique_ptr<rcom::IRPCClient>& client,
-                             const std::shared_ptr<rcom::ILog>& log);
+                RemoteCamera(std::unique_ptr<rcom::IRPCClient>& client);
                 ~RemoteCamera() override = default;
 
                 bool grab(Image &image) override;

@@ -36,8 +36,7 @@ namespace romi {
                 
         public:
                 
-                explicit RemoteNavigation(std::unique_ptr<rcom::IRPCClient>& client,
-                                          const std::shared_ptr<rcom::ILog>& log);
+                explicit RemoteNavigation(std::unique_ptr<rcom::IRPCClient>& client);
                 ~RemoteNavigation() override = default;
 
                 bool moveat(double left, double right) override;

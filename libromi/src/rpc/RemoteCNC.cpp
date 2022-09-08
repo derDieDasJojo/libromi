@@ -27,9 +27,8 @@
 
 namespace romi {
 
-        RemoteCNC::RemoteCNC(std::unique_ptr<rcom::IRPCClient>& rpc_client,
-                             const std::shared_ptr<rcom::ILog>& log)
-                : RemoteStub(rpc_client, log)
+        RemoteCNC::RemoteCNC(std::unique_ptr<rcom::IRPCClient>& rpc_client)
+                : RemoteStub(rpc_client)
         {
         }
 

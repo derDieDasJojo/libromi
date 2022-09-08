@@ -27,9 +27,8 @@
 
 namespace romi {
 
-        RemoteNavigation::RemoteNavigation(std::unique_ptr<rcom::IRPCClient>& client,
-                                           const std::shared_ptr<rcom::ILog>& log)
-                : RemoteStub(client, log)
+        RemoteNavigation::RemoteNavigation(std::unique_ptr<rcom::IRPCClient>& client)
+                : RemoteStub(client)
         {
         }
 

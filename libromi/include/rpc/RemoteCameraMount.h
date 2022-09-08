@@ -34,8 +34,7 @@ namespace romi {
         public:
                 static constexpr const char *ClassName = "remote-gimbal";
                 
-                explicit RemoteCameraMount(std::unique_ptr<rcom::IRPCClient>& client,
-                                           const std::shared_ptr<rcom::ILog>& log);
+                explicit RemoteCameraMount(std::unique_ptr<rcom::IRPCClient>& client);
                 ~RemoteCameraMount() override = default;
 
                 bool homing() override; 
