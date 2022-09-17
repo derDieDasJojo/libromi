@@ -34,15 +34,21 @@ namespace romi {
                 : _navigation(navigation), _fast(), _accurate()
         {
                 try {
-                        nlohmann::json fast_config(config.at("user-interface").at("speed-controller").at("fast"));
-                        nlohmann::json accurate_config = (config.at("user-interface").at("speed-controller").at("accurate"));
+                        nlohmann::json fast_config(config.at("user-interface")
+                                                   .at("speed-controller")
+                                                   .at("fast"));
+                        nlohmann::json accurate_config(config.at("user-interface")
+                                                       .at("speed-controller")
+                                                       .at("accurate"));
                         _fast.parse(fast_config);
                         _accurate.parse(accurate_config);
 
                         if (!_accurate.is_valid())
-                            throw std::range_error("Invalid settings for accurate speed controller");
+                            throw std::range_error("Invalid settings for accurate "
+                                                   "speed controller");
                         if (!_fast.is_valid())
-                            throw std::range_error("Invalid settings for fast speed controller");
+                            throw std::range_error("Invalid settings for fast "
+                                                   "speed controller");
                 } catch (nlohmann::json::exception& je) {
                         r_err("SpeedController::SpeedController: failed to "
                               "parse the configuration");
