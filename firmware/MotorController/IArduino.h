@@ -4,7 +4,7 @@
   Copyright (C) 2021 Sony Computer Science Laboratories
   Author(s) Peter Hanappe
 
-  Azhoo is free software: you can redistribute it and/or modify it
+  MotorController is free software: you can redistribute it and/or modify it
   under the terms of the GNU Lesser General Public License as
   published by the Free Software Foundation, either version 3 of the
   License, or (at your option) any later version.
@@ -19,32 +19,25 @@
   <http://www.gnu.org/licenses/>.
 
  */
-#include <RomiSerial.h>
-#include <ArduinoSerial.h>
-#include "ArduinoUno.h"
-#include "Azhoo.h"
-#include "AzhooCommands.h"
+#ifndef _MOTORCONTROLLER_I_ARDUINO_H
+#define _MOTORCONTROLLER_I_ARDUINO_H
 
-using namespace romiserial;
+#include "IEncoder.h"
+#include "IPWM.h"
 
-ArduinoUno arduino_;
-Azhoo azhoo_(arduino_, Azhoo::kDefaultUpdateInterval);
-ArduinoSerial serial(Serial);
-RomiSerial romi_serial_(serial, serial);
-
-void setup()
+class IArduino
 {
-        Serial.begin(115200);
-        while (!Serial)
-                ;
-        
-        arduino_.setup();
-        azhoo_.setup();
-        setup_commands(&azhoo_, &romi_serial_);
-}
+public:
+        virtual ~IArduino() = default;
+        virtual IEncoder& left_encoder() = 0;
+        virtual IEncoder& right_encoder() = 0;
+        virtual IPWM& left_pwm() = 0;
+        virtual IPWM& right_pwm() = 0;
+        virtual uint32_t milliseconds() = 0;
 
-void loop()
-{
-        azhoo_.update();
-        handle_commands();
-}
+        virtual void init_encoders(uint16_t encoder_steps,
+                                   int8_t left_increment,
+                                   int8_t right_increment) = 0;
+};
+
+#endif // _MOTORCONTROLLER_I_ARDUINO_H

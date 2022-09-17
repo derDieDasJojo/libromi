@@ -4,7 +4,7 @@
   Copyright (C) 2021 Sony Computer Science Laboratories
   Author(s) Peter Hanappe
 
-  Azhoo is free software: you can redistribute it and/or modify it
+  MotorController is free software: you can redistribute it and/or modify it
   under the terms of the GNU Lesser General Public License as
   published by the Free Software Foundation, either version 3 of the
   License, or (at your option) any later version.
@@ -21,12 +21,12 @@
  */
 
 #include <stdio.h>
-#include "AzhooCommands.h"
-#include "AzhooVersion.h"
+#include "MotorControllerCommands.h"
+#include "MotorControllerVersion.h"
 
 // FIXME
 #if ARDUINO
-#include "AzhooTests.h"
+#include "MotorControllerTests.h"
 #endif
 
 using namespace romiserial;
@@ -47,15 +47,15 @@ const static MessageHandler handlers[] = {
         // { 'c', 0, false, send_configuration },
 };
 
-static IAzhoo *azhoo_ = nullptr;
+static IMotorController *controller_ = nullptr;
 static IRomiSerial *romi_serial_ = nullptr;
 static char reply_buffer[100];
 
 const char *kErrBadState = "Bad state";
 
-void setup_commands(IAzhoo *azhoo, IRomiSerial *romiSerial)
+void setup_commands(IMotorController *controller, IRomiSerial *romiSerial)
 {
-        azhoo_ = azhoo;
+        controller_ = controller;
         romi_serial_ = romiSerial;
         if (romi_serial_)
                 romi_serial_->set_handlers(handlers, sizeof(handlers) / sizeof(MessageHandler));
@@ -63,7 +63,7 @@ void setup_commands(IAzhoo *azhoo, IRomiSerial *romiSerial)
 
 void handle_commands()
 {
-        if (azhoo_ != nullptr
+        if (controller_ != nullptr
             && romi_serial_ != nullptr)
                 romi_serial_->handle_input();
 }
@@ -73,7 +73,7 @@ void send_info(IRomiSerial *romiSerial, int16_t *args, const char *string_arg)
         (void) args;
         (void) string_arg;
         
-        romiSerial->send("[0,\"Azhoo\",\"" kAzhooVersion "\","
+        romiSerial->send("[0,\"MotorController\",\"" kMotorControllerVersion "\","
                          "\"" __DATE__ " " __TIME__ "\"]"); 
 }
 
@@ -84,7 +84,7 @@ void send_encoders(IRomiSerial *romiSerial, int16_t *args, const char *string_ar
         int32_t left;
         int32_t right;
         uint32_t time;
-        azhoo_->get_encoders(left, right, time);
+        controller_->get_encoders(left, right, time);
 
 #if ARDUINO
         snprintf(reply_buffer, sizeof(reply_buffer),
@@ -101,7 +101,7 @@ void handle_configure(IRomiSerial *romiSerial, int16_t *args, const char *string
 {
         (void) string_arg;
         bool success;
-        AzhooConfiguration config;
+        MotorControllerConfiguration config;
 
         // Encoders
         config.encoder_steps = (uint16_t) args[0];
@@ -119,7 +119,7 @@ void handle_configure(IRomiSerial *romiSerial, int16_t *args, const char *string
         config.ki_denominator = args[8];
         config.max_amplitude = args[9];
                 
-        success = azhoo_->configure(config);
+        success = controller_->configure(config);
         if (success) {
                 romiSerial->send_ok();  
         } else {
@@ -132,9 +132,9 @@ void handle_enable(IRomiSerial *romiSerial, int16_t *args, const char *string_ar
         (void) string_arg;
         bool success;
         if (args[0] == 0) {
-                success = azhoo_->disable();
+                success = controller_->disable();
         } else {
-                success = azhoo_->enable();
+                success = controller_->enable();
         }
         if (success) {
                 romiSerial->send_ok();  
@@ -148,7 +148,7 @@ void handle_moveat(IRomiSerial *romiSerial, int16_t *args, const char *string_ar
         (void) string_arg;
         int16_t left = (int16_t) args[0];
         int16_t right = (int16_t) args[1];
-        bool success = azhoo_->set_target_speeds(left, right);
+        bool success = controller_->set_target_speeds(left, right);
         if (success) {
                 romiSerial->send_ok();  
         } else {
@@ -160,7 +160,7 @@ void handle_stop(IRomiSerial *romiSerial, int16_t *args, const char *string_arg)
 {
         (void) args;
         (void) string_arg;
-        azhoo_->stop();
+        controller_->stop();
         romiSerial->send_ok();  
 }
 
@@ -175,9 +175,9 @@ void send_speeds(IRomiSerial *romiSerial, int16_t *args, const char *string_arg)
         int16_t left_measured;
         int16_t right_measured;
 
-        azhoo_->get_target_speeds(left_target, right_target);
-        azhoo_->get_current_speeds(left_current, right_current);
-        azhoo_->get_measured_speeds(left_measured, right_measured);
+        controller_->get_target_speeds(left_target, right_target);
+        controller_->get_current_speeds(left_current, right_current);
+        controller_->get_measured_speeds(left_measured, right_measured);
         
         snprintf(reply_buffer, sizeof(reply_buffer),
                  "[0,%hd,%hd,%hd,%hd,%hd,%hd]",
@@ -192,6 +192,6 @@ void handle_tests(IRomiSerial *romiSerial, int16_t *args, const char *string_arg
 {
         (void) string_arg;
         romiSerial->send_ok();  
-        run_tests(*azhoo_, args[0]);
+        run_tests(*controller_, args[0]);
 }
 #endif

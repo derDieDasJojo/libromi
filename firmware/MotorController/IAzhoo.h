@@ -4,7 +4,7 @@
   Copyright (C) 2021 Sony Computer Science Laboratories
   Author(s) Peter Hanappe
 
-  Azhoo is free software: you can redistribute it and/or modify it
+  MotorController is free software: you can redistribute it and/or modify it
   under the terms of the GNU Lesser General Public License as
   published by the Free Software Foundation, either version 3 of the
   License, or (at your option) any later version.
@@ -19,14 +19,14 @@
   <http://www.gnu.org/licenses/>.
 
  */
-#ifndef _AZHOO_I_AZHOO_H
-#define _AZHOO_I_AZHOO_H
+#ifndef _MOTORCONTROLLER_I_AZHOO_H
+#define _MOTORCONTROLLER_I_AZHOO_H
 
 #include <stdint.h>
 #include "SpeedEnvelope.h"
 #include "PIController.h"
 
-struct AzhooConfiguration
+struct MotorControllerConfiguration
 {
         // Number of pulses per wheel revolution.
         uint16_t encoder_steps;
@@ -58,13 +58,13 @@ struct AzhooConfiguration
         int16_t max_amplitude;
 };
 
-class IAzhoo
+class IMotorController
 {
 public:
-        virtual ~IAzhoo() = default;
+        virtual ~IMotorController() = default;
         
         virtual void setup() = 0;
-        virtual bool configure(AzhooConfiguration& config) = 0;
+        virtual bool configure(MotorControllerConfiguration& config) = 0;
         virtual bool enable() = 0;
         virtual bool disable() = 0;
         virtual void stop() = 0;
@@ -99,4 +99,4 @@ public:
 
 };
 
-#endif // _AZHOO_I_AZHOO_H
+#endif // _MOTORCONTROLLER_I_AZHOO_H

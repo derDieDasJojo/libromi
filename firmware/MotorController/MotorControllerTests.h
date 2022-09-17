@@ -4,7 +4,7 @@
   Copyright (C) 2021 Sony Computer Science Laboratories
   Author(s) Peter Hanappe
 
-  Azhoo is free software: you can redistribute it and/or modify it
+  MotorController is free software: you can redistribute it and/or modify it
   under the terms of the GNU Lesser General Public License as
   published by the Free Software Foundation, either version 3 of the
   License, or (at your option) any later version.
@@ -19,19 +19,11 @@
   <http://www.gnu.org/licenses/>.
 
  */
-#include "IncrementalEncoderUno.h"
-        
-void IncrementalEncoderUno::init(uint16_t pulses_per_revolution,
-                                 int8_t increment, 
-                                 uint8_t pin_a,
-                                 uint8_t pin_b,
-                                 EncoderInterruptHandler callback)
-{
-        IncrementalEncoder::init(pulses_per_revolution, increment);
-        pin_b_ = pin_b;
-        pinMode(pin_a, INPUT_PULLUP);
-        pinMode(pin_b, INPUT_PULLUP);
-        attachInterrupt(digitalPinToInterrupt(pin_a),
-                        callback,
-                        RISING);
-}
+#ifndef _MOTORCONTROLLER_TESTS_H
+#define _MOTORCONTROLLER_TESTS_H
+
+#include "IMotorController.h"
+
+void run_tests(IMotorController& controller, int num);
+
+#endif // _MOTORCONTROLLER_TESTS_H

@@ -4,7 +4,7 @@
   Copyright (C) 2021 Sony Computer Science Laboratories
   Author(s) Peter Hanappe
 
-  Azhoo is free software: you can redistribute it and/or modify it
+  MotorController is free software: you can redistribute it and/or modify it
   under the terms of the GNU Lesser General Public License as
   published by the Free Software Foundation, either version 3 of the
   License, or (at your option) any later version.
@@ -20,9 +20,9 @@
 
  */
 #include <Arduino.h>
-#include "AzhooTests.h"
+#include "MotorControllerTests.h"
 
-void test_pi_controller(IAzhoo& azhoo);
+void test_pi_controller(IMotorController& controller);
 
 int ask_test_id()
 {
@@ -41,17 +41,17 @@ int ask_test_id()
         return test;
 }
 
-bool run_test(IAzhoo& azhoo, int test)
+bool run_test(IMotorController& controller, int test)
 {
         bool quit = false;
         
         switch (test){
         case 8:
-                test_pi_controller(azhoo);
+                test_pi_controller(controller);
                 break;
 
         case 9:
-                azhoo.stop();
+                controller.stop();
                 quit = true;
                 break;
                 
@@ -63,25 +63,25 @@ bool run_test(IAzhoo& azhoo, int test)
         return quit;
 }
 
-void show_tests_menu(IAzhoo& azhoo)
+void show_tests_menu(IMotorController& controller)
 {
         bool quit = false;
 
         while (!quit) {
                 int test = ask_test_id();
-                quit = run_test(azhoo, test);
+                quit = run_test(controller, test);
         }
 }
 
-void run_tests(IAzhoo& azhoo, int num)
+void run_tests(IMotorController& controller, int num)
 {
         if (num == 0)
-                show_tests_menu(azhoo);
+                show_tests_menu(controller);
         else
-                run_test(azhoo, num);
+                run_test(controller, num);
 }
 
-void test_pi_controller(IAzhoo& azhoo)
+void test_pi_controller(IMotorController& controller)
 {
         int update_counter = 0;
         int max_updates = 400;
@@ -90,16 +90,16 @@ void test_pi_controller(IAzhoo& azhoo)
         int min_speed = 50;
         int max_speed = 500;
         
-        PIController& left_controller = azhoo.left_controller();
-        PIController& right_controller = azhoo.right_controller();
-        SpeedEnvelope& left_envelope = azhoo.left_speed_envelope();
-        SpeedEnvelope& right_envelope = azhoo.right_speed_envelope();
+        PIController& left_controller = controller.left_controller();
+        PIController& right_controller = controller.right_controller();
+        SpeedEnvelope& left_envelope = controller.left_speed_envelope();
+        SpeedEnvelope& right_envelope = controller.right_speed_envelope();
         
         int16_t target = random(min_speed, max_speed);
-        azhoo.set_target_speeds(target, target);
+        controller.set_target_speeds(target, target);
          
         while (true)  {
-                if (azhoo.update()) {
+                if (controller.update()) {
                         
                         Serial.print(millis());
                         Serial.print(' ');
@@ -154,19 +154,19 @@ void test_pi_controller(IAzhoo& azhoo)
                                 if (++speed_counter == max_speed_changes)
                                         break;
                                 target = random(min_speed, max_speed);
-                                azhoo.set_target_speeds(target, target);
+                                controller.set_target_speeds(target, target);
                         }                        
                 }
         }
         
-        azhoo.set_target_speeds(0, 0);
+        controller.set_target_speeds(0, 0);
         
         int wait = 0;
         while (wait < 100) {
-                if (azhoo.update())
+                if (controller.update())
                         wait++;
         }
         
-        azhoo.stop();
+        controller.stop();
         Serial.println("Done");
 }

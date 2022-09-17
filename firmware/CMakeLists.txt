@@ -2,18 +2,18 @@ cmake_minimum_required(VERSION 3.10)
 
 # We add the tests whether we are building the binaries or not.
 if(BUILD_TESTS)
-    add_subdirectory(Azhoo/tests)
+    add_subdirectory(MotorController/tests)
 endif()
 
 if (${BUILD_ARDUINO})
 
     MESSAGE( "Arduino Firmware output = SourceDir/build")
-    add_custom_target(Azhoo ALL
-            COMMAND "${ARDUINOCLI_EXE}" "compile" "--clean" "--export-binaries" "--fqbn" "arduino:avr:uno" "${CMAKE_CURRENT_SOURCE_DIR}/Azhoo"
+    add_custom_target(MotorController ALL
+            COMMAND "${ARDUINOCLI_EXE}" "compile" "--clean" "--export-binaries" "--fqbn" "arduino:avr:uno" "${CMAKE_CURRENT_SOURCE_DIR}/MotorController"
             COMMENT
-                "Building Arduino Azhoo"
+                "Building Arduino MotorController"
             WORKING_DIRECTORY
-                ${CMAKE_CURRENT_SOURCE_DIR}/Azhoo
+                ${CMAKE_CURRENT_SOURCE_DIR}/MotorController
             DEPENDS
                 install_romiserial_lib
             )

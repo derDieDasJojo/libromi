@@ -4,7 +4,7 @@
   Copyright (C) 2021 Sony Computer Science Laboratories
   Author(s) Peter Hanappe
 
-  Azhoo is free software: you can redistribute it and/or modify it
+  MotorController is free software: you can redistribute it and/or modify it
   under the terms of the GNU Lesser General Public License as
   published by the Free Software Foundation, either version 3 of the
   License, or (at your option) any later version.
@@ -19,15 +19,15 @@
   <http://www.gnu.org/licenses/>.
 
  */
-#ifndef _AZHOO_AZHOO_H
-#define _AZHOO_AZHOO_H
+#ifndef _MOTORCONTROLLER_AZHOO_H
+#define _MOTORCONTROLLER_AZHOO_H
 
-#include "IAzhoo.h"
+#include "IMotorController.h"
 #include "IArduino.h"
 #include "SpeedEnvelope.h"
 #include "PIController.h"
 
-class Azhoo : public IAzhoo
+class MotorController : public IMotorController
 {
 public:
         static const uint32_t kDefaultUpdateInterval;
@@ -35,7 +35,7 @@ public:
         /*
           States: [created] -> [set-up] -> [configured] -> [enabled] <-> [disabled]
         */
-        enum AzhooState {
+        enum MotorControllerState {
                 kCreated = 0,
                 kSetUp,
                 kConfigured,
@@ -53,7 +53,7 @@ public:
         SpeedEnvelope right_speed_envelope_;
         uint32_t interval_;
         uint32_t last_time_;
-        AzhooState state_;
+        MotorControllerState state_;
 
         bool is_set_up();
         bool is_configured();
@@ -76,11 +76,11 @@ protected:
 
 public:
         
-        Azhoo(IArduino& arduino, uint32_t interval_millis);
-        ~Azhoo() override = default;
+        MotorController(IArduino& arduino, uint32_t interval_millis);
+        ~MotorController() override = default;
         
         void setup() override;
-        bool configure(AzhooConfiguration& config) override;
+        bool configure(MotorControllerConfiguration& config) override;
         bool enable() override;
         bool disable() override;
         
@@ -116,4 +116,4 @@ public:
         }
 };
 
-#endif // _AZHOO_AZHOO_H
+#endif // _MOTORCONTROLLER_AZHOO_H

@@ -4,7 +4,7 @@
   Copyright (C) 2021 Sony Computer Science Laboratories
   Author(s) Peter Hanappe
 
-  Azhoo is free software: you can redistribute it and/or modify it
+  MotorController is free software: you can redistribute it and/or modify it
   under the terms of the GNU Lesser General Public License as
   published by the Free Software Foundation, either version 3 of the
   License, or (at your option) any later version.
@@ -19,19 +19,16 @@
   <http://www.gnu.org/licenses/>.
 
  */
-#ifndef _AHZOO_I_ENCODER_H
-#define _AHZOO_I_ENCODER_H
+#ifndef _MOTORCONTROLLER_I_PWM_H
+#define _MOTORCONTROLLER_I_PWM_H
 
-#include <stdint.h>
-
-class IEncoder
+class IPWM
 {
 public:
-        virtual ~IEncoder() = default;
-
-        virtual void init(uint16_t pulses_per_revolution, int8_t direction) = 0;
-        virtual int32_t get_position() = 0;
-        virtual uint16_t positions_per_revolution() = 0;
+        virtual ~IPWM() = default;
+        virtual int16_t center() = 0;
+        virtual int16_t amplitude() = 0;
+        virtual void set(int16_t pulse_width) = 0;
 };
 
-#endif // _AHZOO_I_ENCODER_H
+#endif // _MOTORCONTROLLER_I_PWM_H

@@ -1,6 +1,6 @@
 
-#ifndef _AZHOO_AVERAGE_H
-#define _AZHOO_AVERAGE_H
+#ifndef _MOTORCONTROLLER_AVERAGE_H
+#define _MOTORCONTROLLER_AVERAGE_H
 
 #include "IFilter.h"
 
@@ -42,4 +42,4 @@ public:
         }
 };
 
-#endif // _AZHOO_AVERAGE_H
+#endif // _MOTORCONTROLLER_AVERAGE_H

@@ -4,7 +4,7 @@
   Copyright (C) 2021 Sony Computer Science Laboratories
   Author(s) Peter Hanappe
 
-  Azhoo is free software: you can redistribute it and/or modify it
+  MotorController is free software: you can redistribute it and/or modify it
   under the terms of the GNU Lesser General Public License as
   published by the Free Software Foundation, either version 3 of the
   License, or (at your option) any later version.
@@ -19,11 +19,11 @@
   <http://www.gnu.org/licenses/>.
 
  */
-#include "Azhoo.h"
+#include "MotorController.h"
 
-const uint32_t Azhoo::kDefaultUpdateInterval = 20;
+const uint32_t MotorController::kDefaultUpdateInterval = 20;
 
-Azhoo::Azhoo(IArduino& arduino, uint32_t interval_millis)
+MotorController::MotorController(IArduino& arduino, uint32_t interval_millis)
         : arduino_(arduino),
           left_controller_(arduino.left_encoder(),
                            arduino.left_pwm()),
@@ -38,33 +38,33 @@ Azhoo::Azhoo(IArduino& arduino, uint32_t interval_millis)
         //left_controller_.debug_ = true; // TODO
 }
 
-void Azhoo::setup()
+void MotorController::setup()
 {
         last_time_ = arduino_.milliseconds();
         state_ = kSetUp;
 }
 
-bool Azhoo::is_set_up()
+bool MotorController::is_set_up()
 {
         return state_ == kSetUp;
 }
 
-bool Azhoo::is_configured()
+bool MotorController::is_configured()
 {
         return state_ == kConfigured;
 }
 
-bool Azhoo::is_enabled()
+bool MotorController::is_enabled()
 {
         return state_ == kEnabled;
 }
 
-bool Azhoo::is_disabled()
+bool MotorController::is_disabled()
 {
         return state_ == kDisabled;
 }
 
-bool Azhoo::enable()
+bool MotorController::enable()
 {
         bool success = false;
         stop();
@@ -76,7 +76,7 @@ bool Azhoo::enable()
         return success;
 }
 
-bool Azhoo::disable()
+bool MotorController::disable()
 {
         bool success = true;
         stop();
@@ -88,7 +88,7 @@ bool Azhoo::disable()
         return success;
 }
 
-bool Azhoo::configure(AzhooConfiguration& config)
+bool MotorController::configure(MotorControllerConfiguration& config)
 {
         bool success = false;
         
@@ -118,7 +118,7 @@ bool Azhoo::configure(AzhooConfiguration& config)
         return success;
 }
 
-void Azhoo::init_encoders(uint16_t encoder_steps,
+void MotorController::init_encoders(uint16_t encoder_steps,
                           int8_t left_direction,
                           int8_t right_direction)
 {
@@ -127,7 +127,7 @@ void Azhoo::init_encoders(uint16_t encoder_steps,
         right_controller_.update_encoder_values(interval_ / 1000.0);
 }
 
-void Azhoo::init_speed_envelope(double max_speed, double max_acceleration)
+void MotorController::init_speed_envelope(double max_speed, double max_acceleration)
 {
         left_speed_envelope_.init(max_speed,
                                   max_acceleration,
@@ -137,7 +137,7 @@ void Azhoo::init_speed_envelope(double max_speed, double max_acceleration)
                                    interval_ / 1000.0);
 }
 
-void Azhoo::init_pi_controllers(int16_t kp_numerator, int16_t kp_denominator,
+void MotorController::init_pi_controllers(int16_t kp_numerator, int16_t kp_denominator,
                                 int16_t ki_numerator, int16_t ki_denominator,
                                 int16_t max_amplitude)
 {
@@ -149,7 +149,7 @@ void Azhoo::init_pi_controllers(int16_t kp_numerator, int16_t kp_denominator,
                                max_amplitude);
 }
 
-bool Azhoo::set_target_speeds(int16_t left, int16_t right)
+bool MotorController::set_target_speeds(int16_t left, int16_t right)
 {
         bool updated = false;
         if (is_enabled()) {
@@ -160,32 +160,32 @@ bool Azhoo::set_target_speeds(int16_t left, int16_t right)
         return updated;
 }
 
-void Azhoo::get_target_speeds(int16_t& left, int16_t& right)
+void MotorController::get_target_speeds(int16_t& left, int16_t& right)
 {
         left = left_speed_envelope_.get_target();
         right = right_speed_envelope_.get_target();
 }
         
-void Azhoo::get_current_speeds(int16_t& left, int16_t& right)
+void MotorController::get_current_speeds(int16_t& left, int16_t& right)
 {
         left = left_speed_envelope_.get_current();
         right = right_speed_envelope_.get_current();
 }
         
-void Azhoo::get_measured_speeds(int16_t& left, int16_t& right)
+void MotorController::get_measured_speeds(int16_t& left, int16_t& right)
 {
         left = left_controller_.get_speed();
         right = right_controller_.get_speed();
 }
 
-void Azhoo::get_encoders(int32_t& left, int32_t& right, uint32_t& time)
+void MotorController::get_encoders(int32_t& left, int32_t& right, uint32_t& time)
 {
         left = arduino_.left_encoder().get_position();
         right = arduino_.right_encoder().get_position();
         time = arduino_.milliseconds();
 }
 
-bool Azhoo::update()
+bool MotorController::update()
 {
         bool updated = false;
         
@@ -203,7 +203,7 @@ bool Azhoo::update()
         return updated;
 }
 
-void Azhoo::stop()
+void MotorController::stop()
 {
         left_speed_envelope_.stop();
         right_speed_envelope_.stop();
@@ -211,22 +211,22 @@ void Azhoo::stop()
         right_controller_.stop();
 }
 
-PIController& Azhoo::left_controller()
+PIController& MotorController::left_controller()
 {
         return left_controller_;
 }
         
-PIController& Azhoo::right_controller()
+PIController& MotorController::right_controller()
 {
         return right_controller_;
 }
         
-SpeedEnvelope& Azhoo::left_speed_envelope()
+SpeedEnvelope& MotorController::left_speed_envelope()
 {
         return left_speed_envelope_;
 }
         
-SpeedEnvelope& Azhoo::right_speed_envelope()
+SpeedEnvelope& MotorController::right_speed_envelope()
 {
         return right_speed_envelope_;
 }

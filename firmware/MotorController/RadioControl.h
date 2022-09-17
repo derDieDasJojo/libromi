@@ -4,7 +4,7 @@
   Copyright (C) 2021 Sony Computer Science Laboratories
   Author(s) Peter Hanappe
 
-  Azhoo is free software: you can redistribute it and/or modify it
+  MotorController is free software: you can redistribute it and/or modify it
   under the terms of the GNU Lesser General Public License as
   published by the Free Software Foundation, either version 3 of the
   License, or (at your option) any later version.
@@ -19,11 +19,23 @@
   <http://www.gnu.org/licenses/>.
 
  */
-#ifndef _AZHOO_TESTS_H
-#define _AZHOO_TESTS_H
+#ifndef _MOTORCONTROLLER_RADIOCONTROL_H
+#define _MOTORCONTROLLER_RADIOCONTROL_H
 
-#include "IAzhoo.h"
+#include "IPWM.h"
 
-void run_tests(IAzhoo& azhoo, int num);
+class RadioControl : public IPWM
+{
+public:
+        ~RadioControl() override = default;
 
-#endif // _AZHOO_TESTS_H
+        int16_t center() override {
+                return 1500;
+        }
+        
+        int16_t amplitude() {
+                return 500;
+        }
+};
+
+#endif // _MOTORCONTROLLER_RADIOCONTROL_H

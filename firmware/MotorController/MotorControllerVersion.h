@@ -4,7 +4,7 @@
   Copyright (C) 2021 Sony Computer Science Laboratories
   Author(s) Peter Hanappe
 
-  Azhoo is free software: you can redistribute it and/or modify it
+  MotorController is free software: you can redistribute it and/or modify it
   under the terms of the GNU Lesser General Public License as
   published by the Free Software Foundation, either version 3 of the
   License, or (at your option) any later version.
@@ -19,9 +19,9 @@
   <http://www.gnu.org/licenses/>.
 
  */
-#ifndef _AZHOO_AZHOOVERSION_H
-#define _AZHOO_AZHOOVERSION_H
+#ifndef _MOTORCONTROLLER_AZHOOVERSION_H
+#define _MOTORCONTROLLER_AZHOOVERSION_H
 
-#define kAzhooVersion "0.1"
+#define kMotorControllerVersion "0.1"
 
-#endif // _AZHOO_AZHOOVERSION_H
+#endif // _MOTORCONTROLLER_AZHOOVERSION_H

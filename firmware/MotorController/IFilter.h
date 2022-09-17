@@ -1,6 +1,6 @@
 
-#ifndef _AZHOO_I_FILTER_H
-#define _AZHOO_I_FILTER_H
+#ifndef _MOTORCONTROLLER_I_FILTER_H
+#define _MOTORCONTROLLER_I_FILTER_H
 
 #include <stdint.h>
 
@@ -12,4 +12,4 @@ public:
         virtual int16_t compute(int16_t x) = 0;
 };
 
-#endif // _AZHOO_I_FILTER_H
+#endif // _MOTORCONTROLLER_I_FILTER_H

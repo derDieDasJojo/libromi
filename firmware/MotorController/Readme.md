@@ -1,8 +1,8 @@
 
-# Azhoo
+# MotorController
 
-Azhoo controls the speed of two brushed DC motors. It was designed for
-a rover with two motors and [differential
+The MotorController firmware manages the speed of two brushed DC
+motors. It was designed for a rover with two motors and [differential
 steering](https://en.wikipedia.org/wiki/Differential_steering) but may
 be useful for any application that requires the speed control of
 brushed DC motors.

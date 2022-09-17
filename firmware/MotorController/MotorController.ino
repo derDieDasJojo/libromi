@@ -4,7 +4,7 @@
   Copyright (C) 2021 Sony Computer Science Laboratories
   Author(s) Peter Hanappe
 
-  Azhoo is free software: you can redistribute it and/or modify it
+  MotorController is free software: you can redistribute it and/or modify it
   under the terms of the GNU Lesser General Public License as
   published by the Free Software Foundation, either version 3 of the
   License, or (at your option) any later version.
@@ -19,16 +19,32 @@
   <http://www.gnu.org/licenses/>.
 
  */
-#ifndef _AHZOO_I_PWM_H
-#define _AHZOO_I_PWM_H
+#include <RomiSerial.h>
+#include <ArduinoSerial.h>
+#include "ArduinoUno.h"
+#include "MotorController.h"
+#include "MotorControllerCommands.h"
 
-class IPWM
+using namespace romiserial;
+
+ArduinoUno arduino_;
+MotorController controller_(arduino_, MotorController::kDefaultUpdateInterval);
+ArduinoSerial serial(Serial);
+RomiSerial romi_serial_(serial, serial);
+
+void setup()
 {
-public:
-        virtual ~IPWM() = default;
-        virtual int16_t center() = 0;
-        virtual int16_t amplitude() = 0;
-        virtual void set(int16_t pulse_width) = 0;
-};
+        Serial.begin(115200);
+        while (!Serial)
+                ;
+        
+        arduino_.setup();
+        controller_.setup();
+        setup_commands(&controller_, &romi_serial_);
+}
 
-#endif // _AHZOO_I_PWM_H
+void loop()
+{
+        controller_.update();
+        handle_commands();
+}
