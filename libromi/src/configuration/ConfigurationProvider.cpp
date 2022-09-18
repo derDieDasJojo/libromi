@@ -83,7 +83,7 @@ namespace romi {
     //         }
     // }
 
-    std::string get_script_file(romi::IOptions &options, nlohmann::json &config)
+    std::string get_script_file(romi::IOptions &options, nlohmann::json&)
     {
             std::string file = options.get_value(romi::RoverOptions::script);
             // if (file.empty()) {
