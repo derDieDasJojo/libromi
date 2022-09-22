@@ -24,6 +24,7 @@
 #include <stdexcept>
 
 #include "picamera/ImageEncoder.h"
+#include "util/Logger.h"
 
 namespace romi::arm {
 

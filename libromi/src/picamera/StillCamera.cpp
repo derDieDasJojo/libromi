@@ -24,6 +24,7 @@
 #include <stdexcept>
 
 #include "picamera/StillCamera.h"
+#include "util/Logger.h"
 
 namespace romi {
         

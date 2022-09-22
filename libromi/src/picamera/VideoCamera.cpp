@@ -24,6 +24,7 @@
 #include <stdexcept>
 
 #include "picamera/VideoCamera.h"
+#include "util/Logger.h"
 
 namespace romi {
         

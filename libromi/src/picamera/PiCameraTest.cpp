@@ -4,6 +4,7 @@
 
 #include <rcom/MemBuffer.h>
 #include "picamera/PiCamera.h"
+#include "util/Logger.h"
 
 using namespace romi;
 using namespace std;

@@ -25,6 +25,7 @@
 
 #include "picamera/CameraComponent.h"
 #include "camera/ICameraSettings.h"
+#include "util/Logger.h"
 
 namespace romi::arm {
 

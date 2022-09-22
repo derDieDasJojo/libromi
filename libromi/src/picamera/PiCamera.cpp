@@ -27,6 +27,7 @@
 #include "picamera/StillCamera.h"
 #include "picamera/VideoCamera.h"
 #include "camera/ICameraSettings.h"
+#include "util/Logger.h"
 
 namespace romi {
 
