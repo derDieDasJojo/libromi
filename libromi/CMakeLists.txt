@@ -261,7 +261,7 @@ set(SOURCES
         include/hal/ICameraMount.h
         include/hal/ImagingDevice.h
         
-        include/notifications/FluidSoundNotifications.h
+        #include/notifications/FluidSoundNotifications.h
 
         include/rpc/CameraAdaptor.h
         include/rpc/CNCAdaptor.h
@@ -339,7 +339,7 @@ set(SOURCES
         
         src/fake/FakeScriptEngine.cpp
 
-        src/notifications/FluidSoundNotifications.cpp
+        #src/notifications/FluidSoundNotifications.cpp
         
         src/rpc/CameraAdaptor.cpp
         src/rpc/CNCAdaptor.cpp
@@ -410,7 +410,7 @@ target_include_directories(romi
 target_link_libraries(romi
         romiserial
         rcom
-        fluidsynth
+        #fluidsynth
         ortools
         stdc++fs
         ${PI_CAMERA_LIB})
