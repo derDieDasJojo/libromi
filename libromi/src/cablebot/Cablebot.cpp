@@ -30,6 +30,7 @@
 #include "hal/CNCAndGimbal.h"
 #include "hal/ICameraMount.h"
 #include "cablebot/CablebotBase.h"
+#include "util/Logger.h"
 
 namespace romi {
         
