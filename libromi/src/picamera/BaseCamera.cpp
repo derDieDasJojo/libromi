@@ -22,7 +22,6 @@
 
  */
 #include <stdexcept>
-#include <r.h>
 #include "picamera/BaseCamera.h"
 
 namespace romi {
