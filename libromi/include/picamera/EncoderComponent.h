@@ -25,7 +25,7 @@
 #define _LIBROMI_ENCODER_COMPONENT_
 
 #include <stdint.h>
-#include <MemBuffer.h>
+#include <rcom/MemBuffer.h>
 #include "Component.h"
 #include "Semaphore.h"
 

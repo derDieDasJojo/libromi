@@ -24,11 +24,11 @@
 #ifndef _LIBROMI_BASECAMERA_H_
 #define _LIBROMI_BASECAMERA_H_
 
+#include <rcom/MemBuffer.h>
 #include "picamera/PiCameraIncludes.h"
 #include "picamera/PiCameraSettings.h"
 #include "picamera/CameraComponent.h"
 #include "cv/Image.h"
-#include "MemBuffer.h"
 
 namespace romi {
         

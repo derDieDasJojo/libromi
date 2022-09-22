@@ -2,7 +2,7 @@
 #include <unistd.h>
 #include <stdexcept>
 
-#include <MemBuffer.h>
+#include <rcom/MemBuffer.h>
 #include "picamera/PiCamera.h"
 
 using namespace romi;

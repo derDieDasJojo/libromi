@@ -28,7 +28,7 @@
 #include <atomic>
 #include <mutex>
 #include <condition_variable>
-#include <MemBuffer.h>
+#include <rcom/MemBuffer.h>
 
 #include "picamera/Component.h"
 #include "picamera/EncoderComponent.h"
