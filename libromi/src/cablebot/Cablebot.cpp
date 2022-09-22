@@ -35,8 +35,7 @@
 
 namespace romi {
         
-        std::unique_ptr<ImagingDevice> Cablebot::create(std::shared_ptr<ILog> log,
-                                                        CameraMode mode,
+        std::unique_ptr<ImagingDevice> Cablebot::create(CameraMode mode,
                                                         size_t width,
                                                         size_t height,
                                                         int32_t fps,
