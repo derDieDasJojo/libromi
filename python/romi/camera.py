@@ -3,33 +3,39 @@ import json
 import websocket
 from PIL import Image
 from io import BytesIO
+from romi.remote_device import RemoteDevice
 
-class Camera():
+class Camera(RemoteDevice):
    
     def __init__(self, topic, registry="127.0.0.1"):
-        registry = websocket.create_connection(f"ws://{registry}:10101")
-        cmd = "{'request': 'get', 'topic': '%s'}" % topic
-        registry.send(cmd)
-        data = registry.recv()
-        response = json.loads(data)
-        print(response)
-        print(f"Connecting to ws://{response['address']}")
-        self.connection = websocket.create_connection(f"ws://{response['address']}")
+        super().__init__(topic, registry)
     
     def print_error(self, data):
-       r = json.loads(data)
        print(f"Failed to grab the image: {r['error']['message']}")
        
     def grab(self):
-        cmd = '{"method": "camera-grab-jpeg-binary"}'
+        cmd = '{"method": "camera:grab-jpeg-binary"}'
         self.connection.send(cmd, websocket.ABNF.OPCODE_BINARY)
         data = self.connection.recv()
         if type(data) is str:
-            self.print_error(data)
-            return None
+            if data == "null":
+                print("Failed to grab the image")
+                return None
+            else:
+                self.print_error(data)
+                return None
         else:
             return Image.open(BytesIO(data))
-       
+
+    def set_value(self, name, value):
+        params = {'name': name, 'value': value}
+        self.execute('camera:set-value', params)
+
+    def select_option(self, name, value):
+        params = {'name': name, 'value': value}
+        self.execute('camera:select-option', params)
+
+        
 if __name__ == '__main__':
     camera = Camera("top-camera", "10.10.10.1")
     for i in range(10):

@@ -10,7 +10,7 @@ class RemoteDevice():
 
     def __init__(self, topic, registry='127.0.0.1'):
         registry = websocket.create_connection(f'ws://{registry}:10101')
-        cmd = "{'request': 'get', 'topic': '%s'}" % topic
+        cmd = '{"request": "get", "topic": "%s"}' % topic
         registry.send(cmd)
         data = registry.recv()
         response = json.loads(data)
@@ -58,6 +58,9 @@ class Oquam(RemoteDevice):
        
     def power_up(self):
         self.execute('power-up')
+        
+    def power_down(self):
+        self.execute('power-down')
        
     def get_position(self):
         return self.execute('cnc-get-position')
