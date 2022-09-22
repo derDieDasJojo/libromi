@@ -31,10 +31,12 @@
 #include "hal/ICameraMount.h"
 #include "cablebot/CablebotBase.h"
 #include "util/Logger.h"
+#include "util/RomiSerialLog.h"
 
 namespace romi {
         
-        std::unique_ptr<ImagingDevice> Cablebot::create(CameraMode mode,
+        std::unique_ptr<ImagingDevice> Cablebot::create(std::shared_ptr<ILog> log,
+                                                        CameraMode mode,
                                                         size_t width,
                                                         size_t height,
                                                         int32_t fps,
@@ -60,9 +62,12 @@ namespace romi {
                 std::shared_ptr<romi::ICamera> camera = romi::PiCamera::create(*settings);
 
                 // Base
+                std::shared_ptr<romiserial::ILog> log
+                        = std::make_shared<romi::RomiSerialLog>();
                 std::unique_ptr<romiserial::IRomiSerialClient> base_serial;
                 base_serial = romiserial::RomiSerialClient::create(kSerialBase,
-                                                                   "CablebotBase");
+                                                                   "CablebotBase",
+                                                                   log);
                 //base = std::make_unique<romi::CablebotBase>(base_serial);
 
                 // Gimbal
