@@ -22,9 +22,13 @@
 
  */
 
-
-#include "cablebot/Cablebot.h"
+// FIXME: Avoid pre-compiler macro
+#ifdef PI_BUILD
 #include "picamera/PiCamera.h"
+#else
+#endif
+        
+#include "cablebot/Cablebot.h"
 #include "hal/BldcGimbal.h"
 #include "hal/FakeGimbal.h"
 #include "hal/CNCAndGimbal.h"
@@ -32,19 +36,113 @@
 #include "cablebot/CablebotBase.h"
 #include "util/Logger.h"
 #include "util/RomiSerialLog.h"
+#include "camera/FakeCamera.h"
+#include "cablebot/FakeMotorController.h"
+#include "camera/CameraWithConfig.h"
 
 namespace romi {
         
-        std::unique_ptr<ImagingDevice> Cablebot::create(CameraMode mode,
-                                                        size_t width,
-                                                        size_t height,
-                                                        int32_t fps,
-                                                        uint32_t bitrate)
+        std::unique_ptr<ImagingDevice> Cablebot::create(std::shared_ptr<ICameraInfoIO>& io)
         {
+                auto info = io->load();
+                
                 // Camera
+                std::shared_ptr<romi::ICamera> real_camera
+                        = make_camera(info->get_settings());
+                std::shared_ptr<romi::ICamera> camera
+                        = std::make_shared<CameraWithConfig>(io, real_camera);
+
+                // Base
+                std::unique_ptr<romiserial::IRomiSerialClient> base_serial
+                        = connect_base();
+                std::shared_ptr<romi::ICameraMount> mount
+                        = std::make_shared<romi::CablebotBase>(base_serial);
+                        
+                // Cablebot
+                return std::make_unique<ImagingDevice>(camera, mount);
+        }
+
+        Cablebot::CameraMode Cablebot::get_mode(ICameraSettings& settings)
+        {
+                std::string value;
+                settings.get_option(ICameraSettings::kCameraMode, value);
+                if (value == ICameraSettings::kStillMode)
+                        return kStillMode;
+                else if (value == ICameraSettings::kVideoMode)
+                        return kVideoMode;
+                else
+                        throw std::runtime_error("Cablebot::get_mode: unknown mode");
+        }
+        
+        void Cablebot::get_resolution(ICameraSettings& settings,
+                                      size_t& width, size_t& height)
+        {
+                std::string value;
+                settings.get_option(ICameraSettings::kResolution, value);
+                
+                if (value == ICameraSettings::kResolution4056x3040) {
+                        width = 4056;
+                        height = 3040;
+                } else if (value == ICameraSettings::kResolution2028x1520) {
+                        width = 2028;
+                        height = 1520;
+                } else if (value == ICameraSettings::kResolution1014x760) {
+                        width = 1014;
+                        height = 760;
+                } else if (value == ICameraSettings::kResolution3280x2464) {
+                        width = 3280;
+                        height = 2464;
+                } else if (value == ICameraSettings::kResolution1640x1232) {
+                        width = 1640;
+                        height = 1232;
+                } else if (value == ICameraSettings::kResolution820x616) {
+                        width = 820;
+                        height = 616;
+                } else if (value == ICameraSettings::kResolution1920x1080) {
+                        width = 1920;
+                        height = 1080;
+                } else if (value == ICameraSettings::kResolution640x480) {
+                        width = 640;
+                        height = 480;
+                } else {
+                        throw std::runtime_error("Cablebot::get_mode: unknown resolution");
+                }
+        }
+                
+        int32_t Cablebot::get_framerate(ICameraSettings& settings)
+        {
+                return (int32_t) settings.get_value(ICameraSettings::kFramerate);
+        }
+                
+        uint32_t Cablebot::get_bitrate(ICameraSettings& settings)
+        {
+                return (uint32_t) settings.get_value(ICameraSettings::kBitrate);
+        }
+
+        std::shared_ptr<romi::ICamera> Cablebot::make_camera(ICameraSettings& settings)
+        {
+#ifdef PI_BUILD
+                return make_pi_camera(settings);
+#else
+                return make_fake_camera(settings);
+#endif
+        }
+
+        std::shared_ptr<romi::ICamera>
+        Cablebot::make_pi_camera(ICameraSettings& settings)
+        {
+#ifdef PI_BUILD
                 std::unique_ptr<romi::PiCameraSettings> settings;
 
+                CameraMode mode = get_mode(settings);
+                size_t width, height;
+                
+                get_resolution(settings, width, height);
+                
                 if (mode == kVideoMode) {
+                        int32_t fps = get_framerate(settings);
+                        uint32_t bitrate = get_bitrate(settings);
+
                         r_info("Camera: video mode, %d fps, %d bps",
                                (int) fps, (int) bitrate);
                         settings = std::make_unique<romi::HQVideoCameraSettings>(width,
@@ -59,30 +157,53 @@ namespace romi {
                 }
                 
                 std::shared_ptr<romi::ICamera> camera = romi::PiCamera::create(*settings);
+                return camera;
+#else
+                (void) settings;
+                throw std::runtime_error("Not implemented");
+#endif
+        }
+        
+        std::shared_ptr<romi::ICamera> Cablebot::make_fake_camera(ICameraSettings& settings)
+        {
+                size_t width, height;
+                get_resolution(settings, width, height);
 
-                // Base
+                int32_t fps = get_framerate(settings);
+                
+                std::shared_ptr<romi::ICamera> camera
+                        = std::make_shared<FakeCamera>(width, height, fps);
+                return camera;
+        }
+
+        std::unique_ptr<romiserial::IRomiSerialClient> Cablebot::connect_base()
+        {
+#ifdef PI_BUILD
+                return connect_real_base();
+#else
+                return connect_fake_base();
+#endif
+        }
+        
+        std::unique_ptr<romiserial::IRomiSerialClient> Cablebot::connect_real_base()
+        {
+#ifdef PI_BUILD
                 std::shared_ptr<romiserial::ILog> log
                         = std::make_shared<romi::RomiSerialLog>();
-                std::unique_ptr<romiserial::IRomiSerialClient> base_serial;
-                base_serial = romiserial::RomiSerialClient::create(kSerialBase,
-                                                                   "CablebotBase",
-                                                                   log);
-                //base = std::make_unique<romi::CablebotBase>(base_serial);
-
-                // Gimbal
-                //std::unique_ptr<romiserial::IRomiSerialClient> gimbal_serial;
-                //std::unique_ptr<romi::IGimbal> gimbal;
-                
-                // r_info("Connecting to gimbal at %s", kSerialGimbal);
-                // gimbal_serial = romiserial::RomiSerialClient::create(kSerialGimbal,
-                //                                                      "BldcGimbal");
-		//gimbal = std::make_unique<romi::BldcGimbal>(*gimbal_serial);
-		//gimbal = std::make_unique<romi::FakeGimbal>();
-
-                std::shared_ptr<romi::ICameraMount> mount;
-                mount = std::make_shared<romi::CablebotBase>(base_serial);
-                        
-                // Cablebot
-                return std::make_unique<ImagingDevice>(camera, mount);
+                std::unique_ptr<romiserial::IRomiSerialClient> serial;
+                serial = romiserial::RomiSerialClient::create(kSerialBase,
+                                                              "CablebotBase",
+                                                              log);
+                return serial;
+#else
+                throw std::runtime_error("Not implemented");
+#endif
+        }
+        
+        std::unique_ptr<romiserial::IRomiSerialClient> Cablebot::connect_fake_base()
+        {
+                std::unique_ptr<romiserial::IRomiSerialClient> fake
+                        = std::make_unique<FakeMotorController>("CablebotBase");
+                return fake;
         }
 }

@@ -22,32 +22,22 @@
 
  */
 
-#ifndef __ROMI_IMAGEIO_H
-#define __ROMI_IMAGEIO_H
+#ifndef __ROMI_ICONFIGMANAGER_H
+#define __ROMI_ICONFIGMANAGER_H
 
-#include <vector>
-
-#include "util/FileUtils.h"
-#include "cv/Image.h"
+#include "json.hpp"
 
 namespace romi {
 
-        using bytevector = std::vector<uint8_t>;
-        const int JPEG_QUALITY_90 = 90;
-        class ImageIO
+        class IConfigManager
         {
-
-        public:
-                static bool store_jpg(Image& image, const char *path);
-                static bool store_png(Image& image, const char *path);
-                static bool store_jpg_to_buffer(Image& image,
-                                                std::vector<uint8_t>& buffer);
-                
-                static bool load(Image& image, const char *filename);
-                static bool load_from_buffer(Image& image,
-                                             const std::vector<uint8_t>& image_data);
-
+            public:
+                virtual ~IConfigManager() = default;
+                virtual bool has_section(const std::string& name) = 0;
+                virtual void set_section(const std::string& name,
+                                         nlohmann::json& value) = 0;
+                virtual nlohmann::json get_section(const std::string& name) = 0;
         };
 }
 
-#endif // __ROMI_IMAGEIO_H
+#endif // __ROMI_ICONFIGMANAGER_H

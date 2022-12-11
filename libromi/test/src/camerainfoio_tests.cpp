@@ -1,5 +1,6 @@
 #include "gtest/gtest.h"
 #include "gmock/gmock.h"
+#include "mock_configmanager.h"
 #include "camera/CameraInfoIO.h"
 #include <iostream>
 
@@ -17,8 +18,18 @@ protected:
         static const constexpr double CY = 540.0;
         static const constexpr double K1 = 1.0;
         static const constexpr double K2 = 2.0;
+
+        std::shared_ptr<MockConfigManager> mock_manager_;
+        std::shared_ptr<IConfigManager> manager_;
+        nlohmann::json out_;
         
-	camerainfoio_tests() {
+	camerainfoio_tests()
+                : mock_manager_(),
+                  manager_(),
+                  out_() {
+                
+                mock_manager_ = std::make_shared<MockConfigManager>();
+                manager_ = mock_manager_;
         }
 
 	~camerainfoio_tests() override = default;
@@ -27,6 +38,12 @@ protected:
         }
 
 	void TearDown() override {
+        }
+
+
+public:
+        void set_output(const std::string&, nlohmann::json& out) {
+                out_ = out;
         }
 };
 
@@ -72,8 +89,10 @@ TEST_F(camerainfoio_tests, test_load_is_doing_it_right)
         //std::cout << json.dump(4) << std::endl;
         
         // Act
-        CameraInfoIO loader;
-        auto info = loader.load(json);
+        EXPECT_CALL(*mock_manager_, get_section(_))
+                .WillOnce(Return(json));
+        CameraInfoIO loader(manager_, "test");
+        auto info = loader.load();
 
         // Assert
         ASSERT_STREQ(info->get_id().c_str(), "id");
@@ -140,12 +159,14 @@ TEST_F(camerainfoio_tests, test_load_throws_error_for_unknown_type)
                         }}
         };
 
-        CameraInfoIO loader;
+        EXPECT_CALL(*mock_manager_, get_section(_))
+                .WillOnce(Return(json));
+        CameraInfoIO loader(manager_, "test");
 
         // Act
         
         try {
-                loader.load(json);
+                loader.load();
                 FAIL() << "Expected std::runtime_error";
         }  catch (std::runtime_error const &re) {
                 // Assert
@@ -183,12 +204,14 @@ TEST_F(camerainfoio_tests, test_load_throws_error_for_unknown_distortion)
                         }}
         };
 
-        CameraInfoIO loader;
+        EXPECT_CALL(*mock_manager_, get_section(_))
+                .WillOnce(Return(json));
+        CameraInfoIO loader(manager_, "test");
 
         // Act
         
         try {
-                loader.load(json);
+                loader.load();
                 FAIL() << "Expected std::runtime_error";
         }  catch (std::runtime_error const &re) {
                 // Assert
@@ -240,14 +263,20 @@ TEST_F(camerainfoio_tests, test_store)
                         }}
         };
 
-        CameraInfoIO loader;
-        auto info = loader.load(json);
+
+        EXPECT_CALL(*mock_manager_, get_section(_))
+                .WillOnce(Return(json));
+        EXPECT_CALL(*mock_manager_, set_section(_, _))
+                .WillOnce(Invoke(this, &camerainfoio_tests::set_output));
+        
+        CameraInfoIO loader(manager_, "test");
+        auto info = loader.load();
         
         // Act
-        nlohmann::json out = loader.store(info);
+        loader.store(*info);
         
         // Assert
-        bool same = (json == out);
+        bool same = (json == out_);
         ASSERT_EQ(same, true);
 }
 

@@ -22,32 +22,29 @@
 
  */
 
-#ifndef __ROMI_IMAGEIO_H
-#define __ROMI_IMAGEIO_H
+#ifndef __ROMI_IALARMCLOCK_H
+#define __ROMI_IALARMCLOCK_H
 
-#include <vector>
-
-#include "util/FileUtils.h"
-#include "cv/Image.h"
+#include <memory>
+#include "util/IAlarmClockListener.h"
 
 namespace romi {
 
-        using bytevector = std::vector<uint8_t>;
-        const int JPEG_QUALITY_90 = 90;
-        class ImageIO
+        class IAlarmClock
         {
-
         public:
-                static bool store_jpg(Image& image, const char *path);
-                static bool store_png(Image& image, const char *path);
-                static bool store_jpg_to_buffer(Image& image,
-                                                std::vector<uint8_t>& buffer);
-                
-                static bool load(Image& image, const char *filename);
-                static bool load_from_buffer(Image& image,
-                                             const std::vector<uint8_t>& image_data);
+                virtual ~IAlarmClock() = default;
 
+                virtual void set_listener(std::shared_ptr<IAlarmClockListener>& listener) = 0;
+                // hour: [0, 23]
+                // minute: [0, 59]
+                virtual void add_wakeup_time(uint8_t hour, uint8_t minute) = 0;
+                virtual void clear() = 0;
+                virtual void start() = 0;
+                virtual bool check() = 0;
+                virtual bool check_at(uint8_t hour, uint8_t minute) = 0;
         };
 }
 
-#endif // __ROMI_IMAGEIO_H
+#endif
+

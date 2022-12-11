@@ -30,7 +30,7 @@ namespace romi {
 
         using ObjectMap = std::map<std::string, std::shared_ptr<rcom::IRPCHandler>>;
         
-        class RemoteObjectsAdaptor : public rcom::IRPCHandler
+        class RemoteObjectsAdapter : public rcom::IRPCHandler
         {
         protected:
 
@@ -41,8 +41,8 @@ namespace romi {
                 rcom::IRPCHandler *get_adaptor(const std::string& id);
                 
         public:
-                RemoteObjectsAdaptor();
-                ~RemoteObjectsAdaptor() override = default;
+                RemoteObjectsAdapter();
+                ~RemoteObjectsAdapter() override = default;
 
                 void add(const std::string& id,
                          std::shared_ptr<rcom::IRPCHandler>& adaptor);

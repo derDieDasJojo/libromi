@@ -22,49 +22,50 @@
 
  */
 
+#include <stdlib.h>
+#include <time.h>
+#include <cstdlib>
 #include "util/FileUtils.h"
 #include "util/Logger.h"
-#include "camera/FileCamera.h"
+#include "camera/FakeCamera.h"
 
 namespace romi {
 
-        FileCamera::FileCamera(const std::string& filename)
-                : filename_(filename),
-                  image_(),
+        FakeCamera::FakeCamera(size_t width, size_t height, int32_t fps)
+                : width_(width),
+                  height_(height),
+                  fps_(fps),
+                  image_(Image::RGB, width, height),
                   jpeg_()
         {
-                if (filename_.length() == 0)
-                        throw std::runtime_error("FileCamera: Invalid filename");
-                
-                if (!load_image()) {
-                        r_err("Failed to load the file: %s", filename_.c_str());
-                        throw std::runtime_error("FileCamera::open failed");
+                make_image();
+                make_jpeg();
+        }
+
+        void FakeCamera::make_image()
+        {
+                srand((unsigned int) time(nullptr)); // Should not be done here
+                std::vector<float>& buffer = image_.data();
+                for (size_t i = 0; i < buffer.size(); i++) {
+                        buffer[i] = (float) rand() / (float) RAND_MAX;
                 }
-                
-                load_jpeg();
         }
 
-        bool FileCamera::load_image()
+        void FakeCamera::make_jpeg()
         {
-                return ImageIO::load(image_, filename_.c_str());
+                std::vector<uint8_t> buffer;
+                ImageIO::store_jpg_to_buffer(image_, buffer);
+                jpeg_.append(buffer.data(), buffer.size());
         }
 
-        void FileCamera::load_jpeg()
-        {
-            std::vector<uint8_t> image_data;
-            jpeg_.clear();
-            FileUtils::TryReadFileAsVector(filename_, image_data);
-            jpeg_.append(image_data.data(), image_data.size());
-        }
-
-        bool FileCamera::set_value(const std::string& name, double value)
+        bool FakeCamera::set_value(const std::string& name, double value)
         {
                 (void) name;
                 (void) value;
                 return true;
         }
         
-        bool FileCamera::select_option(const std::string& name,
+        bool FakeCamera::select_option(const std::string& name,
                                        const std::string& value)
         {
                 (void) name;
@@ -72,33 +73,33 @@ namespace romi {
                 return true;
         }
         
-        bool FileCamera::grab(Image &image)
+        bool FakeCamera::grab(Image &image)
         {
                 image = image_;
                 return true;
         }
 
-        rcom::MemBuffer& FileCamera::grab_jpeg()
+        rcom::MemBuffer& FakeCamera::grab_jpeg()
         {
             return jpeg_;
         }
 
-        bool FileCamera::power_up()
+        bool FakeCamera::power_up()
         {
                 return true;
         }
         
-        bool FileCamera::power_down()
+        bool FakeCamera::power_down()
         {
                 return true;
         }
         
-        bool FileCamera::stand_by()
+        bool FakeCamera::stand_by()
         {
                 return true;
         }
         
-        bool FileCamera::wake_up()
+        bool FakeCamera::wake_up()
         {
                 return true;
         }

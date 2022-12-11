@@ -108,6 +108,8 @@ namespace romi {
                 static constexpr const char* kResolution820x616 = "820x616";
                 static constexpr const char* kResolution1920x1080 = "1920x1080"; 
                 static constexpr const char* kResolution640x480 = "640x480"; 
+                static constexpr const char* kFramerate = "framerate"; 
+                static constexpr const char* kBitrate = "bitrate"; 
                 static constexpr const char* kExposureMode = "exposure-mode"; 
                 static constexpr const char* kExposureAuto = "auto"; 
                 static constexpr const char* kExposureOff = "off"; 
@@ -124,12 +126,16 @@ namespace romi {
                 virtual ~ICameraSettings() = default;
 
                 virtual nlohmann::json get_all() = 0;
+                
                 virtual double get_value(const std::string& name) = 0;
                 virtual bool set_value(const std::string& name, double value) = 0;
+                virtual void get_value_names(std::vector<std::string>& list) = 0;
+                
                 virtual std::string& get_option(const std::string& name,
                                                 std::string& value) = 0;
                 virtual bool select_option(const std::string& name,
                                            const std::string& value) = 0;
+                virtual void get_option_names(std::vector<std::string>& list) = 0;
                 
                 //virtual void list_settings(std::vector<CameraSettingInfo>& settings) = 0;
         };

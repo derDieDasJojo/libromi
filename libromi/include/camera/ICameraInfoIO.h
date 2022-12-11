@@ -36,8 +36,8 @@ namespace romi {
         public:
                 virtual ~ICameraInfoIO() = default;
 
-                virtual std::unique_ptr<ICameraInfo> load(nlohmann::json& json) = 0;
-                virtual nlohmann::json store(std::unique_ptr<ICameraInfo>& info) = 0;
+                virtual std::unique_ptr<ICameraInfo> load() = 0;
+                virtual void store(ICameraInfo& info) = 0;
         };
 }
 

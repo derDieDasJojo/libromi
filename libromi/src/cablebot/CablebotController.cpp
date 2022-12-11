@@ -21,33 +21,25 @@
   <http://www.gnu.org/licenses/>.
 
  */
-
-#ifndef __ROMI_IMAGEIO_H
-#define __ROMI_IMAGEIO_H
-
-#include <vector>
-
-#include "util/FileUtils.h"
-#include "cv/Image.h"
+#include "cablebot/CablebotController.h"
 
 namespace romi {
 
-        using bytevector = std::vector<uint8_t>;
-        const int JPEG_QUALITY_90 = 90;
-        class ImageIO
+        CablebotController::CablebotController(std::shared_ptr<ICablebotProgramList>& programs,
+                                               std::shared_ptr<IAlarmClock>& alarmclock)
+                : programs_(programs),
+                  alarmclock_(alarmclock)
         {
+                program_alarmclock();
+                alarmclock_->start();
+        }
 
-        public:
-                static bool store_jpg(Image& image, const char *path);
-                static bool store_png(Image& image, const char *path);
-                static bool store_jpg_to_buffer(Image& image,
-                                                std::vector<uint8_t>& buffer);
-                
-                static bool load(Image& image, const char *filename);
-                static bool load_from_buffer(Image& image,
-                                             const std::vector<uint8_t>& image_data);
-
-        };
+        void CablebotController::program_alarmclock()
+        {
+                alarmclock_->clear();
+                for (size_t i = 0; i < programs_->count(); i++) {
+                        auto program = programs_->get(i);
+                        alarmclock_->add_wakeup_time(program->hour(), program->minute());
+                }
+        }
 }
-
-#endif // __ROMI_IMAGEIO_H

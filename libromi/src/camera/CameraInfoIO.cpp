@@ -33,12 +33,17 @@
 
 namespace romi {
         
-        CameraInfoIO::CameraInfoIO()
+        CameraInfoIO::CameraInfoIO(std::shared_ptr<IConfigManager>& config,
+                                   const std::string& section)
+                : config_(config),
+                  section_(section)
         {
         }
 
-        std::unique_ptr<ICameraInfo> CameraInfoIO::load(nlohmann::json& json)
+        std::unique_ptr<ICameraInfo> CameraInfoIO::load()
         {
+                nlohmann::json json = config_->get_section(section_);
+                        
                 std::string camera_type = json[kCameraType];
                 
                 std::unique_ptr<ICameraIntrinsics> intrinsics
@@ -136,41 +141,41 @@ namespace romi {
                 return result;
         }
 
-        nlohmann::json CameraInfoIO::store(std::unique_ptr<ICameraInfo>& info)
+        void CameraInfoIO::store(ICameraInfo& info)
         {
-                ICameraIntrinsics& intrinsics = info->get_intrinsics();
+                ICameraIntrinsics& intrinsics = info.get_intrinsics();
                 double fx, fy, cx, cy;
                 intrinsics.get_focal_length(fx, fy);
                 intrinsics.get_central_point(cx, cy);
 
-                ICameraDistortion& distortion = info->get_distortion();
+                ICameraDistortion& distortion = info.get_distortion();
                 std::vector<double> distortion_values;
                 distortion.get(distortion_values);
 
-                ICameraSettings& settings = info->get_settings();
+                ICameraSettings& settings = info.get_settings();
 
                 nlohmann::json json{
-                        {CameraInfoIO::kCameraType, info->get_type()},
-                        {CameraInfoIO::kCameraID, info->get_id()},
-                        {CameraInfoIO::kCameraName, info->get_name()},
-                        {CameraInfoIO::kCameraLens, info->get_lens()},
+                        {CameraInfoIO::kCameraType, info.get_type()},
+                        {CameraInfoIO::kCameraID, info.get_id()},
+                        {CameraInfoIO::kCameraName, info.get_name()},
+                        {CameraInfoIO::kCameraLens, info.get_lens()},
                         {CameraInfoIO::kSensor,
                                 {
                                         {CameraInfoIO::kSensorResolution,
-                                                {info->get_sensor_resolution().first,
-                                                                info->get_sensor_resolution().second}},
+                                                {info.get_sensor_resolution().first,
+                                                                info.get_sensor_resolution().second}},
                                         {CameraInfoIO::kSensorDimensions,
-                                                {info->get_sensor_dimensions().first,
-                                                                info->get_sensor_dimensions().second}}
+                                                {info.get_sensor_dimensions().first,
+                                                                info.get_sensor_dimensions().second}}
                                 }},
                         {CameraInfoIO::kCalibration,
                                 {
                                         {CameraInfoIO::kCalibrationDate,
-                                                        info->get_calibration_date()},
+                                                        info.get_calibration_date()},
                                         {CameraInfoIO::kCalibrationPerson,
-                                                        info->get_calibration_person()},
+                                                        info.get_calibration_person()},
                                         {CameraInfoIO::kCalibrationMethod,
-                                                        info->get_calibration_method()}
+                                                        info.get_calibration_method()}
                                 }},
                         {CameraInfoIO::kIntrinsics,
                                 {
@@ -189,6 +194,6 @@ namespace romi {
                                 }}
                 };
 
-                return json;
+                config_->set_section(section_, json);
         }
 }

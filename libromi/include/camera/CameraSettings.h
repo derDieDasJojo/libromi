@@ -39,13 +39,16 @@ namespace romi {
                 ~CameraSettings() override = default;
 
                 nlohmann::json get_all() override;
-                
+
                 double get_value(const std::string& name) override;
                 bool set_value(const std::string& name, double value) override;
+                void get_value_names(std::vector<std::string>& list) override;
+                
                 std::string& get_option(const std::string& name,
                                         std::string& value) override;
                 bool select_option(const std::string& name,
                                    const std::string& value) override;
+                void get_option_names(std::vector<std::string>& list) override;
         };
 }
 

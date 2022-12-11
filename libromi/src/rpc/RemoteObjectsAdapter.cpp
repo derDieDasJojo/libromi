@@ -21,16 +21,18 @@
   <http://www.gnu.org/licenses/>.
 
  */
+#include <iostream>
 #include "rpc/RemoteObjectsAdapter.h"
+#include <util/Logger.h>
 
 namespace romi {
 
-        RemoteObjectsAdaptor::RemoteObjectsAdaptor()
+        RemoteObjectsAdapter::RemoteObjectsAdapter()
                 : map_()
         {
         }
         
-        void RemoteObjectsAdaptor::execute(const std::string& method,
+        void RemoteObjectsAdapter::execute(const std::string& method,
                                            nlohmann::json& params,
                                            nlohmann::json& result,
                                            rcom::RPCError& error)
@@ -48,12 +50,13 @@ namespace romi {
                         }
                         
                 } else {
+                        r_warn("RemoteObjectsAdapter::execute (TXT): missing 'object-id'");
                         error.code = 1;
                         error.message = "Missing object-id parameter";
                 }
         }
         
-        void RemoteObjectsAdaptor::execute(const std::string& method,
+        void RemoteObjectsAdapter::execute(const std::string& method,
                                            nlohmann::json& params,
                                            rcom::MemBuffer& result,
                                            rcom::RPCError &error)
@@ -71,16 +74,17 @@ namespace romi {
                         }
                         
                 } else {
+                        r_warn("RemoteObjectsAdapter::execute (BIN): missing 'object-id'");                        
                         error.code = 1;
                         error.message = "Missing object-id parameter";
                 }
         }
 
-        rcom::IRPCHandler *RemoteObjectsAdaptor::get_adaptor(const std::string& id)
+        rcom::IRPCHandler *RemoteObjectsAdapter::get_adaptor(const std::string& id)
         {
                 rcom::IRPCHandler *result = nullptr;
                 ObjectMap::iterator it;
-
+                
                 it = map_.find(id);
                 if (it != map_.end()) {
                         result = it->second.get();
@@ -89,7 +93,7 @@ namespace romi {
                 return result;
         }
 
-        void RemoteObjectsAdaptor::add(const std::string& id,
+        void RemoteObjectsAdapter::add(const std::string& id,
                                        std::shared_ptr<rcom::IRPCHandler>& ptr)
         {
                 map_.insert(std::pair<std::string, std::shared_ptr<rcom::IRPCHandler>>(id, ptr));

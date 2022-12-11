@@ -29,12 +29,30 @@
 
 namespace romi {
 
-        const int MILLISECONDS_IN_SECOND = 1000;
+        const double MILLISECONDS_IN_SECOND = 1000.0;
+        
         double Clock::time()
         {
                 using namespace std::chrono;
                 milliseconds millisecs = duration_cast< milliseconds >(system_clock::now().time_since_epoch());
                 return static_cast<double>(millisecs.count()) / MILLISECONDS_IN_SECOND;
+        }
+        
+        Date Clock::date()
+        {
+                Date d;
+                using namespace std::chrono;
+                system_clock::time_point now = system_clock::now();
+                time_t tt = system_clock::to_time_t(now);
+                struct tm local_tm;
+                localtime_r(&tt, &local_tm);
+                d.year_ = (int16_t) (1900 + local_tm.tm_year); 
+                d.month_ = (uint8_t) local_tm.tm_mon; 
+                d.day_ = (uint8_t) local_tm.tm_mday; 
+                d.hour_ = (uint8_t) local_tm.tm_hour; 
+                d.minute_ = (uint8_t) local_tm.tm_min; 
+                d.second_ = (uint8_t) local_tm.tm_sec;
+                return d;
         }
 
         std::string Clock::datetime_compact_string()

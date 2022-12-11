@@ -7,7 +7,8 @@ include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/mock
 
 set(SRCS_CLOCK
   src/tests_main.cpp
-  src/Clock_tests.cpp)
+  src/Clock_tests.cpp
+  src/alarmclock_tests.cpp)
 
 add_executable(libromi_unit_tests_clock ${SRCS_CLOCK})
 

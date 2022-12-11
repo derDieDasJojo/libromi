@@ -22,8 +22,8 @@
 
  */
 
-#ifndef __ROMI_FILECAMERA_H
-#define __ROMI_FILECAMERA_H
+#ifndef __ROMI_FAKECAMERA_H
+#define __ROMI_FAKECAMERA_H
 
 #include <string>
 #include <stdexcept>
@@ -32,23 +32,25 @@
 
 namespace romi {
 
-        class FileCamera : public ICamera
+        class FakeCamera : public ICamera
         {
         public:
-                static constexpr const char *ClassName = "file-camera";
+                static constexpr const char *ClassName = "fake-camera";
                 
         protected:
-                std::string filename_;
+                size_t width_;
+                size_t height_;
+                int32_t fps_;
                 Image image_;
                 rcom::MemBuffer jpeg_;
                 
-                bool load_image();
-                void load_jpeg();
+                void make_image();
+                void make_jpeg();
                 
         public:
                 
-                explicit FileCamera(const std::string& filename);
-                ~FileCamera() override = default;
+                explicit FakeCamera(size_t width, size_t height, int32_t fps);
+                ~FakeCamera() override = default;
         
                 bool grab(Image &image) override;
                 rcom::MemBuffer& grab_jpeg() override;
@@ -65,4 +67,4 @@ namespace romi {
         };
 }
 
-#endif // __ROMI_FILECAMERA_H
+#endif // __ROMI_FAKECAMERA_H

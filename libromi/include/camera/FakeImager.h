@@ -22,8 +22,8 @@
 
  */
 
-#ifndef __ROMI_FAKE_IMAGER_H
-#define __ROMI_FAKE_IMAGER_H
+#ifndef __ROMI_FAKEIMAGER_H
+#define __ROMI_FAKEIMAGER_H
 
 #include "api/IImager.h"
 
@@ -59,4 +59,4 @@ namespace romi {
         };
 }
 
-#endif // __ROMI_FAKE_IMAGER_H
+#endif // __ROMI_FAKEIMAGER_H

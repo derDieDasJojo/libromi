@@ -21,33 +21,29 @@
   <http://www.gnu.org/licenses/>.
 
  */
-
-#ifndef __ROMI_IMAGEIO_H
-#define __ROMI_IMAGEIO_H
+#ifndef __ROMI_CABLEBOTPROGRAMLIST_H
+#define __ROMI_CABLEBOTPROGRAMLIST_H
 
 #include <vector>
-
-#include "util/FileUtils.h"
-#include "cv/Image.h"
+#include "cablebot/ICablebotProgramList.h"
 
 namespace romi {
 
-        using bytevector = std::vector<uint8_t>;
-        const int JPEG_QUALITY_90 = 90;
-        class ImageIO
+        class CablebotProgramList : public ICablebotProgramList
         {
-
-        public:
-                static bool store_jpg(Image& image, const char *path);
-                static bool store_png(Image& image, const char *path);
-                static bool store_jpg_to_buffer(Image& image,
-                                                std::vector<uint8_t>& buffer);
+        protected:
+                std::vector<std::shared_ptr<ICablebotProgram>> list_;
                 
-                static bool load(Image& image, const char *filename);
-                static bool load_from_buffer(Image& image,
-                                             const std::vector<uint8_t>& image_data);
+        public:
+                CablebotProgramList();
+                ~CablebotProgramList() override = default;
+                
+                size_t count() override;
+                std::shared_ptr<ICablebotProgram> get(size_t index) override;
+                std::shared_ptr<ICablebotProgram> find(uint8_t hour, uint8_t minute) override;
+                void insert(std::shared_ptr<ICablebotProgram>& program) override;
+        };        
 
-        };
 }
 
-#endif // __ROMI_IMAGEIO_H
+#endif // __ROMI_CABLEBOTPROGRAM_H

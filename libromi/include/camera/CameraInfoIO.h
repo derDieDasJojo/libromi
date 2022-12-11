@@ -25,12 +25,17 @@
 #ifndef __ROMI_CAMERAINFOIO_H
 #define __ROMI_CAMERAINFOIO_H
 
+#include "api/IConfigManager.h"
 #include "camera/ICameraInfoIO.h"
 
 namespace romi {
         
         class CameraInfoIO : public ICameraInfoIO
         {
+        protected:
+                std::shared_ptr<IConfigManager> config_;
+                const std::string section_;
+                
         public:
                 static constexpr const char *kCameraType = "type";
                 static constexpr const char *kCameraID = "id";
@@ -53,11 +58,12 @@ namespace romi {
                 static constexpr const char *kDistortionType = "type";
                 static constexpr const char *kDistortionValues = "values";
                 
-                CameraInfoIO();
+                CameraInfoIO(std::shared_ptr<IConfigManager>& config,
+                             const std::string& section);
                 ~CameraInfoIO() override = default;
 
-                std::unique_ptr<ICameraInfo> load(nlohmann::json& json) override;
-                nlohmann::json store(std::unique_ptr<ICameraInfo>& info) override;
+                std::unique_ptr<ICameraInfo> load() override;
+                void store(ICameraInfo& info) override;
 
         protected:
                 std::unique_ptr<ICameraInfo>

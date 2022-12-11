@@ -47,6 +47,15 @@ namespace romi {
                 return true;
         }
         
+        void CameraSettings::get_value_names(std::vector<std::string>& list)
+        {
+                for (auto it = settings_.begin(); it != settings_.end(); ++it) {
+                        if (it.value().is_number()) {
+                                list.push_back(it.key());
+                        }
+                }
+        }
+        
         std::string& CameraSettings::get_option(const std::string& name,
                                                 std::string& value)
         {
@@ -59,5 +68,14 @@ namespace romi {
         {
                 settings_[name] = value;
                 return true;
+        }
+        
+        void CameraSettings::get_option_names(std::vector<std::string>& list)
+        {
+                for (auto it = settings_.begin(); it != settings_.end(); ++it) {
+                        if (it.value().is_string()) {
+                                list.push_back(it.key());
+                        }
+                }
         }
 }

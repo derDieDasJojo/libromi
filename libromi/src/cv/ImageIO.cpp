@@ -51,6 +51,28 @@ namespace romi {
                 return retval;
         }
 
+        static void buffer_append(void *context, void *data, int size)
+        {
+                uint8_t *bytes = (uint8_t *) data;
+                std::vector<uint8_t> *buffer = (std::vector<uint8_t> *) context;
+                buffer->insert(buffer->end(), bytes, bytes + size);
+        }
+
+        bool ImageIO::store_jpg_to_buffer(Image& image,
+                                          std::vector<uint8_t>& buffer)
+        {
+                std::vector<uint8_t> pixels = image.export_byte_data();
+                int error = stbi_write_jpg_to_func(buffer_append,
+                                                   (void*) &buffer,
+                                                   (int) image.width(),
+                                                   (int) image.height(),
+                                                   (int) image.channels(),
+                                                   pixels.data(),
+                                                   JPEG_QUALITY_90);
+                bool retval = (error != 0);
+                return retval;
+        }
+
         // Loads an image. Converts to BW or RGB if alpha channel is included in original.
         bool ImageIO::load(Image& image, const char *filename)
         {

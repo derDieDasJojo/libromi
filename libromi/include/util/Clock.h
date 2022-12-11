@@ -35,6 +35,7 @@ namespace romi {
                 ~Clock() override = default;
                 
                 double time() override;
+                Date date() override; // In local calendar
                 std::string datetime_compact_string() override;
                 uint64_t timestamp() override;
                 // TBD: Move this out of clock

@@ -22,32 +22,33 @@
 
  */
 
-#ifndef __ROMI_IMAGEIO_H
-#define __ROMI_IMAGEIO_H
+#ifndef __ROMI_CONFIGMANAGER_H
+#define __ROMI_CONFIGMANAGER_H
 
-#include <vector>
-
-#include "util/FileUtils.h"
-#include "cv/Image.h"
+#include <filesystem>
+#include "api/IConfigManager.h"
 
 namespace romi {
 
-        using bytevector = std::vector<uint8_t>;
-        const int JPEG_QUALITY_90 = 90;
-        class ImageIO
+        class ConfigManager : public IConfigManager
         {
+        protected:
+                std::filesystem::path path_;
+                nlohmann::json config_;
 
-        public:
-                static bool store_jpg(Image& image, const char *path);
-                static bool store_png(Image& image, const char *path);
-                static bool store_jpg_to_buffer(Image& image,
-                                                std::vector<uint8_t>& buffer);
+                void load();
+                void store();
                 
-                static bool load(Image& image, const char *filename);
-                static bool load_from_buffer(Image& image,
-                                             const std::vector<uint8_t>& image_data);
-
+        public:
+                ConfigManager(std::filesystem::path& path);
+                ~ConfigManager() override = default;
+                
+                bool has_section(const std::string& name) override;
+                void set_section(const std::string& name,
+                                 nlohmann::json& value) override;
+                nlohmann::json get_section(const std::string& name) override;
         };
+
 }
 
-#endif // __ROMI_IMAGEIO_H
+#endif // __ROMI_CONFIGMANAGER_H

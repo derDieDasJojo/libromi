@@ -25,7 +25,10 @@
 #define __ROMI_CABLEBOT_H
 
 #include <memory>
+#include <IRomiSerialClient.h>
 #include "hal/ImagingDevice.h"
+#include "camera/ICameraInfoIO.h"
+#include "camera/ICameraInfo.h"
 
 namespace romi {
         
@@ -43,11 +46,23 @@ namespace romi {
                 static const constexpr char *kSerialBase = "/dev/serial0";
                 static const constexpr char *kSerialGimbal = "/dev/serial1";
                 
-                static std::unique_ptr<ImagingDevice> create(CameraMode mode,
-                                                             size_t width,
-                                                             size_t height,
-                                                             int32_t fps,
-                                                             uint32_t bitrate);
+                static std::unique_ptr<ImagingDevice>
+                create(std::shared_ptr<ICameraInfoIO>& io);
+                
+        protected:
+                static std::shared_ptr<romi::ICamera> make_camera(ICameraSettings& settings);
+                static std::shared_ptr<romi::ICamera> make_pi_camera(ICameraSettings& settings);
+                static std::shared_ptr<romi::ICamera> make_fake_camera(ICameraSettings& settings);
+                
+                static std::unique_ptr<romiserial::IRomiSerialClient> connect_base();
+                static std::unique_ptr<romiserial::IRomiSerialClient> connect_real_base();
+                static std::unique_ptr<romiserial::IRomiSerialClient> connect_fake_base();
+
+                static CameraMode get_mode(ICameraSettings& settings);
+                static void get_resolution(ICameraSettings& settings,
+                                           size_t& width, size_t& height);
+                static int32_t get_framerate(ICameraSettings& settings);
+                static uint32_t get_bitrate(ICameraSettings& settings);
         };
 }
 

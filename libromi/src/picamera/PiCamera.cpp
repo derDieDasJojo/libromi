@@ -98,7 +98,7 @@ namespace romi {
                 assert_implementation();
                 return impl_->grab_jpeg();
         }
-                
+
         bool PiCamera::set_value(const std::string& name, double value)
         {
                 SynchronizedCodeBlock sync(mutex_);
@@ -119,6 +119,8 @@ namespace romi {
                         result = set_shutter_speed((uint32_t) value);
                 } else if (name == ICameraSettings::kAnalogGain) {
                         result = set_analog_gain((float) value);
+                } else {
+                        r_warn("PiCamera::set_value: Unknown settings '%s'", name.c_str());
                 }
                 return result;
         }
@@ -135,8 +137,8 @@ namespace romi {
                 } else if (name == ICameraSettings::kExposureMode) {
                         result = set_exposure_mode(value);
                 } else {
-                        r_err("PiCamera::select_option: unknown option: %s",
-                              name.c_str());
+                        r_warn("PiCamera::select_option: Unknown option: %s",
+                               name.c_str());
                 }
                 return result;
         }
@@ -162,7 +164,7 @@ namespace romi {
                 }
                 return result;
         }
-        
+
         bool PiCamera::set_resolution(const std::string& value)
         { 
                bool result = true;
@@ -193,8 +195,10 @@ namespace romi {
         bool PiCamera::set_resolution(size_t width, size_t height)
         { 
                 bool result = false;
-                if (settings_.set_resolution(width, height)) {
-                        result = try_create_implementation();                        
+                if (settings_.width_ != width || settings_.height_ != height) {
+                        if (settings_.set_resolution(width, height)) {
+                                result = try_create_implementation();
+                        }
                 }
                 return result;
         }
@@ -203,11 +207,19 @@ namespace romi {
         {
                 bool result = false;
                 if (value == ICameraSettings::kStillMode) {
-                        settings_.mode_ = kStillMode;
-                        result = try_create_implementation();
+                        if (settings_.mode_ != kStillMode) {
+                                settings_.mode_ = kStillMode;
+                                result = try_create_implementation();
+                        } else {
+                                result = true;
+                        }
                 } else if (value == ICameraSettings::kVideoMode) {
-                        settings_.mode_ = kVideoMode;
-                        result = try_create_implementation();
+                        if (settings_.mode_ != kVideoMode) {
+                                settings_.mode_ = kVideoMode;
+                                result = try_create_implementation();
+                        } else {
+                                result = true;
+                        }
                 } else {
                         r_err("PiCamera::set_mode: invalid mode: %s", value.c_str());
                 }

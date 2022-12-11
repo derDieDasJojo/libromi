@@ -22,33 +22,30 @@
 
  */
 
-#ifndef __ROMI_FILECAMERA_H
-#define __ROMI_FILECAMERA_H
+#ifndef __ROMI_CAMERAWITHCONFIG_H
+#define __ROMI_CAMERAWITHCONFIG_H
 
-#include <string>
-#include <stdexcept>
-#include "cv/ImageIO.h"
 #include "api/ICamera.h"
+#include "camera/ICameraInfoIO.h"
 
 namespace romi {
 
-        class FileCamera : public ICamera
+        class CameraWithConfig : public ICamera
         {
-        public:
-                static constexpr const char *ClassName = "file-camera";
-                
         protected:
-                std::string filename_;
-                Image image_;
-                rcom::MemBuffer jpeg_;
-                
-                bool load_image();
-                void load_jpeg();
-                
+                std::shared_ptr<ICameraInfoIO> io_;
+                std::unique_ptr<ICameraInfo> info_;
+                std::shared_ptr<ICamera> camera_;
+
+                void apply_settings();
+                void apply_values();
+                void apply_options();
+
         public:
                 
-                explicit FileCamera(const std::string& filename);
-                ~FileCamera() override = default;
+                explicit CameraWithConfig(std::shared_ptr<ICameraInfoIO>& io,
+                                          std::shared_ptr<ICamera>& camera);
+                ~CameraWithConfig() override = default;
         
                 bool grab(Image &image) override;
                 rcom::MemBuffer& grab_jpeg() override;
@@ -65,4 +62,4 @@ namespace romi {
         };
 }
 
-#endif // __ROMI_FILECAMERA_H
+#endif // __ROMI_CAMERAWITHCONFIG_H

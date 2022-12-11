@@ -25,6 +25,7 @@
 #include <math.h>
 #include <limits.h>
 #include <stdexcept>
+#include <iostream>
 
 #include <rcom/json.hpp>
 
@@ -83,6 +84,8 @@ namespace romi {
                 nlohmann::json response;
                 
                 base_serial_->send(command, response);
+                
+                std::cout << "CablebotBase::send_base_command: " << response.dump(4) << std::endl;
                 
                 if (response.is_array()
                     && response[0].is_number()) {
@@ -189,6 +192,8 @@ namespace romi {
                 nlohmann::json response;
                 base_serial_->send("S", response);
 
+                std::cout << "CablebotBase::is_base_on_target: " << response.dump(4) << std::endl;
+                
                 bool success = (response[0] == 0.0);
                 if (!success) {
                         std::string message = response[1];
@@ -223,6 +228,8 @@ namespace romi {
             nlohmann::json response;
             base_serial_->send("P", response);
 
+            std::cout << "CablebotBase::get_base_position: " << response.dump(4) << std::endl;
+            
             bool success = (response[romiserial::kStatusCode] == 0);
             if (success) {
                     double steps = response[1];
