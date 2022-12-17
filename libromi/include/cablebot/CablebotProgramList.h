@@ -41,6 +41,7 @@ namespace romi {
                 size_t count() override;
                 std::shared_ptr<ICablebotProgram> get(size_t index) override;
                 std::shared_ptr<ICablebotProgram> find(uint8_t hour, uint8_t minute) override;
+                std::shared_ptr<ICablebotProgram> find(uint32_t id) override;
                 void insert(std::shared_ptr<ICablebotProgram>& program) override;
         };        
 

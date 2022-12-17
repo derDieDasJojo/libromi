@@ -22,24 +22,49 @@
 
  */
 
+#include <stdexcept>
 #include "cablebot/CablebotProgram.h"
+#include "util/Logger.h"
 
 namespace romi {
 
-        CablebotProgram::CablebotProgram(uint32_t id, uint8_t hour, uint8_t minute,
+        CablebotProgram::CablebotProgram(uint32_t id, const std::string& name,
+                                         uint8_t hour, uint8_t minute,
                                          double start, double length, double interval,
                                          double tilt, bool enabled)
-                : id_(id), hour_(hour), minute_(minute),
-                  start_(start), length_(length), interval_(interval),
-                  tilt_(tilt), enabled_(enabled) {
+                : id_(id),
+                  name_(),
+                  hour_(hour),
+                  minute_(minute),
+                  start_(start),
+                  length_(length),
+                  interval_(interval),
+                  tilt_(tilt),
+                  enabled_(enabled) {
+                set_name(name);
         }
 
-        uint32_t CablebotProgram::id()
+        uint32_t CablebotProgram::id() const
         {
                 return id_;
         }
         
-        uint8_t CablebotProgram::hour()
+        const std::string& CablebotProgram::name() const
+        {
+                return name_;
+        }
+        
+        void CablebotProgram::set_name(const std::string& name)
+        {
+                if (name.size() > kMaxNameLength) {
+                        r_err("CablebotProgram::set_name: Too long (len=%d < %d)",
+                              (int) name.size(), (int) kMaxNameLength);
+                        throw std::runtime_error("CablebotProgram::set_name: Too long");
+                }
+                name_ = name;
+        }
+        
+        uint8_t CablebotProgram::hour() const
         {
                 return hour_;
         }
@@ -49,7 +74,7 @@ namespace romi {
                 hour_ = hour;
         }
         
-        uint8_t CablebotProgram::minute()
+        uint8_t CablebotProgram::minute() const
         {
                 return minute_;
         }
@@ -59,7 +84,7 @@ namespace romi {
                 minute_ = minute;
         }
         
-        double CablebotProgram::start()
+        double CablebotProgram::start() const
         {
                 return start_;
         }
@@ -69,7 +94,7 @@ namespace romi {
                 start_ = start;
         }
         
-        double CablebotProgram::length()
+        double CablebotProgram::length() const
         {
                 return length_;
         }
@@ -79,7 +104,7 @@ namespace romi {
                 length_ = length;
         }
         
-        double CablebotProgram::interval()
+        double CablebotProgram::interval() const
         {
                 return interval_;
         }
@@ -89,7 +114,7 @@ namespace romi {
                 interval_ = interval;
         }
         
-        double CablebotProgram::tilt()
+        double CablebotProgram::tilt() const
         {
                 return tilt_;
         }
@@ -99,7 +124,7 @@ namespace romi {
                 tilt_ = tilt;
         }
         
-        bool CablebotProgram::is_enabled()
+        bool CablebotProgram::is_enabled() const
         {
                 return enabled_;
         }
@@ -107,5 +132,17 @@ namespace romi {
         void CablebotProgram::set_enabled(bool value)
         {
                 enabled_ = value;
+        }
+
+        void CablebotProgram::update(ICablebotProgram& new_values)
+        {
+                name_ = new_values.name();
+                hour_ = new_values.hour();
+                minute_ = new_values.minute();
+                start_ = new_values.start();
+                length_ = new_values.length();
+                interval_ = new_values.interval();
+                tilt_ = new_values.tilt();
+                enabled_ = new_values.is_enabled();
         }
 }

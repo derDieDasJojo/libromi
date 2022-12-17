@@ -37,6 +37,7 @@ namespace romi {
                 virtual size_t count() = 0;
                 virtual std::shared_ptr<ICablebotProgram> get(size_t index) = 0;
                 virtual std::shared_ptr<ICablebotProgram> find(uint8_t hour, uint8_t minute) = 0;
+                virtual std::shared_ptr<ICablebotProgram> find(uint32_t id) = 0;
                 virtual void insert(std::shared_ptr<ICablebotProgram>& program) = 0;
         };        
 }

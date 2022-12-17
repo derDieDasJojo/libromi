@@ -25,6 +25,7 @@
 #define __ROMI_I_CABLEBOTPROGRAMIO_H
 
 #include <memory>
+#include <rcom/json.hpp>
 #include "cablebot/ICablebotProgramList.h"
 
 namespace romi {
@@ -36,7 +37,6 @@ namespace romi {
                 
                 virtual std::unique_ptr<ICablebotProgramList> load() = 0;
                 virtual void store(ICablebotProgramList& info) = 0;
-
         };
 }
 

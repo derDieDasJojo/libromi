@@ -34,6 +34,7 @@ namespace romi {
         {
         public:
                 static const constexpr char *kID = "id";
+                static const constexpr char *kName = "name";
                 static const constexpr char *kHour = "hour";
                 static const constexpr char *kMinute = "minute";
                 static const constexpr char *kStart = "start-at";
@@ -46,8 +47,7 @@ namespace romi {
                 std::shared_ptr<IConfigManager> config_;
                 const std::string section_;
 
-                nlohmann::json convert(std::shared_ptr<ICablebotProgram>& program);
-                std::shared_ptr<ICablebotProgram> load_program(nlohmann::json json);
+                static nlohmann::json convert(std::shared_ptr<ICablebotProgram>& program);
                 
         public:
                 CablebotProgramIO(std::shared_ptr<IConfigManager>& config,
@@ -56,6 +56,10 @@ namespace romi {
                 
                 std::unique_ptr<ICablebotProgramList> load() override;
                 void store(ICablebotProgramList& info) override;
+                
+                static nlohmann::json to_json(ICablebotProgramList& info);
+                static std::unique_ptr<ICablebotProgramList> from_json(nlohmann::json& json);
+                static std::shared_ptr<ICablebotProgram> load_program(nlohmann::json json);
         };
 
 }

@@ -215,6 +215,7 @@ set(SOURCES
         include/cablebot/CablebotProgram.h
         include/cablebot/CablebotProgramIO.h
         include/cablebot/CablebotProgramList.h
+        include/cablebot/CablebotProgramListAdaptor.h
         include/cablebot/CablebotRunner.h
         include/cablebot/FakeMotorController.h
         include/cablebot/ICablebotProgram.h
@@ -274,7 +275,7 @@ set(SOURCES
         include/rpc/RemoteCameraMount.h
         include/rpc/RemoteFunctionCallNames.h
         include/rpc/RemoteNavigation.h
-        include/rpc/RemoteObjectsAdapter.h
+        include/rpc/RemoteObjectsAdaptor.h
         include/rpc/RemoteWeeder.h
         include/rpc/WeederAdaptor.h
         include/ui/ScriptList.h
@@ -311,6 +312,7 @@ set(SOURCES
         src/cablebot/CablebotProgram.cpp
         src/cablebot/CablebotProgramIO.cpp
         src/cablebot/CablebotProgramList.cpp
+        src/cablebot/CablebotProgramListAdaptor.cpp
         src/cablebot/CablebotRunner.cpp
         src/cablebot/FakeMotorController.cpp
         src/camera/CameraInfo.cpp
@@ -345,7 +347,7 @@ set(SOURCES
         src/rpc/RemoteCamera.cpp
         src/rpc/RemoteCameraMount.cpp
         src/rpc/RemoteNavigation.cpp
-        src/rpc/RemoteObjectsAdapter.cpp
+        src/rpc/RemoteObjectsAdaptor.cpp
         src/rpc/RemoteWeeder.cpp
         src/rpc/ScriptHubListener.cpp
         src/rpc/WeederAdaptor.cpp

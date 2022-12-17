@@ -41,13 +41,28 @@ namespace romi {
                 return list_[index];
         }
 
-        std::shared_ptr<ICablebotProgram> CablebotProgramList::find(uint8_t hour, uint8_t minute)
+        std::shared_ptr<ICablebotProgram> CablebotProgramList::find(uint8_t hour,
+                                                                    uint8_t minute)
         {
                 std::shared_ptr<ICablebotProgram> result;
                 for (size_t i = 0; i < count(); i++) {
                         std::shared_ptr<ICablebotProgram> tmp;
                         tmp = get(i);
                         if (tmp->hour() == hour && tmp->minute() == minute) {
+                                result = tmp;
+                                break;
+                        }
+                }
+                return result;
+        }
+
+        std::shared_ptr<ICablebotProgram> CablebotProgramList::find(uint32_t id)
+        {
+                std::shared_ptr<ICablebotProgram> result;
+                for (size_t i = 0; i < count(); i++) {
+                        std::shared_ptr<ICablebotProgram> tmp;
+                        tmp = get(i);
+                        if (tmp->id() == id) {
                                 result = tmp;
                                 break;
                         }

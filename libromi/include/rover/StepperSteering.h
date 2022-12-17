@@ -24,9 +24,6 @@
 #ifndef __ROMI_STEPPER_STEERING_H
 #define __ROMI_STEPPER_STEERING_H
 
-#include <thread>
-#include <mutex>
-#include <atomic>
 #include "rover/ISteering.h"
 #include "rover/ISteeringController.h"
 #include "rover/NavigationSettings.h"
@@ -49,9 +46,6 @@ namespace romi {
                 double max_angular_speed_;
                 double update_interval_;
                 double last_update_;
-                std::mutex mutex_;
-                std::unique_ptr<std::thread> thread_;
-                std::atomic<bool> quitting_;
                 
                 bool set_target(double target_left, double target_right);
                 int16_t radians_to_10th_of_degrees(double angle);
@@ -62,7 +56,7 @@ namespace romi {
                                 NavigationSettings& settings,
                                 int16_t steps_per_second,
                                 double steps_per_revolution);
-                ~StepperSteering() override;
+                ~StepperSteering() override = default;
                 
                 bool enable() override;
                 bool disable() override;
