@@ -23,6 +23,7 @@
  */
 
 // FIXME: Avoid pre-compiler macro
+#define PI_BUILD
 #ifdef PI_BUILD
 #include "picamera/PiCamera.h"
 #else
@@ -39,6 +40,7 @@
 #include "camera/FakeCamera.h"
 #include "cablebot/FakeMotorController.h"
 #include "camera/CameraWithConfig.h"
+#include "hal/I2C.h"
 
 namespace romi {
         
@@ -136,7 +138,7 @@ namespace romi {
         Cablebot::make_pi_camera(ICameraSettings& settings)
         {
 #ifdef PI_BUILD
-                std::unique_ptr<romi::PiCameraSettings> settings;
+                std::unique_ptr<romi::PiCameraSettings> pi_settings;
 
                 CameraMode mode = get_mode(settings);
                 size_t width, height;
@@ -149,18 +151,18 @@ namespace romi {
 
                         r_info("Camera: video mode, %d fps, %d bps",
                                (int) fps, (int) bitrate);
-                        settings = std::make_unique<romi::HQVideoCameraSettings>(width,
-                                                                                 height,
-                                                                                 fps);
-                        settings->bitrate_ = bitrate;
+                        pi_settings = std::make_unique<romi::HQVideoCameraSettings>(width,
+										    height,
+										    fps);
+                        pi_settings->bitrate_ = bitrate;
                         
                 } else if (mode == kStillMode) {
                         r_info("Camera: still mode.");
-                        settings = std::make_unique<romi::HQStillCameraSettings>(width,
-                                                                                 height);
+                        pi_settings = std::make_unique<romi::HQStillCameraSettings>(width,
+										    height);
                 }
                 
-                std::shared_ptr<ICamera> camera = romi::PiCamera::create(*settings);
+                std::shared_ptr<ICamera> camera = romi::PiCamera::create(*pi_settings);
                 return camera;
 #else
                 (void) settings;
