@@ -21,21 +21,21 @@
   <http://www.gnu.org/licenses/>.
 
  */
-#ifndef __ROMI_BLDCGIMBAL_H
-#define __ROMI_BLDCGIMBAL_H
+#ifndef __ROMI_BLDCGIMBALI2C_H
+#define __ROMI_BLDCGIMBALI2C_H
 
+#include "hal/II2C.h"
 #include "api/IGimbal.h"
-#include "IRomiSerialClient.h"
 
 namespace romi {
         
-        class BldcGimbal : public IGimbal
+        class BldcGimbalI2C : public IGimbal
         {
         protected:
 
                 static const constexpr double kDefaultPower = 0.4; // in range ]0,1] 
-                
-                romiserial::IRomiSerialClient& serial_;
+
+                II2C& bus_;
                 double power_;
 
                 double clamp(double angle_in_degrees);
@@ -43,8 +43,8 @@ namespace romi {
                 double arg_to_angle(double arg);
                 
         public:
-                BldcGimbal(romiserial::IRomiSerialClient& serial);
-                virtual ~BldcGimbal() = default;
+                BldcGimbalI2C(II2C& bus);
+                virtual ~BldcGimbalI2C() = default;
 
                 // bonus:
                 bool moveat(double wx, double wy, double wz); //override;
@@ -70,4 +70,4 @@ namespace romi {
         };
 }
 
-#endif // __ROMI_BLDCGIMBAL_H
+#endif // __ROMI_BLDCGIMBALI2C_H

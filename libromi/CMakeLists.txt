@@ -253,10 +253,13 @@ set(SOURCES
         include/fake/FakeScriptEngine.h
         include/fake/FakeWeeder.h
         include/hal/BldcGimbal.h
+        include/hal/BldcGimbalI2C.h
         include/hal/BrushMotorDriver.h
         include/hal/CNCAndGimbal.h
         include/hal/FakeGimbal.h
         include/hal/ICameraMount.h
+        include/hal/II2C.h
+        include/hal/I2C.h
         include/hal/ImagingDevice.h
         include/rpc/CNCAdaptor.h
         include/rpc/CameraAdaptor.h
@@ -335,10 +338,12 @@ set(SOURCES
         src/cv/slic.cpp
         src/fake/FakeScriptEngine.cpp
         src/hal/BldcGimbal.cpp
+        src/hal/BldcGimbalI2C.cpp
         src/hal/BrushMotorDriver.cpp
         src/hal/CNCAndGimbal.cpp
         src/hal/FakeGimbal.cpp
         src/hal/ImagingDevice.cpp
+        src/hal/I2C.cpp
         src/rpc/CNCAdaptor.cpp
         src/rpc/CameraAdaptor.cpp
         src/rpc/CameraMountAdaptor.cpp
