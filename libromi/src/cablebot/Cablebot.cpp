@@ -29,7 +29,7 @@
 #endif
         
 #include "cablebot/Cablebot.h"
-#include "hal/BldcGimbal.h"
+#include "hal/BldcGimbalI2C.h"
 #include "hal/FakeGimbal.h"
 #include "hal/CNCAndGimbal.h"
 #include "hal/ICameraMount.h"
@@ -42,21 +42,25 @@
 
 namespace romi {
         
-        std::unique_ptr<ImagingDevice> Cablebot::create(std::shared_ptr<ICameraInfoIO>& io)
+        std::unique_ptr<ImagingDevice> Cablebot::create(rcom::ILinux& linux,
+                                                        std::shared_ptr<ICameraInfoIO>& io)
         {
                 auto info = io->load();
                 
                 // Camera
-                std::shared_ptr<romi::ICamera> real_camera
+                std::shared_ptr<ICamera> real_camera
                         = make_camera(info->get_settings());
-                std::shared_ptr<romi::ICamera> camera
+                std::shared_ptr<ICamera> camera
                         = std::make_shared<CameraWithConfig>(io, real_camera);
 
+                // Gimbal
+                std::unique_ptr<IGimbal> gimbal = make_gimbal(linux);
+                
                 // Base
                 std::unique_ptr<romiserial::IRomiSerialClient> base_serial
                         = connect_base();
-                std::shared_ptr<romi::ICameraMount> mount
-                        = std::make_shared<romi::CablebotBase>(base_serial);
+                std::shared_ptr<ICameraMount> mount
+                        = std::make_shared<romi::CablebotBase>(base_serial, gimbal);
                         
                 // Cablebot
                 return std::make_unique<ImagingDevice>(camera, mount);
@@ -119,7 +123,7 @@ namespace romi {
                 return (uint32_t) settings.get_value(ICameraSettings::kBitrate);
         }
 
-        std::shared_ptr<romi::ICamera> Cablebot::make_camera(ICameraSettings& settings)
+        std::shared_ptr<ICamera> Cablebot::make_camera(ICameraSettings& settings)
         {
 #ifdef PI_BUILD
                 return make_pi_camera(settings);
@@ -128,7 +132,7 @@ namespace romi {
 #endif
         }
 
-        std::shared_ptr<romi::ICamera>
+        std::shared_ptr<ICamera>
         Cablebot::make_pi_camera(ICameraSettings& settings)
         {
 #ifdef PI_BUILD
@@ -156,7 +160,7 @@ namespace romi {
                                                                                  height);
                 }
                 
-                std::shared_ptr<romi::ICamera> camera = romi::PiCamera::create(*settings);
+                std::shared_ptr<ICamera> camera = romi::PiCamera::create(*settings);
                 return camera;
 #else
                 (void) settings;
@@ -164,14 +168,14 @@ namespace romi {
 #endif
         }
         
-        std::shared_ptr<romi::ICamera> Cablebot::make_fake_camera(ICameraSettings& settings)
+        std::shared_ptr<ICamera> Cablebot::make_fake_camera(ICameraSettings& settings)
         {
                 size_t width, height;
                 get_resolution(settings, width, height);
 
                 int32_t fps = get_framerate(settings);
                 
-                std::shared_ptr<romi::ICamera> camera
+                std::shared_ptr<ICamera> camera
                         = std::make_shared<FakeCamera>(width, height, fps);
                 return camera;
         }
@@ -205,5 +209,35 @@ namespace romi {
                 std::unique_ptr<romiserial::IRomiSerialClient> fake
                         = std::make_unique<FakeMotorController>("CablebotBase");
                 return fake;
+        }
+
+        std::unique_ptr<IGimbal> Cablebot::make_gimbal(rcom::ILinux& linux)
+        {
+#ifdef PI_BUILD
+                return make_i2c_gimbal(linux);
+#else
+                (void) linux;
+                return make_fake_gimbal();
+#endif
+        }
+
+        std::unique_ptr<IGimbal> Cablebot::make_i2c_gimbal(rcom::ILinux& linux)
+        {
+#ifdef PI_BUILD
+                std::unique_ptr<II2C> bus = std::make_unique<I2C>(linux,
+                                                                  kGimbalI2CDevice,
+                                                                  kGimbalI2CAddress);
+                std::unique_ptr<IGimbal> gimbal = std::make_unique<BldcGimbalI2C>(bus);
+                return gimbal;
+#else
+                (void) linux;
+                throw std::runtime_error("Cablebot::make_i2c_gimbal: Not implemented");
+#endif
+        }
+
+        std::unique_ptr<IGimbal> Cablebot::make_fake_gimbal()
+        {
+                std::unique_ptr<IGimbal> gimbal = std::make_unique<FakeGimbal>();
+                return gimbal;
         }
 }

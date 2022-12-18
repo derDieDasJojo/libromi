@@ -36,9 +36,6 @@ namespace romi {
                 static const uint8_t kBufferLength = 5;
                 static const uint8_t kCheckSumIndex = 4;
                 
-                static constexpr const char *kDefaultDevice = "/dev/i2c-1";
-                static const int kDefaultAddress = 11;
-                
                 rcom::ILinux& linux_;
                 std::string device_;
                 int address_;

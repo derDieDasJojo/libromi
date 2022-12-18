@@ -28,6 +28,8 @@
 #include <memory>
 #include <RomiSerialClient.h>
 #include "hal/ICameraMount.h"
+#include "api/IGimbal.h"
+
 
 namespace romi {
         
@@ -39,6 +41,7 @@ namespace romi {
                 static const constexpr double kDiameter = 0.0505;
                 
                 std::unique_ptr<romiserial::IRomiSerialClient> base_serial_;
+                std::unique_ptr<IGimbal> gimbal_;
                 CNCRange range_xyz_;
                 Range range_angles_;
                 double diameter_;
@@ -54,12 +57,14 @@ namespace romi {
                 bool disable_driver();
                 void try_moveto(double x, double ax, double relative_speed);
                 void base_moveto(double x, double relative_speed);
+                void gimbal_moveto(double ax, double relative_speed);
                 void synchronize_with_base(double timeout);
                 bool is_base_on_target();
                 bool get_base_position(v3& xyz); 
 
         public:
-                CablebotBase(std::unique_ptr<romiserial::IRomiSerialClient>& base_serial);
+                CablebotBase(std::unique_ptr<romiserial::IRomiSerialClient>& base_serial,
+                             std::unique_ptr<IGimbal>& gimbal);
                 virtual ~CablebotBase() = default;
 
 

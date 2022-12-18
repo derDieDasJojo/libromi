@@ -22,6 +22,7 @@
 
 */
 #include "hal/FakeGimbal.h"
+#include "util/Logger.h"
 
 namespace romi {
         
@@ -35,6 +36,7 @@ namespace romi {
         bool FakeGimbal::moveto(double x, double y, double z, double relative_speed)
         {
                 (void) relative_speed;
+                r_debug("FakeGimbal::moveto: x=%0.2f, y=%0.2f, z=%0.2f", x, y, z);
                 x_ = x;
                 y_ = y;
                 z_ = z;
@@ -57,6 +59,7 @@ namespace romi {
         
         bool FakeGimbal::homing()
         {
+                r_debug("FakeGimbal::homing");
                 x_ = 0.0;
                 y_ = 0.0;
                 z_ = 0.0;
@@ -80,11 +83,13 @@ namespace romi {
 
         bool FakeGimbal::power_up()
         {
+                r_debug("FakeGimbal::power_up");
                 return true;
         }
 
         bool FakeGimbal::power_down()
         {
+                r_debug("FakeGimbal::power_down");
                 return true;
         }
 

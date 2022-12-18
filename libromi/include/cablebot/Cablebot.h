@@ -26,9 +26,11 @@
 
 #include <memory>
 #include <IRomiSerialClient.h>
+#include <rcom/ILinux.h>
 #include "hal/ImagingDevice.h"
 #include "camera/ICameraInfoIO.h"
 #include "camera/ICameraInfo.h"
+#include "api/IGimbal.h"
 
 namespace romi {
         
@@ -45,14 +47,20 @@ namespace romi {
 
                 static const constexpr char *kSerialBase = "/dev/serial0";
                 static const constexpr char *kSerialGimbal = "/dev/serial1";
+                static const constexpr char *kGimbalI2CDevice = "/dev/i2c-1";
+                static const int kGimbalI2CAddress = 11;
                 
                 static std::unique_ptr<ImagingDevice>
-                create(std::shared_ptr<ICameraInfoIO>& io);
+                create(rcom::ILinux& linux,
+                       std::shared_ptr<ICameraInfoIO>& io);
                 
         protected:
                 static std::shared_ptr<romi::ICamera> make_camera(ICameraSettings& settings);
                 static std::shared_ptr<romi::ICamera> make_pi_camera(ICameraSettings& settings);
                 static std::shared_ptr<romi::ICamera> make_fake_camera(ICameraSettings& settings);
+                static std::unique_ptr<IGimbal> make_gimbal(rcom::ILinux& linux);
+                static std::unique_ptr<IGimbal> make_i2c_gimbal(rcom::ILinux& linux);
+                static std::unique_ptr<IGimbal> make_fake_gimbal();
                 
                 static std::unique_ptr<romiserial::IRomiSerialClient> connect_base();
                 static std::unique_ptr<romiserial::IRomiSerialClient> connect_real_base();

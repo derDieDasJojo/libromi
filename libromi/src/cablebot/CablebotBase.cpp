@@ -35,8 +35,10 @@
 
 namespace romi {
         
-        CablebotBase::CablebotBase(std::unique_ptr<romiserial::IRomiSerialClient>& base_serial)
+        CablebotBase::CablebotBase(std::unique_ptr<romiserial::IRomiSerialClient>& base_serial,
+                                   std::unique_ptr<IGimbal>& gimbal)
                 : base_serial_(std::move(base_serial)),
+                  gimbal_(std::move(gimbal)),
                   range_xyz_(),
                   range_angles_(),
                   diameter_(kDiameter),
@@ -105,6 +107,11 @@ namespace romi {
                                   double relative_speed)
         {
                 bool success = false;
+                
+                r_info("CablebotBase::moveto: moveto: x=%0.3f, y=%0.3f, z=%0.3f, "
+                       "ax=%0.3f, ay=%0.3f, az=%0.3f, speed: %0.3f",
+                       x, y, z, ax, ay, az, relative_speed);
+
                 try {
                         validate_xyz_coordinates(x, y, z);
                         validate_angles(ax, ay, az);
@@ -120,7 +127,7 @@ namespace romi {
         
         void CablebotBase::try_moveto(double x, double ax, double relative_speed)
         {
-                (void) ax;
+                gimbal_moveto(ax, relative_speed);
                 base_moveto(x, relative_speed);
                 synchronize_with_base(180.0); // Fixme: compute as distance x speed x factor
         }
@@ -154,6 +161,11 @@ namespace romi {
                         throw std::runtime_error("Cablebot::validate_speed: "
                                                  "Invalid speed");
                 }
+        }
+        
+        void CablebotBase::gimbal_moveto(double ax, double relative_speed)
+        {
+                gimbal_->moveto(ax, 0.0, 0.0, relative_speed);
         }
         
         void CablebotBase::base_moveto(double x, double relative_speed)
