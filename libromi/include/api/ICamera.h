@@ -25,10 +25,11 @@
 #ifndef __ROMI_ICAMERA_H
 #define __ROMI_ICAMERA_H
 
-#include "cv/Image.h"
 #include <rcom/json.hpp>
 #include <rcom/MemBuffer.h>
+#include "cv/Image.h"
 #include "api/IPowerDevice.h"
+#include "camera/ICameraSettings.h"
 
 namespace romi {
 
@@ -43,9 +44,10 @@ namespace romi {
                 virtual bool select_option(const std::string& name,
                                            const std::string& value) = 0;
 
+                virtual const ICameraSettings& get_settings() = 0;
                 
                 //virtual bool load_settings(const std::string& name, double value) = 0;
         };
 }
 
-#endif // __ROMI_CAMERA_H
+#endif // __ROMI_ICAMERA_H

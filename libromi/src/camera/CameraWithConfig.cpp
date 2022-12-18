@@ -126,5 +126,10 @@ namespace romi {
         {
                 return camera_->wake_up();
         }
+
+        const ICameraSettings& CameraWithConfig::get_settings()
+        {
+                return info_->get_settings();
+        }
 }
 

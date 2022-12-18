@@ -101,4 +101,9 @@ namespace romi {
                 r_debug("RemoteCamera::wake_up");
                 return execute_simple_request(MethodsPowerDevice::wake_up);
         }
+
+        const ICameraSettings& RemoteCamera::get_settings()
+        {
+                throw std::runtime_error("RemoteCamera::get_settings: not implemented");
+        }
 }

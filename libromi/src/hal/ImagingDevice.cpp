@@ -114,4 +114,9 @@ namespace romi {
                 return camera_->wake_up()
                         && mount_->wake_up();
         }
+
+        const ICameraSettings& ImagingDevice::get_settings()
+        {
+                return camera_->get_settings();
+        }
 }

@@ -102,5 +102,10 @@ namespace romi {
         {
                 return true;
         }
+
+        const ICameraSettings& FileCamera::get_settings()
+        {
+                throw std::runtime_error("FileCamera::get_settings: not implemented");
+        }
 }
 

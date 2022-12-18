@@ -103,5 +103,10 @@ namespace romi {
         {
                 return true;
         }
+
+        const ICameraSettings& FakeCamera::get_settings()
+        {
+                throw std::runtime_error("FakeCamera::get_settings: not implemented");
+        }
 }
 

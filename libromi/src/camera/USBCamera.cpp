@@ -149,4 +149,9 @@ namespace romi {
         {
                 return true;
         }
+
+        const ICameraSettings& USBCamera::get_settings()
+        {
+                throw std::runtime_error("USBCamera::get_settings: not implemented");
+        }
 }
