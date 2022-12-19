@@ -45,7 +45,7 @@ namespace romi {
                 void scan(ICablebotProgram& program);
                 void finalize();
                 void try_finalize();
-                bool moveto(double position);
+                bool moveto(double position, double angle);
                 bool grab_image(size_t counter);
                 bool store_image(rcom::MemBuffer& image, size_t counter);
                 std::string make_image_name(size_t counter);

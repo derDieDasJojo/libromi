@@ -228,7 +228,7 @@ namespace romi {
 #ifdef PI_BUILD
                 std::unique_ptr<II2C> bus = std::make_unique<I2C>(linux,
                                                                   kGimbalI2CDevice,
-                                                                  kGimbalI2CAddress);
+                                                                  11 /*kGimbalI2CAddress*/);
                 std::unique_ptr<IGimbal> gimbal = std::make_unique<BldcGimbalI2C>(bus);
                 return gimbal;
 #else

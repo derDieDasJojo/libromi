@@ -49,7 +49,7 @@ namespace romi {
                         auto program = programs_->find(hour, minute);
                         if (program)
                                 run(*program);
-                        else throw std::runtime_error("Couldn't find the program");
+                        //else throw std::runtime_error("Couldn't find the program");
                         
                 } catch (std::exception& e) {
                         r_err("CablebotRunner::try_run: Failed: %s", e.what());
@@ -79,10 +79,17 @@ namespace romi {
                 size_t counter = 0;
                 double position = program.start();
                 double end = program.start() + program.length();
+                double tilt = program.tilt();
 
                 r_debug("CablebotRunner::scan: Scanning");
         
-                bool success = moveto(position);
+                bool success = moveto(position, 0.0);
+                if (!success) {
+                        throw std::runtime_error("CablebotRunner::scan: Failed to "
+                                                 "move to straing position");;
+                }
+                
+                success = moveto(position, tilt);
                 if (!success) {
                         throw std::runtime_error("CablebotRunner::scan: Failed to "
                                                  "move to straing position");;
@@ -97,7 +104,7 @@ namespace romi {
                         if (position > end + 0.005f)
                                 break;
                                 
-                        success = moveto(position);
+                        success = moveto(position, tilt);
                         if (!success)
                                 break;
                         
@@ -125,11 +132,11 @@ namespace romi {
                 }
         }
 
-        bool CablebotRunner::moveto(double position)
+        bool CablebotRunner::moveto(double position, double angle)
         {
                 r_debug("CablebotRunner::moveto: Move to %.2f", position);
                 bool success = cablebot_.mount_->moveto(position, 0.0, 0.0,
-                                                        0.0, 0.0, 0.0,
+                                                        angle, 0.0, 0.0,
                                                         1.0);
                 if (!success) {
                         r_err("CablebotRunner::moveto: failed");

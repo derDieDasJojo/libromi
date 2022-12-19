@@ -37,46 +37,46 @@
 
 namespace romi {
 
-        struct AlarmTime {
-                uint8_t hour_;
-                uint8_t minute_;
+        // struct AlarmTime {
+        //         uint8_t hour_;
+        //         uint8_t minute_;
                 
-                AlarmTime(uint8_t hour, uint8_t minute)
-                        : hour_(hour),
-                          minute_(minute) {
-                        if (hour_ > 23)
-                                throw std::runtime_error("AlarmTime: invalid hour");
-                        if (minute_ > 59)
-                                throw std::runtime_error("AlarmTime: invalid minute");
-                }
-        };
+        //         AlarmTime(uint8_t hour, uint8_t minute)
+        //                 : hour_(hour),
+        //                   minute_(minute) {
+        //                 if (hour_ > 23)
+        //                         throw std::runtime_error("AlarmTime: invalid hour");
+        //                 if (minute_ > 59)
+        //                         throw std::runtime_error("AlarmTime: invalid minute");
+        //         }
+        // };
         
         class AlarmClock : public IAlarmClock
         {
         protected:
                 std::shared_ptr<IAlarmClockListener> listener_;
-                std::vector<AlarmTime> wakeup_times_;
+                // std::vector<AlarmTime> wakeup_times_;
                 std::unique_ptr<std::thread> thread_;
-                std::mutex mutex_;
+                // std::mutex mutex_;
                 bool running_;
                 uint8_t last_minute_;
                 
-                bool matches(AlarmTime& alarm_time, uint8_t hour, uint8_t minute);
+                // bool matches(AlarmTime& alarm_time, uint8_t hour, uint8_t minute);
                 void main_loop();
-                void wakeup(uint8_t hour, uint8_t minute);
                 void try_check();
+                bool check() /*override*/;
+                bool check_at(uint8_t hour, uint8_t minute) /*override*/;
+                void wakeup(uint8_t hour, uint8_t minute);
 
         public:
                 AlarmClock(std::shared_ptr<IAlarmClockListener>& listener);
                 ~AlarmClock() override;
 
                 void set_listener(std::shared_ptr<IAlarmClockListener>& listener) override;
-                void add_wakeup_time(uint8_t hour, uint8_t minute) override;
-                void clear() override;
+                // void add_wakeup_time(uint8_t hour, uint8_t minute) override;
+                // void clear() override;
                 void start() override;
                 
-                bool check() override;
-                bool check_at(uint8_t hour, uint8_t minute) override;
         };
 }
 

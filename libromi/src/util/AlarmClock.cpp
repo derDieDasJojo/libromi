@@ -32,9 +32,9 @@ namespace romi {
 
         AlarmClock::AlarmClock(std::shared_ptr<IAlarmClockListener>& listener)
                 : listener_(listener),
-                  wakeup_times_(),
+                  // wakeup_times_(),
                   thread_(),
-                  mutex_(),
+                  // mutex_(),
                   running_(true),
                   last_minute_(60)
         {
@@ -50,24 +50,24 @@ namespace romi {
 
         void AlarmClock::set_listener(std::shared_ptr<IAlarmClockListener>& listener)
         {
-                SynchronizedCodeBlock synchronize(mutex_);
+	  //SynchronizedCodeBlock synchronize(mutex_);
                 listener_ = listener;
         }
 
-        void AlarmClock::add_wakeup_time(uint8_t hour, uint8_t minute)
-        {
-                SynchronizedCodeBlock synchronize(mutex_);
-                wakeup_times_.emplace_back(hour, minute);
-        }
+        // void AlarmClock::add_wakeup_time(uint8_t hour, uint8_t minute)
+        // {
+        //         SynchronizedCodeBlock synchronize(mutex_);
+        //         wakeup_times_.emplace_back(hour, minute);
+        // }
         
-        void AlarmClock::clear()
-        {
-                wakeup_times_.clear();
-        }
+        // void AlarmClock::clear()
+        // {
+        //         wakeup_times_.clear();
+        // }
 
         void AlarmClock::start()
         {
-                SynchronizedCodeBlock synchronize(mutex_);
+	  //SynchronizedCodeBlock synchronize(mutex_);
                 if (!thread_) {
                         thread_ = std::make_unique<std::thread>(
                                 [this]() {
@@ -110,22 +110,22 @@ namespace romi {
 
         bool AlarmClock::check_at(uint8_t hour, uint8_t minute)
         {
-                SynchronizedCodeBlock synchronize(mutex_);
+	  //SynchronizedCodeBlock synchronize(mutex_);
                 bool alarm = false;
-                for (size_t i = 0; i < wakeup_times_.size(); i++) {
-                        if (matches(wakeup_times_[i], hour, minute)) {
+                // for (size_t i = 0; i < wakeup_times_.size(); i++) {
+                //         if (matches(wakeup_times_[i], hour, minute)) {
                                 wakeup(hour, minute);
-                                alarm = true;
-                        }
-                }
+                //                 alarm = true;
+                //         }
+                // }
                 return alarm;
         }
 
-        bool AlarmClock::matches(AlarmTime& alarm_time, uint8_t hour, uint8_t minute)
-        {
-                return (alarm_time.hour_ == hour
-                        && alarm_time.minute_ == minute);
-        }
+        // bool AlarmClock::matches(AlarmTime& alarm_time, uint8_t hour, uint8_t minute)
+        // {
+        //         return (alarm_time.hour_ == hour
+        //                 && alarm_time.minute_ == minute);
+        // }
 
         void AlarmClock::wakeup(uint8_t hour, uint8_t minute)
         {

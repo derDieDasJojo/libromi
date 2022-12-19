@@ -145,7 +145,7 @@ namespace romi {
         
         void CablebotBase::validate_angles(double ax, double ay, double az)
         {
-                if (!range_xyz_.is_inside(ax, ay, az)) {
+                if (!range_angles_.is_inside(ax, ay, az)) {
                         r_err("Cablebotbase::validate_angles: "
                               "Angles out of range: "
                               "(%.3f,%.3f,%.3f)", ax, ay, az);
@@ -165,6 +165,7 @@ namespace romi {
         
         void CablebotBase::gimbal_moveto(double ax, double relative_speed)
         {
+ 	        r_debug("CablebotBase::gimbal_moveto: %.2f", ax);
                 gimbal_->moveto(ax, 0.0, 0.0, relative_speed);
         }
         

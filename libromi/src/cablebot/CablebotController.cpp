@@ -30,16 +30,16 @@ namespace romi {
                 : programs_(programs),
                   alarmclock_(alarmclock)
         {
-                program_alarmclock();
-                alarmclock_->start();
+                // program_alarmclock();
+                // alarmclock_->start();
         }
 
         void CablebotController::program_alarmclock()
         {
-                alarmclock_->clear();
-                for (size_t i = 0; i < programs_->count(); i++) {
-                        auto program = programs_->get(i);
-                        alarmclock_->add_wakeup_time(program->hour(), program->minute());
-                }
+                // alarmclock_->clear();
+                // for (size_t i = 0; i < programs_->count(); i++) {
+                //         auto program = programs_->get(i);
+                //         alarmclock_->add_wakeup_time(program->hour(), program->minute());
+                // }
         }
 }

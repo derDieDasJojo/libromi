@@ -38,11 +38,11 @@ namespace romi {
                 virtual void set_listener(std::shared_ptr<IAlarmClockListener>& listener) = 0;
                 // hour: [0, 23]
                 // minute: [0, 59]
-                virtual void add_wakeup_time(uint8_t hour, uint8_t minute) = 0;
-                virtual void clear() = 0;
+                // virtual void add_wakeup_time(uint8_t hour, uint8_t minute) = 0;
+                // virtual void clear() = 0;
                 virtual void start() = 0;
-                virtual bool check() = 0;
-                virtual bool check_at(uint8_t hour, uint8_t minute) = 0;
+                // virtual bool check() = 0;
+                // virtual bool check_at(uint8_t hour, uint8_t minute) = 0;
         };
 }
 
