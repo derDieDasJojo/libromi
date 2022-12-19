@@ -99,6 +99,11 @@ namespace romi {
                 return impl_->grab_jpeg();
         }
 
+        const ICameraSettings& PiCamera::get_settings()
+        {
+                throw std::runtime_error("PiCamera::get_settings: not implemented");
+        }
+
         bool PiCamera::set_value(const std::string& name, double value)
         {
                 SynchronizedCodeBlock sync(mutex_);

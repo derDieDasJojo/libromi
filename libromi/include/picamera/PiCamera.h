@@ -56,6 +56,7 @@ namespace romi {
                 bool set_value(const std::string& name, double value) override;
                 bool select_option(const std::string& name,
                                    const std::string& value) override;
+                const ICameraSettings& get_settings() override;
 
                 bool power_up() override;
                 bool power_down() override;
