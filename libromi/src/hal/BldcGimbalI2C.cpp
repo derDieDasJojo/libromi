@@ -34,7 +34,10 @@ namespace romi {
                 set_zero();
                 reset();
                 motor_wake();
-                set_motor_power(0.75);
+                set_motor_power(40.0);
+                set_motor_position(0.0);
+		  //set_angle(0.0);
+		  //set_follow(true);
         }
 
         int BldcGimbalI2C::angle_to_arg(double angle)
@@ -69,7 +72,8 @@ namespace romi {
                 (void) phi_y;
                 (void) phi_z;
                 (void) relative_speed;
-                set_angle(phi_x);
+                //set_angle(phi_x);
+		set_motor_position(phi_x);
                 return true;
         }
 
@@ -120,6 +124,7 @@ namespace romi {
         
         void BldcGimbalI2C::set_angle(double angle)
         {
+ 	        r_debug("BldcGimbalI2C::set_angle: %.2f", angle);
                 int32_t value = scale_up(angle);
                 bus_->set(kAngle, value);
         }
