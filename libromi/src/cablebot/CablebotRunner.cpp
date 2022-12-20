@@ -26,15 +26,18 @@
 #include "cablebot/CablebotRunner.h"
 #include "util/ClockAccessor.h"
 #include "util/Logger.h"
+#include "camera/CameraInfoIO.h"
 
 namespace romi {
 
         CablebotRunner::CablebotRunner(std::shared_ptr<ICablebotProgramList>& programs,
                                        ImagingDevice& cablebot,
-                                       Session& session)
+                                       Session& session,
+                                       ICameraInfo& camera_info)
                 : programs_(programs),
                   cablebot_(cablebot),
-                  session_(session)
+                  session_(session),
+                  camera_info_(camera_info)
         {
         }
         
@@ -71,6 +74,10 @@ namespace romi {
                 r_debug("CablebotRunner::init: Scan starting");
                 
                 session_.start(program.observation_id());
+
+                nlohmann::json json = CameraInfoIO::to_json(camera_info_);
+                session_.store_metadata("camera", json);
+                
                 r_debug("CablebotRunner::init: Power up");
                 cablebot_.power_up();
         }

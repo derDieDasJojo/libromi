@@ -48,7 +48,7 @@ namespace romi {
                 void try_store_svg(const std::string &filename, const std::string& body, const std::string &observationId) override;
                 void try_store_txt(const std::string &filename, const std::string& text, const std::string &observationId) override;
                 void try_store_path(const std::string &filename, romi::Path &weeder_path, const std::string &observationId) override;
-                bool try_store_metadata(const std::string& name, nlohmann::json& data) override;
+                void try_store_metadata(const std::string& name, nlohmann::json& data) override;
 
                 inline static const std::string metadata_filename_ = "metadata.json";
 

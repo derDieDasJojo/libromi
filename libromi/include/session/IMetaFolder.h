@@ -54,7 +54,7 @@ namespace romi {
                 virtual void try_store_path(const std::string &filename,
                                             romi::Path &weeder_path,
                                             const std::string &observationId) = 0;
-                virtual bool try_store_metadata(const std::string& name,
+                virtual void try_store_metadata(const std::string& name,
                                                 nlohmann::json& data) = 0;
         };
 }

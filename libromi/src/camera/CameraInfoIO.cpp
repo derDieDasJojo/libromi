@@ -143,6 +143,12 @@ namespace romi {
 
         void CameraInfoIO::store(ICameraInfo& info)
         {
+                nlohmann::json json = to_json(info);
+                config_->set_section(section_, json);
+        }
+
+        nlohmann::json CameraInfoIO::to_json(ICameraInfo& info)
+        {
                 ICameraIntrinsics& intrinsics = info.get_intrinsics();
                 double fx, fy, cx, cy;
                 intrinsics.get_focal_length(fx, fy);
@@ -193,7 +199,6 @@ namespace romi {
                                                         distortion_values}
                                 }}
                 };
-
-                config_->set_section(section_, json);
+                return json;
         }
 }

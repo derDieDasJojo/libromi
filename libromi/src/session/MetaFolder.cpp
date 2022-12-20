@@ -183,7 +183,7 @@ namespace romi {
                 FileUtils::TryWriteStringAsFile((folderPath_ / metadata_filename_), (*metadata_).dump(4));
         }
 
-        bool MetaFolder::try_store_metadata(const std::string& name, nlohmann::json& data)
+        void MetaFolder::try_store_metadata(const std::string& name, nlohmann::json& data)
         {
                 (*metadata_)[name] = data;
                 save_metadata();
