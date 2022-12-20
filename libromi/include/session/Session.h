@@ -20,7 +20,7 @@
   along with this program.  If not, see
   <http://www.gnu.org/licenses/>.
 
- */
+*/
 #ifndef ROMI_ROVER_BUILD_AND_TEST_SESSION_H
 #define ROMI_ROVER_BUILD_AND_TEST_SESSION_H
 
@@ -37,21 +37,22 @@ namespace romi {
         class Session : public ISession {
         public:
                 Session() = delete;
-        explicit Session(const rcom::ILinux &linux, const std::string &base_directory,
-                         IRomiDeviceData &device_data, ISoftwareVersion &softwareVersion,
-                         std::shared_ptr<ILocationProvider> location);
-        ~Session() override = default;
-        void start(const std::string& observation_id) override;
-        void stop() override;
-        bool store_jpg(const std::string& name, Image& image)  override;
-        bool store_jpg(const std::string& name, rcom::MemBuffer& jpeg) override;
-        bool store_png(const std::string& name, Image& image)  override;
-        bool store_svg(const std::string& name, const std::string& body) override;
-        bool store_txt(const std::string& name, const std::string& body) override;
-        bool store_path(const std::string& filename, int32_t path_number, Path& weeder_path) override;
-        std::filesystem::path current_path() override;
-        std::filesystem::path base_directory() override;
-        std::filesystem::path create_session_file(const std::string& name) override;
+                explicit Session(const rcom::ILinux &linux, const std::string &base_directory,
+                                 IRomiDeviceData &device_data, ISoftwareVersion &softwareVersion,
+                                 std::shared_ptr<ILocationProvider> location);
+                ~Session() override = default;
+                void start(const std::string& observation_id) override;
+                void stop() override;
+                bool store_jpg(const std::string& name, Image& image)  override;
+                bool store_jpg(const std::string& name, rcom::MemBuffer& jpeg) override;
+                bool store_png(const std::string& name, Image& image)  override;
+                bool store_svg(const std::string& name, const std::string& body) override;
+                bool store_txt(const std::string& name, const std::string& body) override;
+                bool store_path(const std::string& filename, int32_t path_number, Path& weeder_path) override;
+                bool store_metadata(const std::string& name, nlohmann::json& data) override;
+                std::filesystem::path current_path() override;
+                std::filesystem::path base_directory() override;
+                std::filesystem::path create_session_file(const std::string& name) override;
 
         private:
                 const rcom::ILinux& linux_;

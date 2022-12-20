@@ -1,3 +1,26 @@
+/*
+  romi-rover
+
+  Copyright (C) 2019 Sony Computer Science Laboratories
+  Author(s) Peter Hanappe
+
+  romi-rover is collection of applications for the Romi Rover.
+
+  romi-rover is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful, but
+  WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program.  If not, see
+  <http://www.gnu.org/licenses/>.
+
+*/
 
 #include <iostream>
 #include "data_provider/JsonFieldNames.h"
@@ -6,12 +29,12 @@
 
 namespace romi {
         MetaFolder::MetaFolder(std::shared_ptr<IIdentityProvider> identityProvider,
-                           std::shared_ptr<ILocationProvider> locationProvider,
-                           std::filesystem::path folder_path)
+                               std::shared_ptr<ILocationProvider> locationProvider,
+                               std::filesystem::path folder_path)
                 : identityProvider_(std::move(identityProvider)),
                   locationProvider_(std::move(locationProvider)),
                   folderPath_(folder_path),
-                  meta_data_(),
+                  metadata_(),
                   metadata_file_mutex_() {
                 
                 if (nullptr == identityProvider_){
@@ -36,9 +59,9 @@ namespace romi {
         {
                 std::filesystem::create_directories(folderPath_);
 
-                meta_data_ = std::make_unique<nlohmann::json>();
-                (*meta_data_)[JsonFieldNames::romi_identity] = identityProvider_->identity();
-                SaveMetaData();
+                metadata_ = std::make_unique<nlohmann::json>();
+                (*metadata_)[JsonFieldNames::romi_identity] = identityProvider_->identity();
+                save_metadata();
         }
 
         void MetaFolder::add_file_metadata(const std::string &filename,
@@ -48,31 +71,31 @@ namespace romi {
                 newFile[JsonFieldNames::observation_id] = observationId;
                 newFile[JsonFieldNames::location] = locationProvider_->location();
                 newFile[JsonFieldNames::date_time] = romi::ClockAccessor::GetInstance()->datetime_compact_string();
-                (*meta_data_)[filename] = newFile;
-                SaveMetaData();
+                (*metadata_)[filename] = newFile;
+                save_metadata();
         }
 
-        void MetaFolder::CheckInput(Image& image) const
+        void MetaFolder::check_input(Image& image) const
         {
-                if (meta_data_ == nullptr)
+                if (metadata_ == nullptr)
                         throw std::runtime_error("Session not created");
                 if (image.data().empty())
                         throw std::runtime_error("Image data empty");
         }
 
-        void MetaFolder::CheckInput(const std::string& string_data,
+        void MetaFolder::check_input(const std::string& string_data,
                                     bool empty_ok) const
         {
                 (void) string_data;
-                if (meta_data_ == nullptr)
+                if (metadata_ == nullptr)
                         throw std::runtime_error("Session not created");
                 if (string_data.empty() && !empty_ok)
                         throw std::runtime_error("String data empty");
         }
 
-        void MetaFolder::CheckInput(rcom::MemBuffer& jpeg) const
+        void MetaFolder::check_input(rcom::MemBuffer& jpeg) const
         {
-                if (meta_data_ == nullptr)
+                if (metadata_ == nullptr)
                         throw std::runtime_error("Session not created");
                 if (jpeg.data().empty())
                         throw std::runtime_error("Image data empty");
@@ -83,7 +106,7 @@ namespace romi {
                                        const std::string &observationId)
         {
                 std::scoped_lock<std::recursive_mutex> scopedLock(metadata_file_mutex_);
-                CheckInput(image);
+                check_input(image);
                 auto filename_extension = build_filename_with_extension(filename, "jpg");
                 if (!ImageIO::store_jpg(image, (folderPath_ / filename_extension).c_str()))
                         throw std::runtime_error(std::string("try_store_jpg failed to write ")
@@ -96,7 +119,7 @@ namespace romi {
                                        const std::string &observationId)
         {
                 std::scoped_lock<std::recursive_mutex> scopedLock(metadata_file_mutex_);
-                CheckInput(jpeg);
+                check_input(jpeg);
                 auto filename_extension = build_filename_with_extension(filename, "jpg");
                 FileUtils::TryWriteVectorAsFile((folderPath_ / filename_extension), jpeg.data());
                 add_file_metadata(filename_extension, observationId);;
@@ -107,7 +130,7 @@ namespace romi {
                                        const std::string &observationId)
         {
                 std::scoped_lock<std::recursive_mutex> scopedLock(metadata_file_mutex_);
-                CheckInput(image);
+                check_input(image);
                 auto filename_extension = build_filename_with_extension(filename, "png");
                 if (!ImageIO::store_png(image, (folderPath_ / filename_extension).c_str()))
                         throw std::runtime_error(std::string("try_store_png failed to write ")
@@ -120,7 +143,7 @@ namespace romi {
                                        const std::string &observationId)
         {
                 std::scoped_lock<std::recursive_mutex> scopedLock(metadata_file_mutex_);
-                CheckInput(body, false);
+                check_input(body, false);
                 auto filename_extension = build_filename_with_extension(filename, "svg");
                 FileUtils::TryWriteStringAsFile((folderPath_ / filename_extension), body);
                 add_file_metadata(filename_extension, observationId);
@@ -131,7 +154,7 @@ namespace romi {
                                        const std::string &observationId)
         {
                 std::scoped_lock<std::recursive_mutex> scopedLock(metadata_file_mutex_);
-                CheckInput(text, true);
+                check_input(text, true);
                 auto filename_extension = build_filename_with_extension(filename, "txt");
                 FileUtils::TryWriteStringAsFile((folderPath_ / filename_extension), text);
                 add_file_metadata(filename_extension, observationId);
@@ -149,15 +172,20 @@ namespace romi {
                         ss << p.x() << "\t" << p.y() << "\r\n";
                 }
                 std::string path_data = ss.str();
-                CheckInput(path_data, true);
+                check_input(path_data, true);
                 auto filename_extension = build_filename_with_extension(filename, "path");
                 FileUtils::TryWriteStringAsFile((folderPath_ / filename_extension), path_data);
                 add_file_metadata(filename_extension, observationId);
         }
 
-        void MetaFolder::SaveMetaData() const {
-            FileUtils::TryWriteStringAsFile((folderPath_ / meta_data_filename_), (*meta_data_).dump(4));
+        void MetaFolder::save_metadata() const
+        {
+                FileUtils::TryWriteStringAsFile((folderPath_ / metadata_filename_), (*metadata_).dump(4));
         }
 
-
+        bool MetaFolder::try_store_metadata(const std::string& name, nlohmann::json& data)
+        {
+                (*metadata_)[name] = data;
+                save_metadata();
+        }
 }

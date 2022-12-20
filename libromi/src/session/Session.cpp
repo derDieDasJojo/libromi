@@ -174,4 +174,16 @@ namespace romi {
         {
                 return base_directory_ / name;
         }
+
+        bool Session::store_metadata(const std::string& name, nlohmann::json& data)
+        {
+                bool retval = false;
+                try {
+                        meta_folder_->try_store_metadata(name, data);
+                        retval = true;
+                } catch (std::exception& ex) {
+                        throw;
+                }
+                return retval;
+        }
 }
