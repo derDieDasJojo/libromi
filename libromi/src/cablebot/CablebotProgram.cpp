@@ -28,12 +28,15 @@
 
 namespace romi {
 
-        CablebotProgram::CablebotProgram(uint32_t id, const std::string& name,
+        CablebotProgram::CablebotProgram(uint32_t id,
+                                         const std::string& name,
+                                         const std::string& observation_id,
                                          uint8_t hour, uint8_t minute,
                                          double start, double length, double interval,
                                          double tilt, bool enabled)
                 : id_(id),
                   name_(),
+                  observation_id_(),
                   hour_(hour),
                   minute_(minute),
                   start_(start),
@@ -42,6 +45,7 @@ namespace romi {
                   tilt_(tilt),
                   enabled_(enabled) {
                 set_name(name);
+                set_observation_id(observation_id);
         }
 
         uint32_t CablebotProgram::id() const
@@ -62,6 +66,21 @@ namespace romi {
                         throw std::runtime_error("CablebotProgram::set_name: Too long");
                 }
                 name_ = name;
+        }
+        
+        const std::string& CablebotProgram::observation_id() const
+        {
+                return observation_id_;
+        }
+        
+        void CablebotProgram::set_observation_id(const std::string& observation_id)
+        {
+                if (observation_id.size() > kMaxObservationIdLength) {
+                        r_err("CablebotProgram::set_observation_id: Too long (len=%d < %d)",
+                              (int) observation_id.size(), (int) kMaxObservationIdLength);
+                        throw std::runtime_error("CablebotProgram::set_observation_id: Too long");
+                }
+                observation_id_ = observation_id;
         }
         
         uint8_t CablebotProgram::hour() const
@@ -137,6 +156,7 @@ namespace romi {
         void CablebotProgram::update(ICablebotProgram& new_values)
         {
                 name_ = new_values.name();
+                observation_id_ = new_values.observation_id();
                 hour_ = new_values.hour();
                 minute_ = new_values.minute();
                 start_ = new_values.start();

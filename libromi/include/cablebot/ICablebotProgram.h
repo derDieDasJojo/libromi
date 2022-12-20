@@ -37,6 +37,8 @@ namespace romi {
                 virtual uint32_t id() const = 0;
                 virtual const std::string& name() const = 0;
                 virtual void set_name(const std::string& name) = 0;
+                virtual const std::string& observation_id() const = 0;
+                virtual void set_observation_id(const std::string& id) = 0;
                 virtual uint8_t hour() const = 0;
                 virtual void set_hour(uint8_t hour) = 0;
                 virtual uint8_t minute() const = 0;

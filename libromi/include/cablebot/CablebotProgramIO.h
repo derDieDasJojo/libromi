@@ -35,6 +35,7 @@ namespace romi {
         public:
                 static const constexpr char *kID = "id";
                 static const constexpr char *kName = "name";
+                static const constexpr char *kObservationId = "observation-id";
                 static const constexpr char *kHour = "hour";
                 static const constexpr char *kMinute = "minute";
                 static const constexpr char *kStart = "start-at";

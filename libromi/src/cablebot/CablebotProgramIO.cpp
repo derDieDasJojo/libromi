@@ -49,6 +49,7 @@ namespace romi {
 
                 uint32_t id = json[kID];
                 std::string name = json[kName];
+                std::string observation_id = json[kObservationId];
                 uint8_t hour = json[kHour];
                 uint8_t minute = json[kMinute];
                 double start = json[kStart];
@@ -64,7 +65,7 @@ namespace romi {
                        start, length, interval,
                        enabled? "enabled" : "disabled");
                 
-                program = std::make_shared<CablebotProgram>(id, name,
+                program = std::make_shared<CablebotProgram>(id, name, observation_id,
                                                             hour, minute,
                                                             start, length, interval,
                                                             tilt, enabled);
@@ -83,6 +84,7 @@ namespace romi {
                 return nlohmann::json::object({
                                 {kID, program->id()},
                                 {kName, program->name()},
+                                {kObservationId, program->observation_id()},
                                 {kHour, program->hour()},
                                 {kMinute, program->minute()},
                                 {kStart, program->start()},

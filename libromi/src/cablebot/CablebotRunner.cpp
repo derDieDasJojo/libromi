@@ -24,6 +24,7 @@
 
 #include <stdexcept>
 #include "cablebot/CablebotRunner.h"
+#include "util/ClockAccessor.h"
 #include "util/Logger.h"
 
 namespace romi {
@@ -60,16 +61,16 @@ namespace romi {
         
         void CablebotRunner::run(ICablebotProgram& program)
         {
-                init();
+                init(program);
                 scan(program);
                 finalize();
         }
         
-        void CablebotRunner::init()
+        void CablebotRunner::init(ICablebotProgram& program)
         {
                 r_debug("CablebotRunner::init: Scan starting");
                 
-                session_.start("test");
+                session_.start(program.observation_id());
                 r_debug("CablebotRunner::init: Power up");
                 cablebot_.power_up();
         }
@@ -80,6 +81,7 @@ namespace romi {
                 double position = program.start();
                 double end = program.start() + program.length();
                 double tilt = program.tilt();
+                auto clock = romi::ClockAccessor::GetInstance();
 
                 r_debug("CablebotRunner::scan: Scanning");
         
@@ -94,8 +96,11 @@ namespace romi {
                         throw std::runtime_error("CablebotRunner::scan: Failed to "
                                                  "move to straing position");;
                 }
-                
+		
                 while (true) {
+
+                        clock->sleep(2.5); // Wait a wee until the cablebot stops moving
+		
                         success = grab_image(counter++);
                         if (!success)
                                 break;

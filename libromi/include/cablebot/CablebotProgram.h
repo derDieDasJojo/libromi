@@ -33,9 +33,11 @@ namespace romi {
         {
         protected:
                 static const uint32_t kMaxNameLength = 64;
+                static const uint32_t kMaxObservationIdLength = 64;
 
                 uint32_t id_;
                 std::string name_;
+                std::string observation_id_;
                 uint8_t hour_;
                 uint8_t minute_;
                 double start_;
@@ -45,7 +47,9 @@ namespace romi {
                 bool enabled_;
 
         public:
-                CablebotProgram(uint32_t id, const std::string& name,
+                CablebotProgram(uint32_t id,
+                                const std::string& name,
+                                const std::string& observation_id,
                                 uint8_t hour, uint8_t minute,
                                 double start, double length, double interval,
                                 double tilt, bool enabled);
@@ -55,6 +59,8 @@ namespace romi {
                 uint32_t id() const override;
                 const std::string& name() const override;
                 void set_name(const std::string& name) override;
+                const std::string& observation_id() const override;
+                void set_observation_id(const std::string& name) override;
                 uint8_t hour() const override;
                 void set_hour(uint8_t hour) override;
                 uint8_t minute() const override;

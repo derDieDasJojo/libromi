@@ -41,7 +41,7 @@ namespace romi {
 
                 void try_run(uint8_t hour, uint8_t minute);
                 void run(ICablebotProgram& program);
-                void init();
+                void init(ICablebotProgram& program);
                 void scan(ICablebotProgram& program);
                 void finalize();
                 void try_finalize();
