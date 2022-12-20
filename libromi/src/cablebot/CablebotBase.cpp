@@ -53,7 +53,7 @@ namespace romi {
         {
                 double turns = x / circumference_;
                 double steps = kPrecision * turns;
-                r_info("position_to_steps: position: %0.3f, diameter: %0.5f, "
+                r_info("CablebotBase::position_to_steps: position: %0.3f, diameter: %0.5f, "
                        "turns: %0.3f, steps: %0.1f, precision: %0.3f",
                        x, diameter_, turns, steps, kPrecision);
                 if (steps > SHRT_MAX || steps < SHRT_MIN) {
