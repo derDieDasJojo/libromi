@@ -193,7 +193,7 @@ TEST_F(metafolder_tests, construct_creates_metadata_file)
                                                      mockLocationProvider_,
                                                      session_path_));
         ASSERT_TRUE(fs::is_directory(session_path_));
-        ASSERT_TRUE(fs::exists(session_path_ / romi::MetaFolder::meta_data_filename_));
+        ASSERT_TRUE(fs::exists(session_path_ / romi::MetaFolder::metadata_filename_));
 }
 
 TEST_F(metafolder_tests, construct_basic_metadata_file_contain_correct_data)
@@ -205,12 +205,12 @@ TEST_F(metafolder_tests, construct_basic_metadata_file_contain_correct_data)
         auto mockLocationProvider_ = std::make_shared<romi::GpsLocationProvider>(mockGps_);
         auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_,
                                                                            softwareVersion_);
-        fs::path meta_data_filename = session_path_ / romi::MetaFolder::meta_data_filename_;
+        fs::path metadata_filename = session_path_ / romi::MetaFolder::metadata_filename_;
 
         // Act
         romi::MetaFolder meta_folder(roverIdentity, mockLocationProvider_, session_path_);
 
-        std::ifstream ifs(meta_data_filename);
+        std::ifstream ifs(metadata_filename);
         nlohmann::json metaDataJson = nlohmann::json::parse(ifs);
         auto identityJson = metaDataJson[JsonFieldNames::romi_identity.c_str()];
 
@@ -295,7 +295,7 @@ TEST_F(metafolder_tests, store_jpg_no_extension_creates_extension)
         auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_,
                                                                            softwareVersion_);
         romi::MetaFolder meta_folder(roverIdentity, mockLocationProvider_, session_path_);
-        fs::path meta_data_filename = session_path_ / romi::MetaFolder::meta_data_filename_;
+        fs::path metadata_filename = session_path_ / romi::MetaFolder::metadata_filename_;
 
         EXPECT_CALL(*mockClock_, datetime_compact_string)
                 .WillOnce(Return(expected));
@@ -308,7 +308,7 @@ TEST_F(metafolder_tests, store_jpg_no_extension_creates_extension)
         // Act
         meta_folder.try_store_jpg(filename, image, observation);
 
-        std::ifstream ifs(meta_data_filename);
+        std::ifstream ifs(metadata_filename);
         nlohmann::json metaDataJson = nlohmann::json::parse(ifs);
         auto fileJson = metaDataJson[filename_jpg.c_str()];
 
@@ -328,7 +328,7 @@ TEST_F(metafolder_tests, store_jpg_wrong_extension_changes_extension)
         auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_,
                                                                            softwareVersion_);
         romi::MetaFolder meta_folder(roverIdentity, mockLocationProvider_, session_path_);
-        fs::path meta_data_filename = session_path_ / romi::MetaFolder::meta_data_filename_;
+        fs::path metadata_filename = session_path_ / romi::MetaFolder::metadata_filename_;
 
         EXPECT_CALL(*mockClock_, datetime_compact_string)
                 .WillOnce(Return(expected));
@@ -341,7 +341,7 @@ TEST_F(metafolder_tests, store_jpg_wrong_extension_changes_extension)
         // Act
         meta_folder.try_store_jpg(filename, image, observation);
 
-        std::ifstream ifs(meta_data_filename);
+        std::ifstream ifs(metadata_filename);
         nlohmann::json metaDataJson = nlohmann::json::parse(ifs);
         auto fileJson = metaDataJson[filename_jpg.c_str()];
 
@@ -362,7 +362,7 @@ TEST_F(metafolder_tests, store_jpg_same_file_rewrites_metadata)
         auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_,
                                                                            softwareVersion_);
         romi::MetaFolder meta_folder(roverIdentity, mockLocationProvider_, session_path_);
-        fs::path meta_data_filename = session_path_ / romi::MetaFolder::meta_data_filename_;
+        fs::path metadata_filename = session_path_ / romi::MetaFolder::metadata_filename_;
 
         EXPECT_CALL(*mockClock_, datetime_compact_string)
                 .Times(number_files)
@@ -376,7 +376,7 @@ TEST_F(metafolder_tests, store_jpg_same_file_rewrites_metadata)
         // Act
         meta_folder.try_store_jpg(filename, image, observation);
         meta_folder.try_store_jpg(filename, image, observation);
-        std::ifstream ifs(meta_data_filename);
+        std::ifstream ifs(metadata_filename);
         nlohmann::json metaDataJson = nlohmann::json::parse(ifs);
         auto fileJson = metaDataJson[filename];
 
@@ -395,7 +395,7 @@ TEST_F(metafolder_tests, store_jpg_write_error_does_not_write_metadata)
         auto mockLocationProvider_ = std::make_shared<romi::GpsLocationProvider>(mockGps_);
         auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_, softwareVersion_);
         romi::MetaFolder meta_folder(roverIdentity, mockLocationProvider_, session_path_);
-        fs::path meta_data_filename = session_path_ / romi::MetaFolder::meta_data_filename_;
+        fs::path metadata_filename = session_path_ / romi::MetaFolder::metadata_filename_;
 
         romi::Image image(romi::Image::RGB, red_test_image, 4, 4);
         std::string filename("invalid*/*86.jpg");
@@ -406,12 +406,12 @@ TEST_F(metafolder_tests, store_jpg_write_error_does_not_write_metadata)
                      std::runtime_error);
 
         // Assert
-        std::ifstream ifs(meta_data_filename);
+        std::ifstream ifs(metadata_filename);
         nlohmann::json metaDataJson = nlohmann::json::parse(ifs);
         ASSERT_THROW(metaDataJson.at(filename), nlohmann::json::exception);
 }
 
-TEST_F(metafolder_tests, store_jpg_creates_files_and_correct_meta_data)
+TEST_F(metafolder_tests, store_jpg_creates_files_and_correct_metadata)
 {
         // Arrange
         const int number_files(3);
@@ -422,7 +422,7 @@ TEST_F(metafolder_tests, store_jpg_creates_files_and_correct_meta_data)
         auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_,
                                                                            softwareVersion_);
         romi::MetaFolder meta_folder(roverIdentity, mockLocationProvider_, session_path_);
-        fs::path meta_data_filename = session_path_ / romi::MetaFolder::meta_data_filename_;
+        fs::path metadata_filename = session_path_ / romi::MetaFolder::metadata_filename_;
 
         EXPECT_CALL(*mockClock_, datetime_compact_string)
                         .Times(number_files)
@@ -441,7 +441,7 @@ TEST_F(metafolder_tests, store_jpg_creates_files_and_correct_meta_data)
         meta_folder.try_store_jpg(filename2, image, observation);
         meta_folder.try_store_jpg(filename3, image, observation);
 
-        std::ifstream ifs(meta_data_filename);
+        std::ifstream ifs(metadata_filename);
         nlohmann::json metaDataJson = nlohmann::json::parse(ifs);
 
         // Assert
@@ -463,7 +463,7 @@ TEST_F(metafolder_tests, store_jpg_empty_image_throws)
         auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_,
                                                                            softwareVersion_);
         romi::MetaFolder meta_folder(roverIdentity, mockLocationProvider_, session_path_);
-        fs::path meta_data_filename = session_path_ / romi::MetaFolder::meta_data_filename_;
+        fs::path metadata_filename = session_path_ / romi::MetaFolder::metadata_filename_;
 
         romi::Image image;
         std::string filename1("file1.jpg");
@@ -511,7 +511,7 @@ TEST_F(metafolder_tests, store_png_no_extension_creates_extension)
         auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_,
                                                                            softwareVersion_);
         romi::MetaFolder meta_folder(roverIdentity, mockLocationProvider_, session_path_);
-        fs::path meta_data_filename = session_path_ / romi::MetaFolder::meta_data_filename_;
+        fs::path metadata_filename = session_path_ / romi::MetaFolder::metadata_filename_;
 
         EXPECT_CALL(*mockClock_, datetime_compact_string)
                         .WillOnce(Return(expected));
@@ -524,7 +524,7 @@ TEST_F(metafolder_tests, store_png_no_extension_creates_extension)
         // Act
         meta_folder.try_store_png(filename, image, observation);
 
-        std::ifstream ifs(meta_data_filename);
+        std::ifstream ifs(metadata_filename);
         nlohmann::json metaDataJson = nlohmann::json::parse(ifs);
         auto fileJson = metaDataJson[filename_png.c_str()];
 
@@ -544,7 +544,7 @@ TEST_F(metafolder_tests, store_png_wrong_extension_changes_extension)
         auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_,
                                                                            softwareVersion_);
         romi::MetaFolder meta_folder(roverIdentity, mockLocationProvider_, session_path_);
-        fs::path meta_data_filename = session_path_ / romi::MetaFolder::meta_data_filename_;
+        fs::path metadata_filename = session_path_ / romi::MetaFolder::metadata_filename_;
 
         EXPECT_CALL(*mockClock_, datetime_compact_string)
                 .WillOnce(Return(expected));
@@ -557,7 +557,7 @@ TEST_F(metafolder_tests, store_png_wrong_extension_changes_extension)
         // Act
         meta_folder.try_store_png(filename, image, observation);
 
-        std::ifstream ifs(meta_data_filename);
+        std::ifstream ifs(metadata_filename);
         nlohmann::json metaDataJson = nlohmann::json::parse(ifs);
         auto fileJson = metaDataJson[filename_png.c_str()];
 
@@ -579,7 +579,7 @@ TEST_F(metafolder_tests, store_png_same_file_rewrites_metadata)
         auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_,
                                                                            softwareVersion_);
         romi::MetaFolder meta_folder(roverIdentity, mockLocationProvider_, session_path_);
-        fs::path meta_data_filename = session_path_ / romi::MetaFolder::meta_data_filename_;
+        fs::path metadata_filename = session_path_ / romi::MetaFolder::metadata_filename_;
 
         EXPECT_CALL(*mockClock_, datetime_compact_string)
                 .Times(number_files)
@@ -593,7 +593,7 @@ TEST_F(metafolder_tests, store_png_same_file_rewrites_metadata)
         // Act
         meta_folder.try_store_png(filename, image, observation);
         meta_folder.try_store_png(filename, image, observation);
-        std::ifstream ifs(meta_data_filename);
+        std::ifstream ifs(metadata_filename);
         nlohmann::json metaDataJson = nlohmann::json::parse(ifs);
         auto fileJson = metaDataJson[filename.c_str()];
 
@@ -613,7 +613,7 @@ TEST_F(metafolder_tests, store_png_write_error_does_not_write_metadata)
         auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_,
                                                                            softwareVersion_);
         romi::MetaFolder meta_folder(roverIdentity, mockLocationProvider_, session_path_);
-        fs::path meta_data_filename = session_path_ / romi::MetaFolder::meta_data_filename_;
+        fs::path metadata_filename = session_path_ / romi::MetaFolder::metadata_filename_;
 
         romi::Image image(romi::Image::RGB, red_test_image, 4, 4);
         std::string filename("invalid*/*86.png");
@@ -624,12 +624,12 @@ TEST_F(metafolder_tests, store_png_write_error_does_not_write_metadata)
                      std::runtime_error);
 
         // Assert
-        std::ifstream ifs(meta_data_filename);
+        std::ifstream ifs(metadata_filename);
         nlohmann::json metaDataJson = nlohmann::json::parse(ifs);
         ASSERT_THROW(metaDataJson.at(filename.c_str()), nlohmann::json::exception);
 }
 
-TEST_F(metafolder_tests, store_png_creates_files_and_correct_meta_data)
+TEST_F(metafolder_tests, store_png_creates_files_and_correct_metadata)
 {
         // Arrange
         const int number_files(3);
@@ -640,7 +640,7 @@ TEST_F(metafolder_tests, store_png_creates_files_and_correct_meta_data)
         auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_,
                                                                            softwareVersion_);
         romi::MetaFolder meta_folder(roverIdentity, mockLocationProvider_, session_path_);
-        fs::path meta_data_filename = session_path_ / romi::MetaFolder::meta_data_filename_;
+        fs::path metadata_filename = session_path_ / romi::MetaFolder::metadata_filename_;
 
         EXPECT_CALL(*mockClock_, datetime_compact_string)
                 .Times(number_files)
@@ -659,7 +659,7 @@ TEST_F(metafolder_tests, store_png_creates_files_and_correct_meta_data)
         meta_folder.try_store_png(filename2, image, observation);
         meta_folder.try_store_png(filename3, image, observation);
 
-        std::ifstream ifs(meta_data_filename);
+        std::ifstream ifs(metadata_filename);
         nlohmann::json metaDataJson = nlohmann::json::parse(ifs);
 
         // Assert
@@ -680,7 +680,7 @@ TEST_F(metafolder_tests, store_png_empty_image_throws)
         auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_,
                                                                            softwareVersion_);
         romi::MetaFolder meta_folder(roverIdentity, mockLocationProvider_, session_path_);
-        fs::path meta_data_filename = session_path_ / romi::MetaFolder::meta_data_filename_;
+        fs::path metadata_filename = session_path_ / romi::MetaFolder::metadata_filename_;
 
         romi::Image image;
         std::string filename1("file1.png");
@@ -705,7 +705,7 @@ TEST_F(metafolder_tests, store_svg_no_extension_creates_extension)
         auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_,
                                                                            softwareVersion_);
         romi::MetaFolder meta_folder(roverIdentity, mockLocationProvider_, session_path_);
-        fs::path meta_data_filename = session_path_ / romi::MetaFolder::meta_data_filename_;
+        fs::path metadata_filename = session_path_ / romi::MetaFolder::metadata_filename_;
 
         EXPECT_CALL(*mockClock_, datetime_compact_string)
                         .WillOnce(Return(expected));
@@ -717,7 +717,7 @@ TEST_F(metafolder_tests, store_svg_no_extension_creates_extension)
 
         // Act
         meta_folder.try_store_svg(filename, svg_body, observation);
-        std::ifstream ifs(meta_data_filename);
+        std::ifstream ifs(metadata_filename);
         nlohmann::json metaDataJson = nlohmann::json::parse(ifs);
         auto fileJson = metaDataJson[filename_svg.c_str()];
 
@@ -737,7 +737,7 @@ TEST_F(metafolder_tests, store_svg_wrong_extension_changes_extension)
         auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_,
                                                                            softwareVersion_);
         romi::MetaFolder meta_folder(roverIdentity, mockLocationProvider_, session_path_);
-        fs::path meta_data_filename = session_path_ / romi::MetaFolder::meta_data_filename_;
+        fs::path metadata_filename = session_path_ / romi::MetaFolder::metadata_filename_;
 
         EXPECT_CALL(*mockClock_, datetime_compact_string)
                         .WillOnce(Return(expected));
@@ -749,7 +749,7 @@ TEST_F(metafolder_tests, store_svg_wrong_extension_changes_extension)
 
         // Act
         meta_folder.try_store_svg(filename, svg_body, observation);
-        std::ifstream ifs(meta_data_filename);
+        std::ifstream ifs(metadata_filename);
         nlohmann::json metaDataJson = nlohmann::json::parse(ifs);
         auto fileJson = metaDataJson[filename_svg.c_str()];
 
@@ -771,7 +771,7 @@ TEST_F(metafolder_tests, store_svg_same_file_rewrites_metadata)
         auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_,
                                                                            softwareVersion_);
         romi::MetaFolder meta_folder(roverIdentity, mockLocationProvider_, session_path_);
-        fs::path meta_data_filename = session_path_ / romi::MetaFolder::meta_data_filename_;
+        fs::path metadata_filename = session_path_ / romi::MetaFolder::metadata_filename_;
 
         EXPECT_CALL(*mockClock_, datetime_compact_string)
                         .Times(number_files)
@@ -785,7 +785,7 @@ TEST_F(metafolder_tests, store_svg_same_file_rewrites_metadata)
         // Act
         meta_folder.try_store_svg(filename, svg_body, observation);
         meta_folder.try_store_svg(filename, svg_body, observation);
-        std::ifstream ifs(meta_data_filename);
+        std::ifstream ifs(metadata_filename);
         nlohmann::json metaDataJson = nlohmann::json::parse(ifs);
         auto fileJson = metaDataJson[filename.c_str()];
 
@@ -805,7 +805,7 @@ TEST_F(metafolder_tests, store_svg_write_error_does_not_write_metadata)
         auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_,
                                                                            softwareVersion_);
         romi::MetaFolder meta_folder(roverIdentity, mockLocationProvider_, session_path_);
-        fs::path meta_data_filename = session_path_ / romi::MetaFolder::meta_data_filename_;
+        fs::path metadata_filename = session_path_ / romi::MetaFolder::metadata_filename_;
 
         romi::Image image(romi::Image::RGB, red_test_image, 4, 4);
         std::string filename("invalid*/*86.svg");
@@ -816,12 +816,12 @@ TEST_F(metafolder_tests, store_svg_write_error_does_not_write_metadata)
         ASSERT_THROW(meta_folder.try_store_svg(filename, svg_body, observation), std::runtime_error);
 
         // Assert
-        std::ifstream ifs(meta_data_filename);
+        std::ifstream ifs(metadata_filename);
         nlohmann::json metaDataJson = nlohmann::json::parse(ifs);
         ASSERT_THROW(metaDataJson.at(filename.c_str()), nlohmann::json::exception);
 }
 
-TEST_F(metafolder_tests, store_svg_creates_files_and_correct_meta_data)
+TEST_F(metafolder_tests, store_svg_creates_files_and_correct_metadata)
 {
         // Arrange
         const int number_files(3);
@@ -832,7 +832,7 @@ TEST_F(metafolder_tests, store_svg_creates_files_and_correct_meta_data)
         auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_,
                                                                            softwareVersion_);
         romi::MetaFolder meta_folder(roverIdentity, mockLocationProvider_, session_path_);
-        fs::path meta_data_filename = session_path_ / romi::MetaFolder::meta_data_filename_;
+        fs::path metadata_filename = session_path_ / romi::MetaFolder::metadata_filename_;
 
         EXPECT_CALL(*mockClock_, datetime_compact_string)
                 .Times(number_files)
@@ -852,7 +852,7 @@ TEST_F(metafolder_tests, store_svg_creates_files_and_correct_meta_data)
         meta_folder.try_store_svg(filename2, svg_body, observation);
         meta_folder.try_store_svg(filename3, svg_body, observation);
 
-        std::ifstream ifs(meta_data_filename);
+        std::ifstream ifs(metadata_filename);
         nlohmann::json metaDataJson = nlohmann::json::parse(ifs);
 
         // Assert
@@ -875,7 +875,7 @@ TEST_F(metafolder_tests, store_svg_empty_image_throws)
                 = std::make_shared<romi::RoverIdentityProvider>(deviceData_,
                                                                 softwareVersion_);
         romi::MetaFolder meta_folder(roverIdentity, mockLocationProvider_, session_path_);
-        fs::path meta_data_filename = session_path_ / romi::MetaFolder::meta_data_filename_;
+        fs::path metadata_filename = session_path_ / romi::MetaFolder::metadata_filename_;
 
         romi::Image image;
         std::string filename1("file1.svg");
@@ -901,7 +901,7 @@ TEST_F(metafolder_tests, store_txt_no_extension_creates_extension)
         auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_,
                                                                            softwareVersion_);
         romi::MetaFolder meta_folder(roverIdentity, mockLocationProvider_, session_path_);
-        fs::path meta_data_filename = session_path_ / romi::MetaFolder::meta_data_filename_;
+        fs::path metadata_filename = session_path_ / romi::MetaFolder::metadata_filename_;
 
         EXPECT_CALL(*mockClock_, datetime_compact_string)
                         .WillOnce(Return(expected));
@@ -913,7 +913,7 @@ TEST_F(metafolder_tests, store_txt_no_extension_creates_extension)
 
         // Act
         meta_folder.try_store_txt(filename, txt_body, observation);
-        std::ifstream ifs(meta_data_filename);
+        std::ifstream ifs(metadata_filename);
         nlohmann::json metaDataJson = nlohmann::json::parse(ifs);
         auto fileJson = metaDataJson[filename_txt.c_str()];
 
@@ -933,7 +933,7 @@ TEST_F(metafolder_tests, store_txt_wrong_extension_changes_extension)
         auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_,
                                                                            softwareVersion_);
         romi::MetaFolder meta_folder(roverIdentity, mockLocationProvider_, session_path_);
-        fs::path meta_data_filename = session_path_ / romi::MetaFolder::meta_data_filename_;
+        fs::path metadata_filename = session_path_ / romi::MetaFolder::metadata_filename_;
 
         EXPECT_CALL(*mockClock_, datetime_compact_string)
                         .WillOnce(Return(expected));
@@ -945,7 +945,7 @@ TEST_F(metafolder_tests, store_txt_wrong_extension_changes_extension)
 
         // Act
         meta_folder.try_store_txt(filename, txt_body, observation);
-        std::ifstream ifs(meta_data_filename);
+        std::ifstream ifs(metadata_filename);
         nlohmann::json metaDataJson = nlohmann::json::parse(ifs);
         auto fileJson = metaDataJson[filename_txt.c_str()];
 
@@ -967,7 +967,7 @@ TEST_F(metafolder_tests, store_txt_same_file_rewrites_metadata)
         auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_,
                                                                            softwareVersion_);
         romi::MetaFolder meta_folder(roverIdentity, mockLocationProvider_, session_path_);
-        fs::path meta_data_filename = session_path_ / romi::MetaFolder::meta_data_filename_;
+        fs::path metadata_filename = session_path_ / romi::MetaFolder::metadata_filename_;
 
         EXPECT_CALL(*mockClock_, datetime_compact_string)
                 .Times(number_files)
@@ -981,7 +981,7 @@ TEST_F(metafolder_tests, store_txt_same_file_rewrites_metadata)
         // Act
         meta_folder.try_store_txt(filename, txt_body, observation);
         meta_folder.try_store_txt(filename, txt_body, observation);
-        std::ifstream ifs(meta_data_filename);
+        std::ifstream ifs(metadata_filename);
         nlohmann::json metaDataJson = nlohmann::json::parse(ifs);
         auto fileJson = metaDataJson[filename.c_str()];
 
@@ -1001,7 +1001,7 @@ TEST_F(metafolder_tests, store_txt_write_error_does_not_write_metadata)
         auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_,
                                                                            softwareVersion_);
         romi::MetaFolder meta_folder(roverIdentity, mockLocationProvider_, session_path_);
-        fs::path meta_data_filename = session_path_ / romi::MetaFolder::meta_data_filename_;
+        fs::path metadata_filename = session_path_ / romi::MetaFolder::metadata_filename_;
 
         romi::Image image(romi::Image::RGB, red_test_image, 4, 4);
         std::string filename("invalid*/*86.txt");
@@ -1013,12 +1013,12 @@ TEST_F(metafolder_tests, store_txt_write_error_does_not_write_metadata)
                      std::runtime_error);
 
         // Assert
-        std::ifstream ifs(meta_data_filename);
+        std::ifstream ifs(metadata_filename);
         nlohmann::json metaDataJson = nlohmann::json::parse(ifs);
         ASSERT_THROW(metaDataJson.at(filename.c_str()), nlohmann::json::exception);
 }
 
-TEST_F(metafolder_tests, store_txt_creates_files_and_correct_meta_data)
+TEST_F(metafolder_tests, store_txt_creates_files_and_correct_metadata)
 {
         // Arrange
         const int number_files(3);
@@ -1029,7 +1029,7 @@ TEST_F(metafolder_tests, store_txt_creates_files_and_correct_meta_data)
         auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_,
                                                                            softwareVersion_);
         romi::MetaFolder meta_folder(roverIdentity, mockLocationProvider_, session_path_);
-        fs::path meta_data_filename = session_path_ / romi::MetaFolder::meta_data_filename_;
+        fs::path metadata_filename = session_path_ / romi::MetaFolder::metadata_filename_;
 
         EXPECT_CALL(*mockClock_, datetime_compact_string)
                 .Times(number_files)
@@ -1049,7 +1049,7 @@ TEST_F(metafolder_tests, store_txt_creates_files_and_correct_meta_data)
         meta_folder.try_store_txt(filename2, txt_body, observation);
         meta_folder.try_store_txt(filename3, txt_body, observation);
 
-        std::ifstream ifs(meta_data_filename);
+        std::ifstream ifs(metadata_filename);
         nlohmann::json metaDataJson = nlohmann::json::parse(ifs);
 
         // Assert
@@ -1073,7 +1073,7 @@ TEST_F(metafolder_tests, store_txt_empty_string_doesnt_throw)
         auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_,
                                                                            softwareVersion_);
         romi::MetaFolder meta_folder(roverIdentity, mockLocationProvider_, session_path_);
-        fs::path meta_data_filename = session_path_ / romi::MetaFolder::meta_data_filename_;
+        fs::path metadata_filename = session_path_ / romi::MetaFolder::metadata_filename_;
 
         romi::Image image;
         std::string filename1("file1.txt");
@@ -1102,7 +1102,7 @@ TEST_F(metafolder_tests, store_path_no_extension_creates_extension)
         auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_,
                                                                            softwareVersion_);
         romi::MetaFolder meta_folder(roverIdentity, mockLocationProvider_, session_path_);
-        fs::path meta_data_filename = session_path_ / romi::MetaFolder::meta_data_filename_;
+        fs::path metadata_filename = session_path_ / romi::MetaFolder::metadata_filename_;
 
         EXPECT_CALL(*mockClock_, datetime_compact_string)
                         .WillOnce(Return(expected));
@@ -1120,7 +1120,7 @@ TEST_F(metafolder_tests, store_path_no_extension_creates_extension)
 
         // Act
         meta_folder.try_store_path(filename, testPath, observation);
-        std::ifstream ifs(meta_data_filename);
+        std::ifstream ifs(metadata_filename);
         nlohmann::json metaDataJson = nlohmann::json::parse(ifs);
         auto fileJson = metaDataJson[filename_txt.c_str()];
 
@@ -1139,7 +1139,7 @@ TEST_F(metafolder_tests, store_path_wrong_extension_changes_extension)
         auto mockLocationProvider_ = std::make_shared<romi::GpsLocationProvider>(mockGps_);
         auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_, softwareVersion_);
         romi::MetaFolder meta_folder(roverIdentity, mockLocationProvider_, session_path_);
-        fs::path meta_data_filename = session_path_ / romi::MetaFolder::meta_data_filename_;
+        fs::path metadata_filename = session_path_ / romi::MetaFolder::metadata_filename_;
 
         EXPECT_CALL(*mockClock_, datetime_compact_string)
                         .WillOnce(Return(expected));
@@ -1157,7 +1157,7 @@ TEST_F(metafolder_tests, store_path_wrong_extension_changes_extension)
 
         // Act
         meta_folder.try_store_path(filename, testPath, observation);
-        std::ifstream ifs(meta_data_filename);
+        std::ifstream ifs(metadata_filename);
         nlohmann::json metaDataJson = nlohmann::json::parse(ifs);
         auto fileJson = metaDataJson[filename_txt.c_str()];
 
@@ -1178,7 +1178,7 @@ TEST_F(metafolder_tests, store_path_same_file_rewrites_metadata)
         auto mockLocationProvider_ = std::make_shared<romi::GpsLocationProvider>(mockGps_);
         auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_, softwareVersion_);
         romi::MetaFolder meta_folder(roverIdentity, mockLocationProvider_, session_path_);
-        fs::path meta_data_filename = session_path_ / romi::MetaFolder::meta_data_filename_;
+        fs::path metadata_filename = session_path_ / romi::MetaFolder::metadata_filename_;
 
         EXPECT_CALL(*mockClock_, datetime_compact_string)
                         .Times(number_files)
@@ -1199,7 +1199,7 @@ TEST_F(metafolder_tests, store_path_same_file_rewrites_metadata)
         // Act
         meta_folder.try_store_path(filename, testPath, observation);
         meta_folder.try_store_path(filename, testPath, observation);
-        std::ifstream ifs(meta_data_filename);
+        std::ifstream ifs(metadata_filename);
         nlohmann::json metaDataJson = nlohmann::json::parse(ifs);
         auto fileJson = metaDataJson[filename.c_str()];
 
@@ -1218,7 +1218,7 @@ TEST_F(metafolder_tests, store_path_write_error_does_not_write_metadata)
         auto mockLocationProvider_ = std::make_shared<romi::GpsLocationProvider>(mockGps_);
         auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_, softwareVersion_);
         romi::MetaFolder meta_folder(roverIdentity, mockLocationProvider_, session_path_);
-        fs::path meta_data_filename = session_path_ / romi::MetaFolder::meta_data_filename_;
+        fs::path metadata_filename = session_path_ / romi::MetaFolder::metadata_filename_;
 
         romi::Image image(romi::Image::RGB, red_test_image, 4, 4);
         std::string filename("invalid*/*86.txt");
@@ -1231,12 +1231,12 @@ TEST_F(metafolder_tests, store_path_write_error_does_not_write_metadata)
         ASSERT_THROW(meta_folder.try_store_path(filename, testPath, observation), std::runtime_error);
 
         // Assert
-        std::ifstream ifs(meta_data_filename);
+        std::ifstream ifs(metadata_filename);
         nlohmann::json metaDataJson = nlohmann::json::parse(ifs);
         ASSERT_THROW(metaDataJson.at(filename.c_str()), nlohmann::json::exception);
 }
 
-TEST_F(metafolder_tests, store_path_creates_files_and_correct_meta_data)
+TEST_F(metafolder_tests, store_path_creates_files_and_correct_metadata)
 {
         // Arrange
         const int number_files(3);
@@ -1246,7 +1246,7 @@ TEST_F(metafolder_tests, store_path_creates_files_and_correct_meta_data)
         auto mockLocationProvider_ = std::make_shared<romi::GpsLocationProvider>(mockGps_);
         auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_, softwareVersion_);
         romi::MetaFolder meta_folder(roverIdentity, mockLocationProvider_, session_path_);
-        fs::path meta_data_filename = session_path_ / romi::MetaFolder::meta_data_filename_;
+        fs::path metadata_filename = session_path_ / romi::MetaFolder::metadata_filename_;
 
         EXPECT_CALL(*mockClock_, datetime_compact_string)
                 .Times(number_files)
@@ -1273,7 +1273,7 @@ TEST_F(metafolder_tests, store_path_creates_files_and_correct_meta_data)
         meta_folder.try_store_path(filename2, testPath, observation);
         meta_folder.try_store_path(filename3, testPath, observation);
 
-        std::ifstream ifs(meta_data_filename);
+        std::ifstream ifs(metadata_filename);
         nlohmann::json metaDataJson = nlohmann::json::parse(ifs);
 
         // Assert
@@ -1299,7 +1299,7 @@ TEST_F(metafolder_tests, store_empty_path_doesnt_throw)
         auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_,
                                                                            softwareVersion_);
         romi::MetaFolder meta_folder(roverIdentity, mockLocationProvider_, session_path_);
-        fs::path meta_data_filename = session_path_ / romi::MetaFolder::meta_data_filename_;
+        fs::path metadata_filename = session_path_ / romi::MetaFolder::metadata_filename_;
 
         romi::Image image;
         std::string filename1("file1.txt");
@@ -1352,7 +1352,7 @@ TEST_F(metafolder_tests, store_multiple_threads_does_not_corrupt_metafolder)
         auto roverIdentity = std::make_shared<romi::RoverIdentityProvider>(deviceData_,
                                                                            softwareVersion_);
         romi::MetaFolder meta_folder(roverIdentity, mockLocationProvider_, session_path_);
-        fs::path meta_data_filename = session_path_ / romi::MetaFolder::meta_data_filename_;
+        fs::path metadata_filename = session_path_ / romi::MetaFolder::metadata_filename_;
 
         EXPECT_CALL(*mockClock_, datetime_compact_string)
                         .Times(AnyNumber())
@@ -1370,7 +1370,7 @@ TEST_F(metafolder_tests, store_multiple_threads_does_not_corrupt_metafolder)
         png_future.join();
 
         // Assert
-        std::ifstream ifs(meta_data_filename);
+        std::ifstream ifs(metadata_filename);
         nlohmann::json metaDataJson = nlohmann::json::parse(ifs);
         ASSERT_NO_THROW(auto file0Json = metaDataJson["file0.jpg"]);
         ASSERT_NO_THROW(auto file0Json = metaDataJson["file19.jpg"]);

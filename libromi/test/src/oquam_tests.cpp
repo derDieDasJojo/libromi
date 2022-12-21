@@ -42,7 +42,7 @@ protected:
                            slice_interval, max_slice_interval, homing),
                   controller(),
                   linux(),
-                  romiDeviceData(),
+                  romiDeviceData("Oquam", "0001"),
                   softwareVersion(),
                   gps(),
                   locationPrivider(),
