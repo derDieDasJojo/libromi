@@ -29,7 +29,7 @@
 
 namespace romi {
         
-        LinuxJoystick::LinuxJoystick(rcom::ILinux &linux, const std::string& device)
+        LinuxJoystick::LinuxJoystick(rcom::ILinux& linux, const std::string& device)
                 : _linux(linux),
                   _fd(-1),
                   _debug(false),
