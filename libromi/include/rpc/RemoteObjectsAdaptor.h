@@ -47,11 +47,13 @@ namespace romi {
                 void add(const std::string& id,
                          std::shared_ptr<rcom::IRPCHandler>& adaptor);
                 
-                void execute(const std::string& method,
+                void execute(const std::string& id,
+                             const std::string& method,
                              nlohmann::json& params,
                              nlohmann::json& result,
                              rcom::RPCError& error) override;
-                void execute(const std::string& method,
+                void execute(const std::string& id,
+                             const std::string& method,
                              nlohmann::json& params,
                              rcom::MemBuffer& result,
                              rcom::RPCError &error) override;

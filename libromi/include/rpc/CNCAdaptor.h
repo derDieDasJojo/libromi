@@ -60,11 +60,13 @@ namespace romi {
                 explicit CNCAdaptor(ICNC &cnc);
                 ~CNCAdaptor() override = default;
                 
-                void execute(const std::string& method,
+                void execute(const std::string& id,
+                             const std::string& method,
                              nlohmann::json& params,
                              nlohmann::json& result,
                              rcom::RPCError &error) override;
-                void execute(const std::string& method,
+                void execute(const std::string& id,
+                             const std::string& method,
                              nlohmann::json &params,
                              rcom::MemBuffer& result,
                              rcom::RPCError &status) override;

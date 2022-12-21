@@ -32,51 +32,37 @@ namespace romi {
         {
         }
         
-        void RemoteObjectsAdaptor::execute(const std::string& method,
+        void RemoteObjectsAdaptor::execute(const std::string& id,
+                                           const std::string& method,
                                            nlohmann::json& params,
                                            nlohmann::json& result,
                                            rcom::RPCError& error)
         {
-                if (params.contains(kObjectID)) {
-                        std::string id = params[kObjectID];
-                        rcom::IRPCHandler *adaptor = get_adaptor(id);
+                rcom::IRPCHandler *adaptor = get_adaptor(id);
 
-                        if (adaptor != nullptr) {
-                                adaptor->execute(method, params, result, error);
+                if (adaptor != nullptr) {
+                        adaptor->execute(id, method, params, result, error);
                                 
-                        } else {
-                                error.code = 2;
-                                error.message = "Unknown object-id";
-                        }
-                        
                 } else {
-                        r_warn("RemoteObjectsAdaptor::execute (TXT): missing 'object-id'");
-                        error.code = 1;
-                        error.message = "Missing object-id parameter";
+                        error.code = 2;
+                        error.message = "Unknown object id";
                 }
         }
         
-        void RemoteObjectsAdaptor::execute(const std::string& method,
+        void RemoteObjectsAdaptor::execute(const std::string& id,
+                                           const std::string& method,
                                            nlohmann::json& params,
                                            rcom::MemBuffer& result,
                                            rcom::RPCError &error)
         {
-                if (params.contains(kObjectID)) {
-                        std::string id = params[kObjectID];
-                        rcom::IRPCHandler *adaptor = get_adaptor(id);
+                rcom::IRPCHandler *adaptor = get_adaptor(id);
 
-                        if (adaptor != nullptr) {
-                                adaptor->execute(method, params, result, error);
+                if (adaptor != nullptr) {
+                        adaptor->execute(id, method, params, result, error);
                                 
-                        } else {
-                                error.code = 2;
-                                error.message = "Unknown object-id";
-                        }
-                        
                 } else {
-                        r_warn("RemoteObjectsAdaptor::execute (BIN): missing 'object-id'");                        
-                        error.code = 1;
-                        error.message = "Missing object-id parameter";
+                        error.code = 2;
+                        error.message = "Unknown object id";
                 }
         }
 

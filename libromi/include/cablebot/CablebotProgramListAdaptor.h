@@ -52,11 +52,13 @@ namespace romi {
                                            std::shared_ptr<ICablebotProgramIO>& program_io);
                 ~CablebotProgramListAdaptor() override = default;
 
-                void execute(const std::string& method,
+                void execute(const std::string& id,
+                             const std::string& method,
                              nlohmann::json& params,
                              nlohmann::json& result,
                              rcom::RPCError &error) override;
-                void execute(const std::string& method,
+                void execute(const std::string& id,
+                             const std::string& method,
                              nlohmann::json &params,
                              rcom::MemBuffer& result,
                              rcom::RPCError &status) override;

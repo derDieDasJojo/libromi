@@ -69,7 +69,8 @@ namespace romi {
 
                 output_.clear();
                 
-                client_->execute(MethodsCamera::kGrabJpegBinary, params, output_, error);
+                client_->execute("", MethodsCamera::kGrabJpegBinary,
+                                 params, output_, error);
                 
                 if (error.code != 0) {
                         r_warn("RemoteCamera::grab_jpeg: %s", error.message.c_str());

@@ -37,13 +37,15 @@ namespace romi {
         {
         }
 
-        void CablebotProgramListAdaptor::execute(const std::string& method,
+        void CablebotProgramListAdaptor::execute(const std::string& id,
+                                                 const std::string& method,
                                                  nlohmann::json& params,
                                                  nlohmann::json& result,
                                                  rcom::RPCError &error)
         {
                 r_debug("CablebotProgramListAdaptor::execute");
                 
+                (void) id;
                 error.code = 0;
                 
                 try {
@@ -64,11 +66,13 @@ namespace romi {
                 }
         }
         
-        void CablebotProgramListAdaptor::execute(const std::string& method,
+        void CablebotProgramListAdaptor::execute(const std::string& id,
+                                                 const std::string& method,
                                                  nlohmann::json &params,
                                                  rcom::MemBuffer& result,
                                                  rcom::RPCError &error)
         {
+                (void) id;
                 (void) method;
                 (void) params;
                 (void) result;

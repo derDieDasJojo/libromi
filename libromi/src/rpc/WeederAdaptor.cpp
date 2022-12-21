@@ -33,11 +33,13 @@ namespace romi {
         {
         }
 
-        void WeederAdaptor::execute(const std::string& method,
+        void WeederAdaptor::execute(const std::string& id,
+                                    const std::string& method,
                                     nlohmann::json &params,
                                     rcom::MemBuffer& result,
                                     rcom::RPCError &error)
         {
+                (void) id;
                 (void) method;
                 (void) params;
                 (void) result;
@@ -45,11 +47,13 @@ namespace romi {
                 error.message = "Unknown method";
         }
         
-        void WeederAdaptor::execute(const std::string& method,
+        void WeederAdaptor::execute(const std::string& id,
+                                    const std::string& method,
                                     nlohmann::json& params,
                                     nlohmann::json& result,
                                     rcom::RPCError &error)
         {
+                (void) id;
                 (void) params;
                 (void) result;
                 

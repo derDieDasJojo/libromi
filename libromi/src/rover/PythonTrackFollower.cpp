@@ -132,7 +132,7 @@ namespace romi {
                 params["path"] = path;
 
 
-                rpc_->execute(function_name_, params, response, error);
+                rpc_->execute("python", function_name_, params, response, error);
                 
                 if (error.code != 0) {
                         r_warn("Failed to call Python: %s", error.message.c_str());

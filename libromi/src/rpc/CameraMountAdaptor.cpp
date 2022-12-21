@@ -36,11 +36,13 @@ namespace romi {
         {
         }
 
-        void CameraMountAdaptor::execute(const std::string& method,
-                                    nlohmann::json &params,
-                                    rcom::MemBuffer& result,
-                                    rcom::RPCError &error)
+        void CameraMountAdaptor::execute(const std::string& id,
+                                         const std::string& method,
+                                         nlohmann::json &params,
+                                         rcom::MemBuffer& result,
+                                         rcom::RPCError &error)
         {
+                (void) id;
                 (void) method;
                 (void) params;
                 (void) result;
@@ -48,13 +50,15 @@ namespace romi {
                 error.message = "Unknown method";
         }
         
-        void CameraMountAdaptor::execute(const std::string& method,
+        void CameraMountAdaptor::execute(const std::string& id,
+                                         const std::string& method,
                                          nlohmann::json& params,
                                          nlohmann::json& result,
                                          rcom::RPCError &error)
         {
                 r_debug("CameraMountAdaptor::execute");
                 
+                (void) id;
                 error.code = 0;
                 
                 try {

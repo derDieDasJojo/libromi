@@ -33,11 +33,13 @@ namespace romi {
         {
         }
 
-        void CNCAdaptor::execute(const std::string& method,
+        void CNCAdaptor::execute(const std::string& id,
+                                 const std::string& method,
                                  nlohmann::json &params,
                                  rcom::MemBuffer& result,
                                  rcom::RPCError &error)
         {
+                (void) id;
                 (void) method;
                 (void) params;
                 (void) result;
@@ -45,11 +47,15 @@ namespace romi {
                 error.message = "Unknown method";
         }
 
-        void CNCAdaptor::execute(const std::string& method, nlohmann::json& params,
-                                 nlohmann::json& result, rcom::RPCError &error)
+        void CNCAdaptor::execute(const std::string& id,
+                                 const std::string& method,
+                                 nlohmann::json& params,
+                                 nlohmann::json& result,
+                                 rcom::RPCError &error)
         {
                 r_debug("CNCAdaptor::execute");
 
+                (void) id;
                 error.code = 0;
                 
                 try {

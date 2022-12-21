@@ -32,11 +32,13 @@ namespace romi {
         {
         }
 
-        void NavigationAdaptor::execute(const std::string& method,
+        void NavigationAdaptor::execute(const std::string& id,
+                                        const std::string& method,
                                         nlohmann::json &params,
                                         rcom::MemBuffer& result,
                                         rcom::RPCError &error)
         {
+                (void) id;
                 (void) method;
                 (void) params;
                 (void) result;
@@ -44,10 +46,14 @@ namespace romi {
                 error.message = "NavigationAdaptor::execute(binary): Unknown method";
         }
         
-        void NavigationAdaptor::execute(const std::string& method, nlohmann::json &params,
-                                        nlohmann::json &result, rcom::RPCError &error)
+        void NavigationAdaptor::execute(const std::string& id,
+                                        const std::string& method,
+                                        nlohmann::json &params,
+                                        nlohmann::json &result,
+                                        rcom::RPCError &error)
         {
                 r_debug("NavigationAdaptor::execute(text): %s", method.c_str());
+                (void) id;
                 (void) result;
                 error.code = 0;
                 

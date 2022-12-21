@@ -33,11 +33,13 @@ namespace romi {
         {
         }
 
-        void CameraAdaptor::execute(const std::string& method,
+        void CameraAdaptor::execute(const std::string& id,
+                                    const std::string& method,
                                     nlohmann::json &params,
                                     rcom::MemBuffer& result,
                                     rcom::RPCError& error)
         {
+                (void) id;
                 (void) params;
 
                 error.code = 0;
@@ -63,9 +65,13 @@ namespace romi {
         }
 
         
-        void CameraAdaptor::execute(const std::string& method, nlohmann::json& params,
-                                    nlohmann::json& result, rcom::RPCError& error)
+        void CameraAdaptor::execute(const std::string& id,
+                                    const std::string& method,
+                                    nlohmann::json& params,
+                                    nlohmann::json& result,
+                                    rcom::RPCError& error)
         {
+                (void) id;
                 error.code = 0;
                                 
                 try {
