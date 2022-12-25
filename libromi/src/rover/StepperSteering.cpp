@@ -51,23 +51,13 @@ namespace romi {
                   steps_right_(0),
                   max_angular_speed_(0.0),
                   update_interval_(0.0),
-                  last_update_(0.0),
-                  mutex_(),
-                  thread_(nullptr),
-                  quitting_(false)
+                  last_update_(0.0)
         {
                 if (!enable())
                         throw std::runtime_error("StepperSteering: enable failed");
 
                 if (!homing())
                         throw std::runtime_error("StepperSteering: homing failed");
-        }
-
-        StepperSteering::~StepperSteering()
-        {
-                quitting_ = true;
-                if (thread_ != nullptr)
-                        thread_->join();
         }
         
         bool StepperSteering::homing()
@@ -117,7 +107,6 @@ namespace romi {
 
         bool StepperSteering::set_target(double left, double right)
         {
-                std::lock_guard sync(mutex_);
                 left_target_ = left;
                 right_target_ = right;
 

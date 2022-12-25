@@ -278,7 +278,6 @@ set(SOURCES
         include/rpc/RemoteCameraMount.h
         include/rpc/RemoteFunctionCallNames.h
         include/rpc/RemoteNavigation.h
-        include/rpc/RemoteObjectsAdaptor.h
         include/rpc/RemoteWeeder.h
         include/rpc/WeederAdaptor.h
         include/ui/ScriptList.h
@@ -352,7 +351,6 @@ set(SOURCES
         src/rpc/RemoteCamera.cpp
         src/rpc/RemoteCameraMount.cpp
         src/rpc/RemoteNavigation.cpp
-        src/rpc/RemoteObjectsAdaptor.cpp
         src/rpc/RemoteWeeder.cpp
         src/rpc/ScriptHubListener.cpp
         src/rpc/WeederAdaptor.cpp

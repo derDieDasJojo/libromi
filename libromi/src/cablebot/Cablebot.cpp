@@ -23,7 +23,7 @@
  */
 
 // FIXME: Avoid pre-compiler macro
-#define PI_BUILD
+//#define PI_BUILD
 #ifdef PI_BUILD
 #include "picamera/PiCamera.h"
 #else
