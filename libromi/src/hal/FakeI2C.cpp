@@ -28,7 +28,7 @@
 
 namespace romi {
 
-        FakeI2C::FakeI2C(rcom::ILinux& linux, const char *device, int address)
+        FakeI2C::FakeI2C(const char *device, int address)
                 : device_(device),
                   address_(address)
         {
