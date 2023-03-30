@@ -10,5 +10,4 @@ $ python3 -m pip install -e .
 
 To run the Romi hardware you will also need keras, tensorflow
 
-beacause it is challenging to get it for older raspberry versions i ended up with this one:
-https://github.com/PINTO0309/TensorflowLite-bin/releases
+tensorflow is available for the newest raspbian 64 bit os
